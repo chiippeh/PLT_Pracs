@@ -1,0 +1,53 @@
+
+   1 // Sieve of Eratosthenes for finding primes 2 <= n <= Max (Parva version)
+   2 // P.D. Terry,  Rhodes University, 2017
+   3 
+   4   int modulus (int x, int y) {
+   5 	// Returns 
+   6 	 return (x-((x/y)*y));
+   7   }
+   8 
+   9   void Main() {
+  10     const Max = 32000;
+  11     bool[] uncrossed = new bool[Max];          // the sieve
+  12     int i, n, k, it, iterations, primes = 0;   // counters
+  13     read("How many iterations? ", iterations);
+  14     bool display = iterations == 1;
+  15     read("Supply largest number to be tested ", n);
+  16     if (n > Max) {
+  17       write("n too large, sorry");
+  18       return;
+  19     }
+  20     write("Prime numbers between 2 and " , n, "\n");
+  21     write("-----------------------------------\n");
+  22     it = 1;
+  23     while (it <= iterations) {
+  24       primes = 0;
+  25       i = 2;
+  26       while (i <= n) {                         // clear sieve
+  27         uncrossed[i-2] = true;
+  28         i = i + 1;
+  29       }
+  30       i = 2;
+  31       while (i <= n) {                          /* the passes over the sieve */
+  32         if (uncrossed[i-2]) {
+  33           if (display && (modulus(primes,8) == 0)) write("\n");  // ensure line not too long
+  34 
+  35           primes = primes + 1;
+  36 
+  37           if (display) write(i, "\t");
+  38           k = i;                               // now cross out multiples of i
+  39           while(k <= n) {
+  40             uncrossed[k-2] = false;
+  41             k = k + i;
+  42           }
+  43         }
+  44 		i = i + 1;
+  45       }
+  46       it = it + 1;
+  47       if (display) write("\n");
+  48     }
+  49     write(primes, " primes");
+  50   } // Main
+
+0 errors detected
