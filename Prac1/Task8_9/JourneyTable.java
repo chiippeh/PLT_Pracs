@@ -79,6 +79,7 @@ public class JourneyTable {
             results.write(firstRowSpacings[i]);
             results.write(busStops.get(i));
         }
+        //This comment better
         //hey giiiirrrrllll
 
         results.write("\n");
