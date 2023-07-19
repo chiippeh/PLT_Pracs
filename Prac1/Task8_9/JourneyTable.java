@@ -58,7 +58,7 @@ public class JourneyTable {
 
                     // doing it twice makes it 'symmetrical'
                     travelTable[i][j] = travelTime;
-                    travelTable[j][i] = travelTime;
+                    // travelTable[j][i] = travelTime;
                 }   
             }      
         }
