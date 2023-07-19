@@ -1,5 +1,5 @@
 // Sieve of Eratosthenes using IntSet abstract data type
-// *names*, Rhodes University, 2023
+// Wynne Edwards (g21E2079), Mila-Jo Davies (g21D6937), Manu Jourdan (g21J5408), Rhodes University, 2023
 
 import library.*;
 
