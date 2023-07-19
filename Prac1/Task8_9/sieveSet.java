@@ -6,15 +6,10 @@ import library.*;
 class sieveSet {
 
   static public void main(String[] args) {
-    final int Max = 49000;
     IntSet mySet = new IntSet();
     int i, n, k, it, iterations, primes = 0;
     { IO.write("How many iterations? "); iterations = IO.readInt(); }
     { IO.write("Supply largest number to be tested "); n = IO.readInt(); }
-    if (n > Max) {
-      { IO.write("n too large, sorry"); }
-      return;
-    }
     it = 1;
     while (it <= iterations) {
       primes = 0;
