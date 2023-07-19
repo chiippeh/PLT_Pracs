@@ -1,0 +1,70 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "JourneyTable",
+            "request": "launch",
+            "mainClass": "JourneyTable",
+            "projectName": "PLT_Pracs_cefcabaf"
+        },
+        {
+            "type": "java",
+            "name": "SampleIO",
+            "request": "launch",
+            "mainClass": "SampleIO",
+            "projectName": "PLT_Pracs_cefcabaf"
+        },
+        {
+            "type": "java",
+            "name": "emptyj",
+            "request": "launch",
+            "mainClass": "emptyj",
+            "projectName": "PLT_Pracs_cefcabaf"
+        },
+        {
+            "type": "java",
+            "name": "fiboj",
+            "request": "launch",
+            "mainClass": "fiboj",
+            "projectName": "PLT_Pracs_cefcabaf"
+        },
+        {
+            "type": "java",
+            "name": "sampleIO",
+            "request": "launch",
+            "mainClass": "sampleIO",
+            "projectName": "PLT_Pracs_cefcabaf"
+        },
+        {
+            "type": "java",
+            "name": "sieve",
+            "request": "launch",
+            "mainClass": "sieve",
+            "projectName": "PLT_Pracs_cefcabaf"
+        },
+        {
+            "type": "java",
+            "name": "sieveSet",
+            "request": "launch",
+            "mainClass": "sieveSet",
+            "projectName": "PLT_Pracs_cefcabaf"
+        },
+        {
+            "type": "java",
+            "name": "sievej",
+            "request": "launch",
+            "mainClass": "sievej",
+            "projectName": "PLT_Pracs_cefcabaf"
+        }
+    ]
+}
