@@ -1,6 +1,5 @@
-import java.lang.reflect.Array;
+// Wynne Edwards (g21E2079), Mila-Jo Davies (g21D6937), Manu Jourdan (g21J5408), Rhodes University, 2023
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import library.*;
 
@@ -63,14 +62,46 @@ public class JourneyTable {
             }      
         }
 
-        // print out for testing
-        System.out.println("Travel Table: \n");
-        for (int i = 0; i < travelTable.length; i++) {
-            for (int j = 0; j < travelTable.length; j++) {
-                System.out.print(travelTable[i][j] + " ");
-            }
-            System.out.println();
+        // System.out.println("Travel Table: \n");
+        // for (int i = 0; i < travelTable.length; i++) {
+        //     for (int j = 0; j < travelTable.length; j++) {
+        //         System.out.print(travelTable[i][j] + " ");
+        //     }
+        //     System.out.println();
+        // }
+
+        //print out to results.txt
+        String[] firstRowSpacings = new String[]{"   ","  ","   ","   ","      ","     ","    ","    "};    //spaces between headings
+        results.write("           ");
+        results.write(busStops.get(0));
+        for (int i = 1; i < busStops.size(); i++) {
+            //prints each heading
+            results.write(firstRowSpacings[i]);
+            results.write(busStops.get(i));
         }
+
+        results.write("\n");
+        for (int i = 0; i < travelTable.length; i++) {;
+            results.write("   ");
+            results.write(busStops.get(i)); 
+            for (int j = 0; j < travelTable.length; j++) {
+                //check each value to determine the best spacing
+                if (j==0) {
+                    results.write(" ".repeat(10-(busStops.get(i).length())));
+                } else if (j < (travelTable.length)) {
+                    if (travelTable[i][j-1] > 9) {
+                        //print 7-space gap if single digit
+                        results.write("       ");
+                    } else {
+                        //print 8-space gap if double digit
+                        results.write("        ");
+                    }
+                }
+                results.write(travelTable[i][j]);
+            }
+            results.write("\n");
+        }
+        System.out.println("Bus Time Table generated in " + args[1]);
     }
     
 }
