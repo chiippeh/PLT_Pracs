@@ -62,7 +62,6 @@ public class JourneyTable {
             }      
         }
 
-        // print out for testing
         System.out.println("Travel Table: \n");
         for (int i = 0; i < travelTable.length; i++) {
             for (int j = 0; j < travelTable.length; j++) {
@@ -79,8 +78,6 @@ public class JourneyTable {
             results.write(firstRowSpacings[i]);
             results.write(busStops.get(i));
         }
-        //This comment better
-        //hey giiiirrrrllll
 
         results.write("\n");
         for (int i = 0; i < travelTable.length; i++) {
@@ -102,7 +99,6 @@ public class JourneyTable {
             }
             results.write("\n");
         }
-        //cleeooorrrr noooorrrr
 
     }
     
