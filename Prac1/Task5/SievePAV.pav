@@ -2,10 +2,10 @@
 // P.D. Terry,  Rhodes University, 2017
 //
 // Code adapted by:
-// 
+// Wynne Edwards (g21E2079), Mila-Jo Davies (g21D6937), Manu Jourdan (g21J5408), Rhodes University, 2023
 
+  // Modulo operation function
   int modulus (int x, int y) {
-	// Returns 
 	 return (x-((x/y)*y));
   }
 
@@ -44,7 +44,7 @@
             k = k + i;
           }
         }
-		i = i + 1;
+		    i = i + 1;
       }
       it = it + 1;
       if (display) write("\n");
