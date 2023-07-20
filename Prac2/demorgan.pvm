@@ -1,41 +1,41 @@
-                            ; try adding high level comments
-                            ; and for a start include your names
-   0   DSP      2
+                            ; Wynne Edwards (g21E2079), Mila-Jo Davies (g21D6937), Manu Jourdan (g21J5408), Rhodes University, 2023
+                            ;
+   0   DSP      2           ; X is variable 0, Y is variable 1
    2   PRNS     "   X      Y    (X.Y)\' X\'+Y\'  (X+Y)\' X\'.Y\'\n\n"
    4   LDA      0
    6   LDC      0
-   8   STO
-   9   LDA      1
+   8   STO                  ; X = false
+   9   LDA      1           ; REPEAT
   11   LDC      0
-  13   STO
-  14   LDA      0
-  16   LDV
-  17   PRNB
-  18   LDA      1
+  13   STO                  ; Y = false
+  14   LDA      0           ; REPEAT
+  16   LDV                  
+  17   PRNB                 ; print X
+  18   LDA      1              
   20   LDV
-  21   PRNB
+  21   PRNB                 ; print Y
   22   LDA      0
   24   LDV
   25   LDA      1
   27   LDV
-  28   AND
-  29   NOT
-  30   PRNB
-  31   LDA      0
+  28   AND                  
+  29   NOT                  
+  30   PRNB                 ; print !(X && Y)   
+  31   LDA      0           
   33   LDV
-  34   NOT
+  34   NOT                  
   35   LDA      1
   37   LDV
   38   NOT
-  39   OR
-  40   PRNB
+  39   OR       
+  40   PRNB                 ; print !X || !Y
   41   LDA      0
   43   LDV
   44   LDA      1
   46   LDV
   47   OR
   48   NOT
-  49   PRNB
+  49   PRNB                 ; print !(X || Y)
   50   LDA      0
   52   LDV
   53   NOT
@@ -43,25 +43,25 @@
   56   LDV
   57   NOT
   58   AND
-  59   PRNB
-  60   PRNS     "\n"
+  59   PRNB                 ; print !X && !Y
+  60   PRNS     "\n"        ; print "\n"
   62   LDA      1
   64   LDA      1
   66   LDV
   67   NOT
-  68   STO
+  68   STO                  ; Y = ! Y
   69   LDA      1
   71   LDV
   72   NOT
-  73   BZE      14
+  73   BZE      14          ; UNTIL (!Y)
   75   LDA      0
   77   LDA      0
   79   LDV
   80   NOT
-  81   STO
+  81   STO                  ; X = ! X
   82   LDA      0
   84   LDV
   85   NOT
-  86   BZE      9
+  86   BZE      9           ; UNTIL (!X)
   88   HALT
 

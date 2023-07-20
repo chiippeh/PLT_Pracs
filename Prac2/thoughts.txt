@@ -1,0 +1,10 @@
+Task 1:
+
+MAKEASM : creates the required class files for the system with assem.class as the
+entry point
+
+ASM complies and executes Assem.java (this is the entry point)
+
+Didn't print out stack trace if you didnt chose option
+
+
