@@ -1,0 +1,19 @@
+void main () {
+/* Demonstrate de Morgan's Laws
+   P.D. Terry, Rhodes University */
+
+  bool X, Y;
+
+  write("   X      Y   (X.Y)'  X'+Y'  (X+Y)' X'.Y'\n\n");
+
+  X = false;
+  repeat
+    Y = false;
+    repeat
+      write(X, Y, !(X && Y),  !X || !Y, !(X || Y), !X && !Y, "\n");
+      Y = ! Y;
+    until (!Y); // again
+    X = ! X;
+  until (!X); // again
+
+} // main
