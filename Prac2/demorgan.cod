@@ -1,0 +1,67 @@
+ASSEM
+BEGIN
+  {    0 } DSP      2
+  {    2 } PRNS     "   X      Y    (X.Y)\' X\'+Y\'  (X+Y)\' X\'.Y\'\n\n"
+  {    4 } LDA      0
+  {    6 } LDC      0
+  {    8 } STO     
+  {    9 } LDA      1
+  {   11 } LDC      0
+  {   13 } STO     
+  {   14 } LDA      0
+  {   16 } LDV     
+  {   17 } PRNB    
+  {   18 } LDA      1
+  {   20 } LDV     
+  {   21 } PRNB    
+  {   22 } LDA      0
+  {   24 } LDV     
+  {   25 } LDA      1
+  {   27 } LDV     
+  {   28 } AND     
+  {   29 } NOT     
+  {   30 } PRNB    
+  {   31 } LDA      0
+  {   33 } LDV     
+  {   34 } NOT     
+  {   35 } LDA      1
+  {   37 } LDV     
+  {   38 } NOT     
+  {   39 } OR      
+  {   40 } PRNB    
+  {   41 } LDA      0
+  {   43 } LDV     
+  {   44 } LDA      1
+  {   46 } LDV     
+  {   47 } OR      
+  {   48 } NOT     
+  {   49 } PRNB    
+  {   50 } LDA      0
+  {   52 } LDV     
+  {   53 } NOT     
+  {   54 } LDA      1
+  {   56 } LDV     
+  {   57 } NOT     
+  {   58 } AND     
+  {   59 } PRNB    
+  {   60 } PRNS     "\n"
+  {   62 } LDA      1
+  {   64 } LDA      1
+  {   66 } LDV     
+  {   67 } NOT     
+  {   68 } STO     
+  {   69 } LDA      1
+  {   71 } LDV     
+  {   72 } NOT     
+  {   73 } BZE      14
+  {   75 } LDA      0
+  {   77 } LDA      0
+  {   79 } LDV     
+  {   80 } NOT     
+  {   81 } STO     
+  {   82 } LDA      0
+  {   84 } LDV     
+  {   85 } NOT     
+  {   86 } BZE      9
+  {   88 } HALT    
+END.
