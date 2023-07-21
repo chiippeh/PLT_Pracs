@@ -10,58 +10,69 @@ BEGIN
   {   13 } STO     
   {   14 } LDA      0
   {   16 } LDV     
-  {   17 } PRNB    
+  {   17 } PRNI    
   {   18 } LDA      1
   {   20 } LDV     
-  {   21 } PRNB    
+  {   21 } PRNI    
   {   22 } LDA      0
   {   24 } LDV     
-  {   25 } LDA      1
-  {   27 } LDV     
-  {   28 } AND     
-  {   29 } NOT     
-  {   30 } PRNB    
-  {   31 } LDA      0
-  {   33 } LDV     
-  {   34 } NOT     
-  {   35 } LDA      1
-  {   37 } LDV     
-  {   38 } NOT     
-  {   39 } OR      
-  {   40 } PRNB    
-  {   41 } LDA      0
-  {   43 } LDV     
-  {   44 } LDA      1
-  {   46 } LDV     
-  {   47 } OR      
-  {   48 } NOT     
-  {   49 } PRNB    
-  {   50 } LDA      0
+  {   25 } BZE      38
+  {   27 } LDA      1
+  {   29 } LDV     
+  {   30 } BZE      38
+  {   32 } LDC      1
+  {   34 } NOP     
+  {   35 } NOP     
+  {   36 } BRN      40
+  {   38 } LDC      0
+  {   40 } NOT     
+  {   41 } PRNI    
+  {   42 } LDA      0
+  {   44 } LDV     
+  {   45 } NOT     
+  {   46 } BZE      50
+  {   48 } BRN      56
+  {   50 } LDA      1
   {   52 } LDV     
   {   53 } NOT     
-  {   54 } LDA      1
-  {   56 } LDV     
-  {   57 } NOT     
-  {   58 } AND     
-  {   59 } PRNB    
-  {   60 } PRNS     "\n"
-  {   62 } LDA      1
-  {   64 } LDA      1
-  {   66 } LDV     
-  {   67 } NOT     
-  {   68 } STO     
-  {   69 } LDA      1
-  {   71 } LDV     
-  {   72 } NOT     
-  {   73 } BZE      14
-  {   75 } LDA      0
-  {   77 } LDA      0
-  {   79 } LDV     
-  {   80 } NOT     
-  {   81 } STO     
-  {   82 } LDA      0
-  {   84 } LDV     
-  {   85 } NOT     
-  {   86 } BZE      9
-  {   88 } HALT    
+  {   54 } BZE      60
+  {   56 } LDC      1
+  {   58 } BRN      62
+  {   60 } LDC      0
+  {   62 } PRNI    
+  {   63 } LDA      0
+  {   65 } LDV     
+  {   66 } LDA      1
+  {   68 } LDV     
+  {   69 } OR      
+  {   70 } NOT     
+  {   71 } PRNI    
+  {   72 } LDA      0
+  {   74 } LDV     
+  {   75 } NOT     
+  {   76 } LDA      1
+  {   78 } LDV     
+  {   79 } NOT     
+  {   80 } AND     
+  {   81 } PRNI    
+  {   82 } PRNS     "\n"
+  {   84 } LDA      1
+  {   86 } LDA      1
+  {   88 } LDV     
+  {   89 } NOT     
+  {   90 } STO     
+  {   91 } LDA      1
+  {   93 } LDV     
+  {   94 } NOT     
+  {   95 } BZE      14
+  {   97 } LDA      0
+  {   99 } LDA      0
+  {  101 } LDV     
+  {  102 } NOT     
+  {  103 } STO     
+  {  104 } LDA      0
+  {  106 } LDV     
+  {  107 } NOT     
+  {  108 } BZE      9
+  {  110 } HALT    
 END.
