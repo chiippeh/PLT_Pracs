@@ -1,0 +1,60 @@
+ASSEM
+BEGIN
+  {    0 } DSP      4
+  {    2 } LDA      0
+  {    4 } LDC      10
+  {    6 } STO     
+  {    7 } LDA      1
+  {    9 } LDC      1
+  {   11 } STO     
+  {   12 } LDA      0
+  {   14 } LDV     
+  {   15 } LDA      1
+  {   17 } LDV     
+  {   18 } CGE     
+  {   19 } BZE      86
+  {   21 } LDA      2
+  {   23 } LDC      1
+  {   25 } STO     
+  {   26 } LDA      3
+  {   28 } LDA      1
+  {   30 } LDV     
+  {   31 } STO     
+  {   32 } LDA      3
+  {   34 } LDV     
+  {   35 } LDC      0
+  {   37 } CGT     
+  {   38 } BZE      64
+  {   40 } LDA      2
+  {   42 } LDA      3
+  {   44 } LDV     
+  {   45 } LDA      2
+  {   47 } LDV     
+  {   48 } MUL     
+  {   49 } STO     
+  {   50 } LDA      3
+  {   52 } LDA      3
+  {   54 } LDV     
+  {   55 } LDC      1
+  {   57 } SUB     
+  {   58 } STO     
+  {   59 } LDA      3
+  {   61 } LDV     
+  {   62 } BRN      32
+  {   64 } LDA      1
+  {   66 } LDV     
+  {   67 } PRNI    
+  {   68 } PRNS     "! = "
+  {   70 } LDA      2
+  {   72 } LDV     
+  {   73 } PRNI    
+  {   74 } PRNL    
+  {   75 } LDA      1
+  {   77 } LDA      1
+  {   79 } LDV     
+  {   80 } LDC      1
+  {   82 } ADD     
+  {   83 } STO     
+  {   84 } BRN      12
+  {   86 } HALT    
+END.

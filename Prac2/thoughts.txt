@@ -25,6 +25,7 @@ FOR THE OR:
 
 
 
+
                               ; Wynne Edwards (g21E2079), Mila-Jo Davies (g21D6937), Manu Jourdan (g21J5408), Rhodes University, 2023
                             ;
    0   DSP      2           ; X is variable 0, Y is variable 1
@@ -102,3 +103,15 @@ FOR THE OR:
   105   NOT
   106   BZE      9           ; UNTIL (!X)
   108   HALT
+
+
+
+
+  fact.pvm
+  20  LDA      3           
+   22  LDA      1
+   24  LDV
+   25  STO
+   26  NOP
+   27  NOP
+   28  HALT

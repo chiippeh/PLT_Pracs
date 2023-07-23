@@ -15,5 +15,4 @@ void main () {
     write(n, "! = ", f, "\n");
     n = n + 1;
   }
-
 } // main
