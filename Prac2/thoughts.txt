@@ -8,3 +8,14 @@ ASM complies and executes Assem.java (this is the entry point)
 Didn't print out stack trace if you didnt chose option
 
 
+FOR THE OR:
+
+  42   LDA      0           
+  44   LDV
+  45   BZE      53          ; if x = 0 then branch, else continue
+  47   LDA      1
+  49   LDV
+  50   NOT
+  51   BRN      55
+  53   LDC      1
+  55   PRNI      
