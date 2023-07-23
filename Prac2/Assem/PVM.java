@@ -337,11 +337,25 @@ import library.*;
           case PVM.sub:           // integer subtraction
             tos = pop(); push(pop() - tos);
             break;
+
+          //////////////////////////////////////////////////////////changed code to check for multiplicative overflow
           case PVM.mul:           // integer multiplication
-            tos = pop(); push(pop() * tos);
+            tos = pop(); 
+            sos = pop();
+            if ((Math.abs(maxInt/tos)) <= Math.abs(sos)) { 
+              ps = badMem;
+              break;
+            }
+            push(tos * sos);
             break;
+          //////////////////////////////////////////////////////////changed code to check for divide by zero error
           case PVM.div:           // integer division (quotient)
-            tos = pop(); push(pop() / tos);
+            tos = pop();
+            if (tos == 0) {
+              ps = divZero;
+              break;
+            }
+            push(pop() / tos);
             break;
           case PVM.rem:           // integer division (remainder)
             tos = pop(); push(pop() % tos);

@@ -18,9 +18,9 @@
   20   LDA      1
   22   LDA      1
   24   LDV
-  25   LDC      1000
+  25   LDC      -1000
   27   MUL
-  28   STO               ;     prod = prod * 1000;
+  28   STO               ;     prod = prod * -1000;
   29   LDA      1
   31   LDV
   32   PRNI              ;     write(prod);
