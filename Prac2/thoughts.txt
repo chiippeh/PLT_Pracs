@@ -8,3 +8,97 @@ ASM complies and executes Assem.java (this is the entry point)
 Didn't print out stack trace if you didnt chose option
 
 
+FOR THE OR:
+
+  42   LDA      0           
+  44   LDV
+  45   BZE      53          ; if x = 0 then branch, else continue
+  47   LDA      1
+  49   LDV
+  50   NOT
+  51   BRN      55
+  53   LDC      1
+  55   PRNI      
+
+
+
+
+
+
+                              ; Wynne Edwards (g21E2079), Mila-Jo Davies (g21D6937), Manu Jourdan (g21J5408), Rhodes University, 2023
+                            ;
+   0   DSP      2           ; X is variable 0, Y is variable 1
+   2   PRNS     "   X      Y    (X.Y)\' X\'+Y\'  (X+Y)\' X\'.Y\'\n\n"
+   4   LDA      0
+   6   LDC      0
+   8   STO                  ; X = false
+   9   LDA      1           ; REPEAT
+  11   LDC      0
+  13   STO                  ; Y = false
+  14   LDA      0           ; REPEAT
+  16   LDV                  
+  17   PRNI                 ; print X
+  18   LDA      1              
+  20   LDV
+  21   PRNI                 ; print Y
+  22   LDA      0
+  24   LDV
+  25   BZE      38
+  27   LDA      1
+  29   LDV
+  30   BZE      38
+  32   LDC      1
+  34   NOP
+  35   NOP
+  36   BRN      40
+  38   LDC      0
+  40   NOT                
+  41   PRNI                 ; print !(X && Y)   
+  42   LDA      0           
+  44   LDV
+  45   NOT
+  46   BZE      50          ; if X false branch else continue 
+  48   BRN      56          ; if X true branch to 56
+  50   LDA      1           
+  52   LDV
+  53   NOT
+  54   BZE      60          ; if Y false branch else continue
+  56   LDC      1           ; if Y true load constant of true
+  58   BRN      62          ; branch to print
+  60   LDC      0
+  62   PRNI                 ; print !X || !Y
+  63   LDA      0
+  65   LDV
+  66   LDA      1
+  68   LDV
+  69   OR
+  70   NOT
+  71   PRNI                 ; print !(X || Y)
+  72   LDA      0
+  74   LDV
+  75   NOT
+  76   LDA      1
+  77   LDV
+  78   NOT
+  79   AND
+  80   PRNI                 ; print !X && !Y
+  81   PRNS     "\n"        ; print "\n"
+  82   LDA      1
+  83   LDA      1
+  85   LDV
+  86   NOT
+  87   STO                  ; Y = ! Y
+  88   LDA      1
+  90   LDV
+  91   NOT
+  92   BZE      14          ; UNTIL (!Y)
+  94   LDA      0
+  96   LDA      0
+  98   LDV
+  99   NOT
+  100   STO                  ; X = ! X
+  102   LDA      0
+  104   LDV
+  105   NOT
+  106   BZE      9           ; UNTIL (!X)
+  108   HALT
