@@ -29,50 +29,39 @@ BEGIN
   {   41 } PRNI    
   {   42 } LDA      0
   {   44 } LDV     
-  {   45 } NOT     
-  {   46 } BZE      50
-  {   48 } BRN      56
-  {   50 } LDA      1
-  {   52 } LDV     
-  {   53 } NOT     
-  {   54 } BZE      60
-  {   56 } LDC      1
-  {   58 } BRN      62
-  {   60 } LDC      0
-  {   62 } PRNI    
-  {   63 } LDA      0
-  {   65 } LDV     
-  {   66 } LDA      1
-  {   68 } LDV     
-  {   69 } OR      
-  {   70 } NOT     
-  {   71 } PRNI    
-  {   72 } LDA      0
-  {   74 } LDV     
-  {   75 } NOT     
-  {   76 } LDA      1
-  {   78 } LDV     
-  {   79 } NOT     
-  {   80 } AND     
-  {   81 } PRNI    
-  {   82 } PRNS     "\n"
-  {   84 } LDA      1
-  {   86 } LDA      1
-  {   88 } LDV     
-  {   89 } NOT     
-  {   90 } STO     
-  {   91 } LDA      1
-  {   93 } LDV     
-  {   94 } NOT     
-  {   95 } BZE      14
-  {   97 } LDA      0
-  {   99 } LDA      0
-  {  101 } LDV     
-  {  102 } NOT     
-  {  103 } STO     
-  {  104 } LDA      0
-  {  106 } LDV     
-  {  107 } NOT     
-  {  108 } BZE      9
-  {  110 } HALT    
+  {   45 } BZE      53
+  {   47 } LDA      1
+  {   49 } LDV     
+  {   50 } NOT     
+  {   51 } BRN      55
+  {   53 } LDC      1
+  {   55 } PRNI    
+  {   56 } LDA      0
+  {   58 } LDV     
+  {   59 } NOT     
+  {   60 } LDA      1
+  {   62 } LDV     
+  {   63 } NOT     
+  {   64 } AND     
+  {   65 } PRNI    
+  {   66 } PRNS     "\n"
+  {   68 } LDA      1
+  {   70 } LDA      1
+  {   72 } LDV     
+  {   73 } NOT     
+  {   74 } STO     
+  {   75 } LDA      1
+  {   77 } LDV     
+  {   78 } NOT     
+  {   79 } BZE      14
+  {   81 } LDA      0
+  {   83 } LDA      0
+  {   85 } LDV     
+  {   86 } NOT     
+  {   87 } STO     
+  {   88 } LDA      0
+  {   90 } LDV     
+  {   91 } NOT     
+  {   92 } BZE      9
+  {   94 } HALT    
 END.
