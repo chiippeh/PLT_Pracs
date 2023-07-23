@@ -1,6 +1,7 @@
 void main () {
 // Print a table of factorial numbers 1! ... 10!
-// Your names here!
+// Wynne Edwards (g21E2079), Mila-Jo Davies (g21D6937), Manu Jourdan (g21J5408), Rhodes University, 2023
+
 
   const limit = 10;
   int n = 1;
