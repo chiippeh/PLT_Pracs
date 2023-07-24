@@ -331,11 +331,25 @@ import library.*;
           case PVM.neg:           // integer negation
             push(-pop());
             break;
+          //////////////////////////////////////////////////////////changed code to check for memory overflow
           case PVM.add:           // integer addition
-            tos = pop(); push(pop() + tos);
+            tos = pop();
+            sos = pop();
+            if (maxInt - Math.abs(tos) <= Math.abs(sos)) {
+              ps = badMem;
+              break;
+            }
+            push(sos + tos);
             break;
+          /////////////////////////////////////////////////////////changed code to check for memory overflow
           case PVM.sub:           // integer subtraction
-            tos = pop(); push(pop() - tos);
+            tos = pop();
+            sos = pop(); 
+            if (maxInt - Math.abs(tos) <= Math.abs(sos)) {
+              ps = badMem;
+              break;
+            }
+            push(sos - tos);
             break;
 
           //////////////////////////////////////////////////////////changed code to check for multiplicative overflow
@@ -357,8 +371,14 @@ import library.*;
             }
             push(pop() / tos);
             break;
+          //////////////////////////////////////////////////////////changed code tp check for divide by zero error
           case PVM.rem:           // integer division (remainder)
-            tos = pop(); push(pop() % tos);
+            tos = pop(); 
+            if (tos == 0){
+              ps = divZero;
+              break;
+            }
+            push(pop() % tos);
             break;
           case PVM.not:           // logical negation
             push(pop() == 0 ? 1 : 0);
