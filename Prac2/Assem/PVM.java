@@ -445,9 +445,23 @@ import library.*;
           case PVM.stl_2:         // pop to local variable 2
           case PVM.stl_3:         // pop to local variable 3
           case PVM.stoc:          // character checked store
+          //////////////////////////////////////////////////////////included a case to read a character input
           case PVM.inpc:          // character input
+          tos = pop();
+          mem[tos] = IO.readChar();
+          break;
+          //////////////////////////////////////////////////////////included a case to print a character
           case PVM.prnc:          // character output
+          tos = pop();
+          IO.write((char) tos);
+          break;
+          //////////////////////////////////////////////////////////included a case to capitalise a character
           case PVM.cap:           // toUpperCase
+          char tosl = (char) pop();
+          tosl = Character.toUpperCase(tosl);
+          push(tosl);
+          break;
+          
           case PVM.low:           // toLowerCase
           case PVM.islet:         // isLetter
 
@@ -579,12 +593,16 @@ import library.*;
       mnemonics[PVM.anew]   = "ANEW";
       mnemonics[PVM.brn]    = "BRN";
       mnemonics[PVM.bze]    = "BZE";
+      //////////////////////////////////////////////////////////added mneumonics for CAP
+      mnemonics[PVM.cap]    = "CAP";
       mnemonics[PVM.ceq]    = "CEQ";
       mnemonics[PVM.cge]    = "CGE";
       mnemonics[PVM.cgt]    = "CGT";
       mnemonics[PVM.cle]    = "CLE";
       mnemonics[PVM.clt]    = "CLT";
       mnemonics[PVM.cne]    = "CNE";
+      //////////////////////////////////////////////////////////added mneumonics for DEC
+      mnemonics[PVM.dec]    = "DEC";
       mnemonics[PVM.div]    = "DIV";
       mnemonics[PVM.dsp]    = "DSP";
       mnemonics[PVM.halt]   = "HALT";
