@@ -14,5 +14,5 @@ PRODUCTIONS
   Calc       = { Expression "=" } EOF .
   Expression = Term { "+" Term  |  "-" Term } .
   Term       = Factor { "*" Factor |  "/" Factor | "%" Factor } .
-  Factor     = decNumber  .
+  Factor     =  {"+" | "-"} (decNumber | "(" Expression ")" | "abs(" Expression ")") {!} .
 END Calc.

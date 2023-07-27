@@ -15,10 +15,13 @@ public class Parser {
 	public static final int star_Sym = 5;
 	public static final int slash_Sym = 6;
 	public static final int percent_Sym = 7;
-	public static final int NOT_SYM = 8;
+	public static final int lparen_Sym = 8;
+	public static final int rparen_Sym = 9;
+	public static final int abs_Sym = 10;
+	public static final int NOT_SYM = 11;
 	// pragmas
 
-	public static final int maxT = 8;
+	public static final int maxT = 11;
 
 	static final boolean T = true;
 	static final boolean x = false;
@@ -103,7 +106,7 @@ public class Parser {
 	}
 
 	static void Calc() {
-		while (la.kind == decNumber_Sym) {
+		while (StartOf(1)) {
 			Expression();
 			Expect(equal_Sym);
 		}
@@ -140,7 +143,23 @@ public class Parser {
 	}
 
 	static void Factor() {
-		Expect(decNumber_Sym);
+		if (la.kind == plus_Sym || la.kind == minus_Sym) {
+			if (la.kind == plus_Sym) {
+				Get();
+			} else {
+				Get();
+			}
+		}
+		if (la.kind == decNumber_Sym) {
+			Get();
+		} else if (la.kind == lparen_Sym) {
+			Get();
+			Expression();
+			Expect(rparen_Sym);
+		} else if (la.kind == abs_Sym) {
+			Get();
+			Expression();
+		} else SynErr(12);
 	}
 
 
@@ -155,7 +174,8 @@ public class Parser {
 	}
 
 	private static boolean[][] set = {
-		{T,x,x,x, x,x,x,x, x,x}
+		{T,x,x,x, x,x,x,x, x,x,x,x, x},
+		{x,T,x,T, T,x,x,x, T,x,T,x, x}
 
 	};
 
@@ -285,7 +305,11 @@ class Errors {
 			case 5: s = "\"*\" expected"; break;
 			case 6: s = "\"/\" expected"; break;
 			case 7: s = "\"%\" expected"; break;
-			case 8: s = "??? expected"; break;
+			case 8: s = "\"(\" expected"; break;
+			case 9: s = "\")\" expected"; break;
+			case 10: s = "\"abs\" expected"; break;
+			case 11: s = "??? expected"; break;
+			case 12: s = "invalid Factor"; break;
 			default: s = "error " + n; break;
 		}
 		storeError(line, col, s);

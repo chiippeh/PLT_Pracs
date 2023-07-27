@@ -67,8 +67,8 @@ public class Scanner {
 	static final char EOL = '\n';
 	static final int  eofSym = 0;
 	static final int charSetSize = 256;
-	static final int maxT = 8;
-	static final int noSym = 8;
+	static final int maxT = 11;
+	static final int noSym = 11;
 	// terminals
 	static final int EOF_SYM = 0;
 	static final int decNumber_Sym = 1;
@@ -78,17 +78,20 @@ public class Scanner {
 	static final int star_Sym = 5;
 	static final int slash_Sym = 6;
 	static final int percent_Sym = 7;
-	static final int NOT_SYM = 8;
+	static final int lparen_Sym = 8;
+	static final int rparen_Sym = 9;
+	static final int abs_Sym = 10;
+	static final int NOT_SYM = 11;
 	// pragmas
 
 	static short[] start = {
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	  0,  0,  0,  0,  0,  7,  0,  0,  0,  0,  5,  3,  0,  4,  0,  6,
+	  0,  0,  0,  0,  0,  7,  0,  0,  8,  9,  5,  3,  0,  4,  0,  6,
 	  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0,  2,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	  0, 10,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -208,6 +211,18 @@ public class Scanner {
 					{ t.kind = slash_Sym; done = true; break; }
 				case 7:
 					{ t.kind = percent_Sym; done = true; break; }
+				case 8:
+					{ t.kind = lparen_Sym; done = true; break; }
+				case 9:
+					{ t.kind = rparen_Sym; done = true; break; }
+				case 10:
+					if (ch == 'b') { buf.append(ch); NextCh(); state = 11; break;}
+					else { t.kind = noSym; done = true; break; }
+				case 11:
+					if (ch == 's') { buf.append(ch); NextCh(); state = 12; break;}
+					else { t.kind = noSym; done = true; break; }
+				case 12:
+					{ t.kind = abs_Sym; done = true; break; }
 
 			}
 		}
