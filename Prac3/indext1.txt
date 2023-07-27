@@ -1,0 +1,4 @@
+subminimum 40
+hello there 4
+abstract class 12
+varsity 3

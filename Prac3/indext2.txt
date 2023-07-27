@@ -1,0 +1,4 @@
+subminimum 40
+abstract class 12, 45
+abstraction, data 165
+aggregate pass, chances of 0

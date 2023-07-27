@@ -1,3 +1,6 @@
+                            ; Modified demorgan.pvm to use logical short-circuiting for (X.Y)' + X'+Y'
+                            ; Wynne Edwards (g21E2079), Mila-Jo Davies (g21D6937), Manu Jourdan (g21J5408), Rhodes University, 2023
+                            ;
 0    DSP      2      ; X is variable 0, Y is variable 1
 2    PRNS     "   X      Y    (X.Y)\' X\'+Y\'  (X+Y)\' X\'.Y\'\n\n"      
 4    LDA      0      

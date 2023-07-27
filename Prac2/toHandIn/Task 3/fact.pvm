@@ -1,0 +1,59 @@
+                     ; Print a table of factorial numbers 1! ... 20!
+                     ; Wynne Edwards (g21E2079), Mila-Jo Davies (g21D6937), Manu Jourdan (g21J5408), Rhodes University, 2023
+0    DSP      4      ; Variables:  limit = 0, n = 1, f = 2, i = 3
+2    LDA      0      
+4    LDC      10      
+6    STO             ; const limit = 10
+7    LDA      1      
+9    LDC      1      
+11   STO             ; int n = 1
+12   LDA      0      
+14   LDV             
+15   LDA      1      
+17   LDV             
+18   CGE             
+19   BZE      86     ; while (n <= limit) {} if true continue if false branch
+21   LDA      2      
+23   LDC      1      
+25   STO             ; int f = 1
+26   LDA      3      
+28   LDA      1      
+30   LDV             
+31   STO             ; int i = n
+32   LDA      3      
+34   LDV             
+35   LDC      0      
+37   CGT             
+38   BZE      64     ; while (i > 0) {} if true continue if false branch
+40   LDA      2      
+42   LDA      3      
+44   LDV             
+45   LDA      2      
+47   LDV             
+48   MUL             
+49   STO             ; f = f * i
+50   LDA      3      
+52   LDA      3      
+54   LDV             
+55   LDC      1      
+57   SUB             
+58   STO             ; i = i - 1
+59   LDA      3      
+61   LDV             
+62   BRN      32     ; back to inner while    
+64   LDA      1      
+66   LDV             
+67   PRNI            
+68   PRNS     "! = "      
+70   LDA      2      
+72   LDV             
+73   PRNI            
+74   PRNL            ; write(n, "! = ", f, "\n");       
+75   LDA      1      
+77   LDA      1      
+79   LDV             
+80   LDC      1      
+82   ADD             
+83   STO             ; n = n + 1;   
+84   BRN      12     ; back to outer while
+86   HALT            
