@@ -1,22 +1,11 @@
 
-   1 COMPILER Song  $CN
-   2 /* Song identifier
-   3    Extended by Wynne Edwards (g21E2079), Mila-Jo Davies (g21D6937), Manu Jourdan (g21J5408), Rhodes University, 2023 */
-   4 
-   5 CHARACTERS
-   6   letterPunc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' " .
-   7   digit      = "0123456789 " .
-   8 
-   9 TOKENS
-  10   songTitle   = '"' (letterPunc | digit) {letterPunc | digit} '"' .
-  11   artist      = "(" (letterPunc | digit) {letterPunc | digit} ")" .
-  12   releaseDate = "[" digit {digit} "]" .
-  13 
-  14 IGNORE CHR(0) .. CHR(31) /* ASCII control characters */
-  15 
-  16 PRODUCTIONS
-  17   Song = {songTitle artist {"," artist} [releaseDate] "."} EOF .
-  18 
-  19 END Song.
+   1 aggregate pass, chances of 0
+   2 loss of DP certificate 2012
+   3 prac tests 10, 25, 27, 30
+   4 probable exclusion from Rhodes 2013
+   5 class attendance, intolerable 15, 745
+   6 aegrotat examinations -- see unethical doctors
+   7 deadlines, compiler course -- see sunrise
+   8 recursion -- see recursion
 
 0 errors detected

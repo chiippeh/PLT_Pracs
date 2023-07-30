@@ -1,0 +1,17 @@
+COMPILER Index  $CN
+
+CHARACTERS
+  letter      = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" .
+  digit       = "0123456789" .
+
+TOKENS
+  letterIdent = letter {letter} .
+  digitIdent  = digit {digit} .
+
+IGNORE CHR(0) .. CHR(31)
+
+PRODUCTIONS
+  Index       = {letterIdent {[","] letterIdent} | digitIdent {[","] digitIdent} | SeeIndex} EOF .
+  SeeIndex    = "--" letterIdent {[","] letterIdent} .
+
+END Index.
