@@ -67,8 +67,8 @@ public class Scanner {
 	static final char EOL = '\n';
 	static final int  eofSym = 0;
 	static final int charSetSize = 256;
-	static final int maxT = 11;
-	static final int noSym = 11;
+	static final int maxT = 12;
+	static final int noSym = 12;
 	// terminals
 	static final int EOF_SYM = 0;
 	static final int decNumber_Sym = 1;
@@ -80,18 +80,19 @@ public class Scanner {
 	static final int percent_Sym = 7;
 	static final int lparen_Sym = 8;
 	static final int rparen_Sym = 9;
-	static final int abs_Sym = 10;
-	static final int NOT_SYM = 11;
+	static final int abslparen_Sym = 10;
+	static final int bang_Sym = 11;
+	static final int NOT_SYM = 12;
 	// pragmas
 
 	static short[] start = {
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	  0,  0,  0,  0,  0,  7,  0,  0,  8,  9,  5,  3,  0,  4,  0,  6,
-	  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0,  2,  0,  0,
+	  0, 16,  0,  0,  0,  9,  0,  0, 10, 11,  7,  5,  0,  6,  1,  8,
+	  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0,  4,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	  0, 10,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	  0, 12,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -197,32 +198,46 @@ public class Scanner {
 				case -1: { t.kind = eofSym; done = true; break; }  // NextCh already done /* pdt */
 				case 0: { t.kind = noSym; done = true; break; }    // NextCh already done
 				case 1:
-					if ((ch >= '0' && ch <= '9')) { buf.append(ch); NextCh(); state = 1; break;}
-					else { t.kind = decNumber_Sym; done = true; break; }
+					if ((ch >= '0' && ch <= '9')) { buf.append(ch); NextCh(); state = 2; break;}
+					else if (ch == '.') { buf.append(ch); NextCh(); state = 1; break;}
+					else { t.kind = noSym; done = true; break; }
 				case 2:
-					{ t.kind = equal_Sym; done = true; break; }
+					if ((ch >= '0' && ch <= '9')) { buf.append(ch); NextCh(); state = 2; break;}
+					else if (ch == '.') { buf.append(ch); NextCh(); state = 3; break;}
+					else { t.kind = decNumber_Sym; done = true; break; }
 				case 3:
-					{ t.kind = plus_Sym; done = true; break; }
+					if ((ch >= '0' && ch <= '9')) { buf.append(ch); NextCh(); state = 2; break;}
+					else if (ch == '.') { buf.append(ch); NextCh(); state = 3; break;}
+					else { t.kind = noSym; done = true; break; }
 				case 4:
-					{ t.kind = minus_Sym; done = true; break; }
+					{ t.kind = equal_Sym; done = true; break; }
 				case 5:
-					{ t.kind = star_Sym; done = true; break; }
+					{ t.kind = plus_Sym; done = true; break; }
 				case 6:
-					{ t.kind = slash_Sym; done = true; break; }
+					{ t.kind = minus_Sym; done = true; break; }
 				case 7:
-					{ t.kind = percent_Sym; done = true; break; }
+					{ t.kind = star_Sym; done = true; break; }
 				case 8:
-					{ t.kind = lparen_Sym; done = true; break; }
+					{ t.kind = slash_Sym; done = true; break; }
 				case 9:
-					{ t.kind = rparen_Sym; done = true; break; }
+					{ t.kind = percent_Sym; done = true; break; }
 				case 10:
-					if (ch == 'b') { buf.append(ch); NextCh(); state = 11; break;}
-					else { t.kind = noSym; done = true; break; }
+					{ t.kind = lparen_Sym; done = true; break; }
 				case 11:
-					if (ch == 's') { buf.append(ch); NextCh(); state = 12; break;}
-					else { t.kind = noSym; done = true; break; }
+					{ t.kind = rparen_Sym; done = true; break; }
 				case 12:
-					{ t.kind = abs_Sym; done = true; break; }
+					if (ch == 'b') { buf.append(ch); NextCh(); state = 13; break;}
+					else { t.kind = noSym; done = true; break; }
+				case 13:
+					if (ch == 's') { buf.append(ch); NextCh(); state = 14; break;}
+					else { t.kind = noSym; done = true; break; }
+				case 14:
+					if (ch == '(') { buf.append(ch); NextCh(); state = 15; break;}
+					else { t.kind = noSym; done = true; break; }
+				case 15:
+					{ t.kind = abslparen_Sym; done = true; break; }
+				case 16:
+					{ t.kind = bang_Sym; done = true; break; }
 
 			}
 		}

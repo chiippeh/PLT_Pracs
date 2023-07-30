@@ -1,0 +1,22 @@
+COMPILER Song  $CN
+/* aaaaaaaaaada
+   aaaaaaaaaaaaa
+   aaaaaaaaaaaaa */
+
+/*---------------------------------------------*/
+
+CHARACTERS
+  letterPunc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' " .
+  digit      = "0123456789 " .
+
+TOKENS
+  songTitle   = '"' letterPunc {letterPunc} '"' .
+  artist      = letterPunc {letterPunc} .
+  releaseDate = digit {digit} .
+
+
+IGNORE CHR(0) .. CHR(31) /* ASCII control characters */
+
+PRODUCTIONS
+
+END Song.

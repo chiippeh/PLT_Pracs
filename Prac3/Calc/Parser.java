@@ -17,11 +17,12 @@ public class Parser {
 	public static final int percent_Sym = 7;
 	public static final int lparen_Sym = 8;
 	public static final int rparen_Sym = 9;
-	public static final int abs_Sym = 10;
-	public static final int NOT_SYM = 11;
+	public static final int abslparen_Sym = 10;
+	public static final int bang_Sym = 11;
+	public static final int NOT_SYM = 12;
 	// pragmas
 
-	public static final int maxT = 11;
+	public static final int maxT = 12;
 
 	static final boolean T = true;
 	static final boolean x = false;
@@ -143,7 +144,7 @@ public class Parser {
 	}
 
 	static void Factor() {
-		if (la.kind == plus_Sym || la.kind == minus_Sym) {
+		while (la.kind == plus_Sym || la.kind == minus_Sym) {
 			if (la.kind == plus_Sym) {
 				Get();
 			} else {
@@ -156,10 +157,14 @@ public class Parser {
 			Get();
 			Expression();
 			Expect(rparen_Sym);
-		} else if (la.kind == abs_Sym) {
+		} else if (la.kind == abslparen_Sym) {
 			Get();
 			Expression();
-		} else SynErr(12);
+			Expect(rparen_Sym);
+		} else SynErr(13);
+		while (la.kind == bang_Sym) {
+			Get();
+		}
 	}
 
 
@@ -174,8 +179,8 @@ public class Parser {
 	}
 
 	private static boolean[][] set = {
-		{T,x,x,x, x,x,x,x, x,x,x,x, x},
-		{x,T,x,T, T,x,x,x, T,x,T,x, x}
+		{T,x,x,x, x,x,x,x, x,x,x,x, x,x},
+		{x,T,x,T, T,x,x,x, T,x,T,x, x,x}
 
 	};
 
@@ -307,9 +312,10 @@ class Errors {
 			case 7: s = "\"%\" expected"; break;
 			case 8: s = "\"(\" expected"; break;
 			case 9: s = "\")\" expected"; break;
-			case 10: s = "\"abs\" expected"; break;
-			case 11: s = "??? expected"; break;
-			case 12: s = "invalid Factor"; break;
+			case 10: s = "\"abs(\" expected"; break;
+			case 11: s = "\"!\" expected"; break;
+			case 12: s = "??? expected"; break;
+			case 13: s = "invalid Factor"; break;
 			default: s = "error " + n; break;
 		}
 		storeError(line, col, s);

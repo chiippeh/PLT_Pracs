@@ -6,7 +6,7 @@ CHARACTERS
   digit      = "0123456789" .
 
 TOKENS
-  decNumber  = digit { digit } .
+  decNumber  = {"."} digit {{"."} digit } .
 
 IGNORE CHR(0) .. CHR(31)
 
@@ -14,5 +14,5 @@ PRODUCTIONS
   Calc       = { Expression "=" } EOF .
   Expression = Term { "+" Term  |  "-" Term } .
   Term       = Factor { "*" Factor |  "/" Factor | "%" Factor } .
-  Factor     =  {"+" | "-"} (decNumber | "(" Expression ")" | "abs(" Expression ")") {!} .
+  Factor     =  {"+" | "-"} (decNumber | "(" Expression ")" | "abs(" Expression ")") {"!"} .
 END Calc.
