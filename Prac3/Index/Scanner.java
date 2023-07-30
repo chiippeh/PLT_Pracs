@@ -67,21 +67,22 @@ public class Scanner {
 	static final char EOL = '\n';
 	static final int  eofSym = 0;
 	static final int charSetSize = 256;
-	static final int maxT = 5;
-	static final int noSym = 5;
+	static final int maxT = 6;
+	static final int noSym = 6;
 	// terminals
 	static final int EOF_SYM = 0;
-	static final int letterIdent_Sym = 1;
-	static final int digitIdent_Sym = 2;
-	static final int comma_Sym = 3;
-	static final int minusminus_Sym = 4;
-	static final int NOT_SYM = 5;
+	static final int word_Sym = 1;
+	static final int number_Sym = 2;
+	static final int punct_Sym = 3;
+	static final int comma_Sym = 4;
+	static final int minusminus_Sym = 5;
+	static final int NOT_SYM = 6;
 	// pragmas
 
 	static short[] start = {
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  3,  4,  0,  0,
+	  0,  0,  0,  0,  0,  0,  0,  0,  3,  3,  0,  3,  4,  3,  0,  0,
 	  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0,  0,  0,  0,
 	  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
 	  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0,  0,  0,
@@ -173,7 +174,7 @@ public class Scanner {
 
 	static void CheckLiteral() {
 		String lit = t.val;
-		
+		if (lit.compareTo("--") == 0) t.kind = minusminus_Sym;
 	}
 
 	/* AW Scan() renamed to NextToken() */
@@ -193,17 +194,17 @@ public class Scanner {
 				case 1:
 					if ((ch >= 'A' && ch <= 'Z'
 					  || ch >= 'a' && ch <= 'z')) { buf.append(ch); NextCh(); state = 1; break;}
-					else { t.kind = letterIdent_Sym; done = true; break; }
+					else { t.kind = word_Sym; done = true; break; }
 				case 2:
 					if ((ch >= '0' && ch <= '9')) { buf.append(ch); NextCh(); state = 2; break;}
-					else { t.kind = digitIdent_Sym; done = true; break; }
+					else { t.kind = number_Sym; done = true; break; }
 				case 3:
-					{ t.kind = comma_Sym; done = true; break; }
+					if ((ch >= '(' && ch <= ')'
+					  || ch == '+'
+					  || ch == '-')) { buf.append(ch); NextCh(); state = 3; break;}
+					else { t.kind = punct_Sym; t.val = buf.toString(); CheckLiteral(); return t; }
 				case 4:
-					if (ch == '-') { buf.append(ch); NextCh(); state = 5; break;}
-					else { t.kind = noSym; done = true; break; }
-				case 5:
-					{ t.kind = minusminus_Sym; done = true; break; }
+					{ t.kind = comma_Sym; done = true; break; }
 
 			}
 		}

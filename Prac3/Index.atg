@@ -3,15 +3,18 @@ COMPILER Index  $CN
 CHARACTERS
   letter      = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" .
   digit       = "0123456789" .
+  punc        = "-+()" .
 
 TOKENS
-  letterIdent = letter {letter} .
-  digitIdent  = digit {digit} .
+  word        = letter {letter} .
+  number      = digit {digit} .
+  punct = punc {punc} .
 
 IGNORE CHR(0) .. CHR(31)
 
 PRODUCTIONS
-  Index       = {letterIdent {[","] letterIdent} | digitIdent {[","] digitIdent} | SeeIndex} EOF .
-  SeeIndex    = "--" letterIdent {[","] letterIdent} .
+  Index         = {Line} EOF .
+  Line          = ({punct} word {[","] word {punct}} {punct} | {punct} number {[","] number {punct}}) {punct} | "--" SeeDashedLine .
+  SeeDashedLine = word {[","] word} .
 
 END Index.

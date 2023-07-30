@@ -5,18 +5,20 @@ import java.io.*;
 
 public class Parser {
 	public static final int _EOF = 0;
-	public static final int _letterIdent = 1;
-	public static final int _digitIdent = 2;
+	public static final int _word = 1;
+	public static final int _number = 2;
+	public static final int _punct = 3;
 	// terminals
 	public static final int EOF_SYM = 0;
-	public static final int letterIdent_Sym = 1;
-	public static final int digitIdent_Sym = 2;
-	public static final int comma_Sym = 3;
-	public static final int minusminus_Sym = 4;
-	public static final int NOT_SYM = 5;
+	public static final int word_Sym = 1;
+	public static final int number_Sym = 2;
+	public static final int punct_Sym = 3;
+	public static final int comma_Sym = 4;
+	public static final int minusminus_Sym = 5;
+	public static final int NOT_SYM = 6;
 	// pragmas
 
-	public static final int maxT = 5;
+	public static final int maxT = 6;
 
 	static final boolean T = true;
 	static final boolean x = false;
@@ -101,38 +103,62 @@ public class Parser {
 	}
 
 	static void Index() {
-		while (la.kind == letterIdent_Sym || la.kind == digitIdent_Sym || la.kind == minusminus_Sym) {
-			if (la.kind == letterIdent_Sym) {
-				Get();
-				while (la.kind == letterIdent_Sym || la.kind == comma_Sym) {
-					if (la.kind == comma_Sym) {
-						Get();
-					}
-					Expect(letterIdent_Sym);
-				}
-			} else if (la.kind == digitIdent_Sym) {
-				Get();
-				while (la.kind == digitIdent_Sym || la.kind == comma_Sym) {
-					if (la.kind == comma_Sym) {
-						Get();
-					}
-					Expect(digitIdent_Sym);
-				}
-			} else {
-				SeeIndex();
-			}
+		while (StartOf(1)) {
+			Line();
 		}
 		Expect(EOF_SYM);
 	}
 
-	static void SeeIndex() {
-		Expect(minusminus_Sym);
-		Expect(letterIdent_Sym);
-		while (la.kind == letterIdent_Sym || la.kind == comma_Sym) {
+	static void Line() {
+		if (la.kind == word_Sym || la.kind == number_Sym || la.kind == punct_Sym) {
+			if (la.kind == word_Sym || la.kind == punct_Sym) {
+				while (la.kind == punct_Sym) {
+					Get();
+				}
+				Expect(word_Sym);
+				while (la.kind == word_Sym || la.kind == comma_Sym) {
+					if (la.kind == comma_Sym) {
+						Get();
+					}
+					Expect(word_Sym);
+					while (la.kind == punct_Sym) {
+						Get();
+					}
+				}
+				while (la.kind == punct_Sym) {
+					Get();
+				}
+			} else {
+				while (la.kind == punct_Sym) {
+					Get();
+				}
+				Expect(number_Sym);
+				while (la.kind == number_Sym || la.kind == comma_Sym) {
+					if (la.kind == comma_Sym) {
+						Get();
+					}
+					Expect(number_Sym);
+					while (la.kind == punct_Sym) {
+						Get();
+					}
+				}
+			}
+			while (la.kind == punct_Sym) {
+				Get();
+			}
+		} else if (la.kind == minusminus_Sym) {
+			Get();
+			SeeDashedLine();
+		} else SynErr(7);
+	}
+
+	static void SeeDashedLine() {
+		Expect(word_Sym);
+		while (la.kind == word_Sym || la.kind == comma_Sym) {
 			if (la.kind == comma_Sym) {
 				Get();
 			}
-			Expect(letterIdent_Sym);
+			Expect(word_Sym);
 		}
 	}
 
@@ -148,7 +174,8 @@ public class Parser {
 	}
 
 	private static boolean[][] set = {
-		{T,x,x,x, x,x,x}
+		{T,x,x,x, x,x,x,x},
+		{x,T,T,T, x,T,x,x}
 
 	};
 
@@ -271,11 +298,13 @@ class Errors {
 		String s;
 		switch (n) {
 			case 0: s = "EOF expected"; break;
-			case 1: s = "letterIdent expected"; break;
-			case 2: s = "digitIdent expected"; break;
-			case 3: s = "\",\" expected"; break;
-			case 4: s = "\"--\" expected"; break;
-			case 5: s = "??? expected"; break;
+			case 1: s = "word expected"; break;
+			case 2: s = "number expected"; break;
+			case 3: s = "punct expected"; break;
+			case 4: s = "\",\" expected"; break;
+			case 5: s = "\"--\" expected"; break;
+			case 6: s = "??? expected"; break;
+			case 7: s = "invalid Line"; break;
 			default: s = "error " + n; break;
 		}
 		storeError(line, col, s);
