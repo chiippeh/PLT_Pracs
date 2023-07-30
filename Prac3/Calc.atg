@@ -1,6 +1,7 @@
 COMPILER Calc  $CN
 /* Simple arithmetic calculator
-   P.D. Terry, Rhodes University extended by KB 2021 */
+   P.D. Terry, Rhodes University extended by KB 2021 
+   Extended by Wynne Edwards (g21E2079), Mila-Jo Davies (g21D6937), Manu Jourdan (g21J5408), Rhodes University, 2023 */
 
 CHARACTERS
   digit      = "0123456789" .

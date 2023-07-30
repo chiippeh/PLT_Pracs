@@ -1,22 +1,19 @@
 COMPILER Song  $CN
-/* aaaaaaaaaada
-   aaaaaaaaaaaaa
-   aaaaaaaaaaaaa */
-
-/*---------------------------------------------*/
+/* Song identifier
+   Extended by Wynne Edwards (g21E2079), Mila-Jo Davies (g21D6937), Manu Jourdan (g21J5408), Rhodes University, 2023 */
 
 CHARACTERS
   letterPunc = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' " .
   digit      = "0123456789 " .
 
 TOKENS
-  songTitle   = '"' letterPunc {letterPunc} '"' .
-  artist      = letterPunc {letterPunc} .
-  releaseDate = digit {digit} .
-
+  songTitle   = '"' (letterPunc | digit) {letterPunc | digit} '"' .
+  artist      = "(" (letterPunc | digit) {letterPunc | digit} ")" .
+  releaseDate = "[" digit {digit} "]" .
 
 IGNORE CHR(0) .. CHR(31) /* ASCII control characters */
 
 PRODUCTIONS
+  Song = {songTitle artist {"," artist} [releaseDate] "."} EOF .
 
 END Song.
