@@ -74,15 +74,15 @@ public class Scanner {
 	static final int songTitle_Sym = 1;
 	static final int artist_Sym = 2;
 	static final int releaseDate_Sym = 3;
-	static final int comma_Sym = 4;
-	static final int point_Sym = 5;
+	static final int point_Sym = 4;
+	static final int comma_Sym = 5;
 	static final int NOT_SYM = 6;
 	// pragmas
 
 	static short[] start = {
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	  0,  0,  1,  0,  0,  0,  0,  0,  4,  0,  0,  0, 10,  0, 11,  0,
+	  0,  0,  1,  0,  0,  0,  0,  0,  4,  0,  0,  0, 11,  0, 10,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  7,  0,  0,  0,  0,
@@ -237,9 +237,9 @@ public class Scanner {
 				case 9:
 					{ t.kind = releaseDate_Sym; done = true; break; }
 				case 10:
-					{ t.kind = comma_Sym; done = true; break; }
-				case 11:
 					{ t.kind = point_Sym; done = true; break; }
+				case 11:
+					{ t.kind = comma_Sym; done = true; break; }
 
 			}
 		}

@@ -8,13 +8,14 @@ CHARACTERS
 TOKENS
   word        = letter {letter} .
   number      = digit {digit} .
-  punct = punc {punc} .
-
-IGNORE CHR(0) .. CHR(31)
+  combo       = "-" digit .
+  punct       = punc {punc} .
 
 PRODUCTIONS
-  Index         = {Line} EOF .
-  Line          = ({punct} word {[","] word {punct}} {punct} | {punct} number {[","] number {punct}}) {punct} | "--" SeeDashedLine .
-  SeeDashedLine = word {[","] word} .
+  Index       = {Line "\r\n"} EOF .
+  Line        = Title [","|"--"] [Subtitle] {","|"--" Subtitle} {EndIndex} | .
+  Title       = word {punct} {(word | number | combo) {punct}} .
+  Subtitle    = word {punct} {(word | combo) {punct}} .
+  EndIndex    = number [","] {(number | combo) [","] | "Appendix" number}  .
 
 END Index.

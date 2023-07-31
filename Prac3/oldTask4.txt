@@ -1,0 +1,9 @@
+  Index        = {Line"\r\n"} EOF.
+  Line         = StartDesc EndIndex .
+  StartDesc    = {punct} word ({[","] {punct} word} | {{punct} number}) .
+  EndIndex     = {punct} number {[","] {punct} number} | Dashed .
+  Dashed       = "--" word {word} .
+
+
+Index        = {Line "\r\n"} EOF .
+  Line         = word {punct} {(word  | number) {punct}} |  .

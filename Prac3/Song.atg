@@ -14,6 +14,7 @@ TOKENS
 IGNORE CHR(0) .. CHR(31) /* ASCII control characters */
 
 PRODUCTIONS
-  Song = {songTitle artist {"," artist} [releaseDate] "."} EOF .
+  Song = {Expr "."} EOF .
+  Expr = songTitle artist {"," artist} [releaseDate] .
 
 END Song.

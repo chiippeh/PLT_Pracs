@@ -13,8 +13,8 @@ public class Parser {
 	public static final int songTitle_Sym = 1;
 	public static final int artist_Sym = 2;
 	public static final int releaseDate_Sym = 3;
-	public static final int comma_Sym = 4;
-	public static final int point_Sym = 5;
+	public static final int point_Sym = 4;
+	public static final int comma_Sym = 5;
 	public static final int NOT_SYM = 6;
 	// pragmas
 
@@ -104,18 +104,22 @@ public class Parser {
 
 	static void Song() {
 		while (la.kind == songTitle_Sym) {
-			Get();
-			Expect(artist_Sym);
-			while (la.kind == comma_Sym) {
-				Get();
-				Expect(artist_Sym);
-			}
-			if (la.kind == releaseDate_Sym) {
-				Get();
-			}
+			Expr();
 			Expect(point_Sym);
 		}
 		Expect(EOF_SYM);
+	}
+
+	static void Expr() {
+		Expect(songTitle_Sym);
+		Expect(artist_Sym);
+		while (la.kind == comma_Sym) {
+			Get();
+			Expect(artist_Sym);
+		}
+		if (la.kind == releaseDate_Sym) {
+			Get();
+		}
 	}
 
 
@@ -256,8 +260,8 @@ class Errors {
 			case 1: s = "songTitle expected"; break;
 			case 2: s = "artist expected"; break;
 			case 3: s = "releaseDate expected"; break;
-			case 4: s = "\",\" expected"; break;
-			case 5: s = "\".\" expected"; break;
+			case 4: s = "\".\" expected"; break;
+			case 5: s = "\",\" expected"; break;
 			case 6: s = "??? expected"; break;
 			default: s = "error " + n; break;
 		}

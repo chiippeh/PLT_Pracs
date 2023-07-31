@@ -7,18 +7,22 @@ public class Parser {
 	public static final int _EOF = 0;
 	public static final int _word = 1;
 	public static final int _number = 2;
-	public static final int _punct = 3;
+	public static final int _combo = 3;
+	public static final int _punct = 4;
 	// terminals
 	public static final int EOF_SYM = 0;
 	public static final int word_Sym = 1;
 	public static final int number_Sym = 2;
-	public static final int punct_Sym = 3;
-	public static final int comma_Sym = 4;
-	public static final int minusminus_Sym = 5;
-	public static final int NOT_SYM = 6;
+	public static final int combo_Sym = 3;
+	public static final int punct_Sym = 4;
+	public static final int crlf_Sym = 5;
+	public static final int comma_Sym = 6;
+	public static final int minusminus_Sym = 7;
+	public static final int Appendix_Sym = 8;
+	public static final int NOT_SYM = 9;
 	// pragmas
 
-	public static final int maxT = 6;
+	public static final int maxT = 9;
 
 	static final boolean T = true;
 	static final boolean x = false;
@@ -103,62 +107,96 @@ public class Parser {
 	}
 
 	static void Index() {
-		while (StartOf(1)) {
+		while (la.kind == word_Sym || la.kind == crlf_Sym) {
 			Line();
+			Expect(crlf_Sym);
 		}
 		Expect(EOF_SYM);
 	}
 
 	static void Line() {
-		if (la.kind == word_Sym || la.kind == number_Sym || la.kind == punct_Sym) {
-			if (la.kind == word_Sym || la.kind == punct_Sym) {
-				while (la.kind == punct_Sym) {
+		if (la.kind == word_Sym) {
+			Title();
+			if (la.kind == comma_Sym || la.kind == minusminus_Sym) {
+				if (la.kind == comma_Sym) {
+					Get();
+				} else {
 					Get();
 				}
-				Expect(word_Sym);
-				while (la.kind == word_Sym || la.kind == comma_Sym) {
-					if (la.kind == comma_Sym) {
-						Get();
-					}
-					Expect(word_Sym);
-					while (la.kind == punct_Sym) {
-						Get();
-					}
-				}
-				while (la.kind == punct_Sym) {
+			}
+			if (la.kind == word_Sym) {
+				Subtitle();
+			}
+			while (la.kind == comma_Sym || la.kind == minusminus_Sym) {
+				if (la.kind == comma_Sym) {
 					Get();
+				} else {
+					Get();
+					Subtitle();
 				}
+			}
+			while (la.kind == number_Sym) {
+				EndIndex();
+			}
+		} else if (la.kind == crlf_Sym) {
+		} else SynErr(10);
+	}
+
+	static void Title() {
+		Expect(word_Sym);
+		while (la.kind == punct_Sym) {
+			Get();
+		}
+		while (la.kind == word_Sym || la.kind == number_Sym || la.kind == combo_Sym) {
+			if (la.kind == word_Sym) {
+				Get();
+			} else if (la.kind == number_Sym) {
+				Get();
 			} else {
-				while (la.kind == punct_Sym) {
-					Get();
-				}
-				Expect(number_Sym);
-				while (la.kind == number_Sym || la.kind == comma_Sym) {
-					if (la.kind == comma_Sym) {
-						Get();
-					}
-					Expect(number_Sym);
-					while (la.kind == punct_Sym) {
-						Get();
-					}
-				}
+				Get();
 			}
 			while (la.kind == punct_Sym) {
 				Get();
 			}
-		} else if (la.kind == minusminus_Sym) {
-			Get();
-			SeeDashedLine();
-		} else SynErr(7);
+		}
 	}
 
-	static void SeeDashedLine() {
+	static void Subtitle() {
 		Expect(word_Sym);
-		while (la.kind == word_Sym || la.kind == comma_Sym) {
-			if (la.kind == comma_Sym) {
+		while (la.kind == punct_Sym) {
+			Get();
+		}
+		while (la.kind == word_Sym || la.kind == combo_Sym) {
+			if (la.kind == word_Sym) {
+				Get();
+			} else {
 				Get();
 			}
-			Expect(word_Sym);
+			while (la.kind == punct_Sym) {
+				Get();
+			}
+		}
+	}
+
+	static void EndIndex() {
+		Expect(number_Sym);
+		if (la.kind == comma_Sym) {
+			Get();
+		}
+		while (la.kind == number_Sym || la.kind == combo_Sym || la.kind == Appendix_Sym) {
+			if (la.kind == number_Sym || la.kind == combo_Sym) {
+				if (la.kind == number_Sym) {
+					Get();
+				} else {
+					Get();
+				}
+				if (la.kind == comma_Sym) {
+					Get();
+				}
+			} else {
+				Get();
+				Expect(number_Sym);
+			}
 		}
 	}
 
@@ -174,8 +212,7 @@ public class Parser {
 	}
 
 	private static boolean[][] set = {
-		{T,x,x,x, x,x,x,x},
-		{x,T,T,T, x,T,x,x}
+		{T,x,x,x, x,x,x,x, x,x,x}
 
 	};
 
@@ -300,11 +337,14 @@ class Errors {
 			case 0: s = "EOF expected"; break;
 			case 1: s = "word expected"; break;
 			case 2: s = "number expected"; break;
-			case 3: s = "punct expected"; break;
-			case 4: s = "\",\" expected"; break;
-			case 5: s = "\"--\" expected"; break;
-			case 6: s = "??? expected"; break;
-			case 7: s = "invalid Line"; break;
+			case 3: s = "combo expected"; break;
+			case 4: s = "punct expected"; break;
+			case 5: s = "\"\\r\\n\" expected"; break;
+			case 6: s = "\",\" expected"; break;
+			case 7: s = "\"--\" expected"; break;
+			case 8: s = "\"Appendix\" expected"; break;
+			case 9: s = "??? expected"; break;
+			case 10: s = "invalid Line"; break;
 			default: s = "error " + n; break;
 		}
 		storeError(line, col, s);

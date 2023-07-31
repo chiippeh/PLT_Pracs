@@ -67,22 +67,25 @@ public class Scanner {
 	static final char EOL = '\n';
 	static final int  eofSym = 0;
 	static final int charSetSize = 256;
-	static final int maxT = 6;
-	static final int noSym = 6;
+	static final int maxT = 9;
+	static final int noSym = 9;
 	// terminals
 	static final int EOF_SYM = 0;
 	static final int word_Sym = 1;
 	static final int number_Sym = 2;
-	static final int punct_Sym = 3;
-	static final int comma_Sym = 4;
-	static final int minusminus_Sym = 5;
-	static final int NOT_SYM = 6;
+	static final int combo_Sym = 3;
+	static final int punct_Sym = 4;
+	static final int crlf_Sym = 5;
+	static final int comma_Sym = 6;
+	static final int minusminus_Sym = 7;
+	static final int Appendix_Sym = 8;
+	static final int NOT_SYM = 9;
 	// pragmas
 
 	static short[] start = {
+	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  6,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	  0,  0,  0,  0,  0,  0,  0,  0,  3,  3,  0,  3,  4,  3,  0,  0,
+	  0,  0,  0,  0,  0,  0,  0,  0,  4,  4,  0,  4,  8,  5,  0,  0,
 	  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0,  0,  0,  0,
 	  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
 	  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0,  0,  0,
@@ -137,14 +140,6 @@ public class Scanner {
 		NextCh();
 		ignore = new BitSet(charSetSize+1);
 		ignore.set(' '); // blanks are always white space
-		ignore.set(0); ignore.set(1); ignore.set(2); ignore.set(3); 
-		ignore.set(4); ignore.set(5); ignore.set(6); ignore.set(7); 
-		ignore.set(8); ignore.set(9); ignore.set(10); ignore.set(11); 
-		ignore.set(12); ignore.set(13); ignore.set(14); ignore.set(15); 
-		ignore.set(16); ignore.set(17); ignore.set(18); ignore.set(19); 
-		ignore.set(20); ignore.set(21); ignore.set(22); ignore.set(23); 
-		ignore.set(24); ignore.set(25); ignore.set(26); ignore.set(27); 
-		ignore.set(28); ignore.set(29); ignore.set(30); ignore.set(31); 
 		
 		//--- AW: fill token list
 		tokens = new Token();  // first token is a dummy
@@ -175,6 +170,7 @@ public class Scanner {
 	static void CheckLiteral() {
 		String lit = t.val;
 		if (lit.compareTo("--") == 0) t.kind = minusminus_Sym;
+		else if (lit.compareTo("Appendix") == 0) t.kind = Appendix_Sym;
 	}
 
 	/* AW Scan() renamed to NextToken() */
@@ -194,16 +190,29 @@ public class Scanner {
 				case 1:
 					if ((ch >= 'A' && ch <= 'Z'
 					  || ch >= 'a' && ch <= 'z')) { buf.append(ch); NextCh(); state = 1; break;}
-					else { t.kind = word_Sym; done = true; break; }
+					else { t.kind = word_Sym; t.val = buf.toString(); CheckLiteral(); return t; }
 				case 2:
 					if ((ch >= '0' && ch <= '9')) { buf.append(ch); NextCh(); state = 2; break;}
 					else { t.kind = number_Sym; done = true; break; }
 				case 3:
+					{ t.kind = combo_Sym; done = true; break; }
+				case 4:
 					if ((ch >= '(' && ch <= ')'
 					  || ch == '+'
-					  || ch == '-')) { buf.append(ch); NextCh(); state = 3; break;}
+					  || ch == '-')) { buf.append(ch); NextCh(); state = 4; break;}
 					else { t.kind = punct_Sym; t.val = buf.toString(); CheckLiteral(); return t; }
-				case 4:
+				case 5:
+					if ((ch >= '0' && ch <= '9')) { buf.append(ch); NextCh(); state = 3; break;}
+					else if ((ch >= '(' && ch <= ')'
+					  || ch == '+'
+					  || ch == '-')) { buf.append(ch); NextCh(); state = 4; break;}
+					else { t.kind = punct_Sym; t.val = buf.toString(); CheckLiteral(); return t; }
+				case 6:
+					if (ch == 10) { buf.append(ch); NextCh(); state = 7; break;}
+					else { t.kind = noSym; done = true; break; }
+				case 7:
+					{ t.kind = crlf_Sym; done = true; break; }
+				case 8:
 					{ t.kind = comma_Sym; done = true; break; }
 
 			}
