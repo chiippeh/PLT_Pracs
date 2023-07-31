@@ -147,10 +147,8 @@ public class Parser {
 		while (la.kind == punct_Sym) {
 			Get();
 		}
-		while (la.kind == word_Sym || la.kind == number_Sym || la.kind == combo_Sym) {
+		while (la.kind == word_Sym || la.kind == combo_Sym) {
 			if (la.kind == word_Sym) {
-				Get();
-			} else if (la.kind == number_Sym) {
 				Get();
 			} else {
 				Get();
@@ -183,10 +181,13 @@ public class Parser {
 		if (la.kind == comma_Sym) {
 			Get();
 		}
-		while (la.kind == number_Sym || la.kind == combo_Sym || la.kind == Appendix_Sym) {
-			if (la.kind == number_Sym || la.kind == combo_Sym) {
-				if (la.kind == number_Sym) {
-					Get();
+		while (StartOf(1)) {
+			if (la.kind == number_Sym || la.kind == combo_Sym || la.kind == punct_Sym) {
+				if (la.kind == number_Sym || la.kind == punct_Sym) {
+					while (la.kind == punct_Sym) {
+						Get();
+					}
+					Expect(number_Sym);
 				} else {
 					Get();
 				}
@@ -212,7 +213,8 @@ public class Parser {
 	}
 
 	private static boolean[][] set = {
-		{T,x,x,x, x,x,x,x, x,x,x}
+		{T,x,x,x, x,x,x,x, x,x,x},
+		{x,x,T,T, T,x,x,x, T,x,x}
 
 	};
 
