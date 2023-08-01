@@ -116,23 +116,16 @@ public class Parser {
 
 	static void Line() {
 		if (la.kind == word_Sym) {
-			Title();
-			if (la.kind == comma_Sym || la.kind == minusminus_Sym) {
-				if (la.kind == comma_Sym) {
-					Get();
-				} else {
-					Get();
-				}
-			}
-			if (la.kind == word_Sym) {
-				Subtitle();
+			Phrase();
+			while (la.kind == comma_Sym) {
+				Get();
+				Phrase();
 			}
 			while (la.kind == comma_Sym || la.kind == minusminus_Sym) {
 				if (la.kind == comma_Sym) {
 					Get();
 				} else {
-					Get();
-					Subtitle();
+					Dashed();
 				}
 			}
 			while (la.kind == number_Sym) {
@@ -142,7 +135,7 @@ public class Parser {
 		} else SynErr(10);
 	}
 
-	static void Title() {
+	static void Phrase() {
 		Expect(word_Sym);
 		while (la.kind == punct_Sym) {
 			Get();
@@ -159,21 +152,9 @@ public class Parser {
 		}
 	}
 
-	static void Subtitle() {
-		Expect(word_Sym);
-		while (la.kind == punct_Sym) {
-			Get();
-		}
-		while (la.kind == word_Sym || la.kind == combo_Sym) {
-			if (la.kind == word_Sym) {
-				Get();
-			} else {
-				Get();
-			}
-			while (la.kind == punct_Sym) {
-				Get();
-			}
-		}
+	static void Dashed() {
+		Expect(minusminus_Sym);
+		Phrase();
 	}
 
 	static void EndIndex() {

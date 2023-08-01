@@ -13,9 +13,10 @@ TOKENS
 
 PRODUCTIONS
   Index       = {Line "\r\n"} EOF .
-  Line        = Title [","|"--"] [Subtitle] {","|"--" Subtitle} {EndIndex} | .
-  Title       = word {punct} {(word | combo) {punct}} .
-  Subtitle    = word {punct} {(word | combo) {punct}} .
-  EndIndex    = number [","] {({punct} number | combo) [","] | "Appendix" number}  .
+  Line        = Phrase {"," Phrase} {","| Dashed} {EndIndex} | .
+  Phrase      = word {punct} {(word | combo) {punct}} .
+  Dashed      = "--" Phrase .
+  EndIndex    = number [","] {({punct} number | combo) [","] | Appendix}  .
+  Appendix    = "Appendix" number .
 
 END Index.
