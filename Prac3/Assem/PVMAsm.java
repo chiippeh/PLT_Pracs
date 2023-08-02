@@ -119,8 +119,44 @@ import library.*;
             case PVM.brn:                            // all require numeric address field
             case PVM.bze:
             case PVM.dsp:
- 			case PVM.stlc:		
+            ///////////////////////////////////////////////////////////////////////////// Created task5 opcodes (start)
+ 			      case PVM.stlc:
+              codeLen = (codeLen + 1) % PVM.memSize;
+              if (ch == '\n')                        // no field could be found
+                error("Missing address", codeLen);
+              else {                                 // unpack it and store
+                PVM.mem[codeLen] = src.readInt();
+                if (src.error()) error("Bad address", codeLen);
+              }
+              break;                      
             case PVM.lda:
+              codeLen = (codeLen + 1) % PVM.memSize;
+              if (ch == '\n')                        // no field could be found
+                error("Missing address", codeLen);
+              else {                                 // unpack it and store
+                PVM.mem[codeLen] = src.readInt();
+                if (src.error()) error("Bad address", codeLen);
+              }
+              break;                       
+            case PVM.ldl:
+              codeLen = (codeLen + 1) % PVM.memSize;
+              if (ch == '\n')                        // no field could be found
+                error("Missing address", codeLen);
+              else {                                 // unpack it and store
+                PVM.mem[codeLen] = src.readInt();
+                if (src.error()) error("Bad address", codeLen);
+              }
+              break;                     
+            case PVM.stl:
+              codeLen = (codeLen + 1) % PVM.memSize;
+              if (ch == '\n')                        // no field could be found
+                error("Missing address", codeLen);
+              else {                                 // unpack it and store
+                PVM.mem[codeLen] = src.readInt();
+                if (src.error()) error("Bad address", codeLen);
+              }
+              break; 
+            ///////////////////////////////////////////////////////////////////////////////// Created task5 opcodes (end)               
             case PVM.ldc:
               codeLen = (codeLen + 1) % PVM.memSize;
               if (ch == '\n')                        // no field could be found

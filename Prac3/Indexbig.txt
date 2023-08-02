@@ -1,4 +1,4 @@
-abstract class 12, 45
+(abstract) class 12, 45
 abstraction, data 165
 advantages of Java and Modula-2 1-99, 100-500, Appendix 4
 aegrotat examinations -- see unethical doctors

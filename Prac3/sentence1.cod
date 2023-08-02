@@ -1,0 +1,38 @@
+ASSEM
+BEGIN
+  {    0 } DSP      2
+  {    2 } LDC      256
+  {    4 } ANEW    
+  {    5 } STL_0   
+  {    6 } LDC_0   
+  {    7 } STL_1   
+  {    8 } LDL_0   
+  {    9 } LDL_1   
+  {   10 } LDXA    
+  {   11 } INPC    
+  {   12 } LDA_1   
+  {   13 } INC     
+  {   14 } LDL_0   
+  {   15 } LDL_1   
+  {   16 } LDC_1   
+  {   17 } SUB     
+  {   18 } LDXA    
+  {   19 } LDV     
+  {   20 } LDC      46
+  {   22 } CEQ     
+  {   23 } BZE      8
+  {   25 } LDL_1   
+  {   26 } LDC_0   
+  {   27 } CGT     
+  {   28 } BZE      40
+  {   30 } LDA_1   
+  {   31 } DEC     
+  {   32 } LDL_0   
+  {   33 } LDL_1   
+  {   34 } LDXA    
+  {   35 } LDV     
+  {   36 } CAP     
+  {   37 } PRNC    
+  {   38 } BRN      25
+  {   40 } HALT    
+END.

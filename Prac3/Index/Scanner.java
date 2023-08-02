@@ -67,8 +67,8 @@ public class Scanner {
 	static final char EOL = '\n';
 	static final int  eofSym = 0;
 	static final int charSetSize = 256;
-	static final int maxT = 9;
-	static final int noSym = 9;
+	static final int maxT = 11;
+	static final int noSym = 11;
 	// terminals
 	static final int EOF_SYM = 0;
 	static final int word_Sym = 1;
@@ -77,15 +77,17 @@ public class Scanner {
 	static final int punct_Sym = 4;
 	static final int crlf_Sym = 5;
 	static final int comma_Sym = 6;
-	static final int minusminus_Sym = 7;
-	static final int Appendix_Sym = 8;
-	static final int NOT_SYM = 9;
+	static final int lparen_Sym = 7;
+	static final int rparen_Sym = 8;
+	static final int minusminus_Sym = 9;
+	static final int Appendix_Sym = 10;
+	static final int NOT_SYM = 11;
 	// pragmas
 
 	static short[] start = {
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  6,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	  0,  0,  0,  0,  0,  0,  0,  0,  4,  4,  0,  4,  8,  5,  0,  0,
+	  0,  0,  0,  0,  0,  0,  0,  0,  9, 10,  0,  4,  8,  5,  0,  0,
 	  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0,  0,  0,  0,
 	  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
 	  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0,  0,  0,
@@ -197,14 +199,12 @@ public class Scanner {
 				case 3:
 					{ t.kind = combo_Sym; done = true; break; }
 				case 4:
-					if ((ch >= '(' && ch <= ')'
-					  || ch == '+'
+					if ((ch == '+'
 					  || ch == '-')) { buf.append(ch); NextCh(); state = 4; break;}
 					else { t.kind = punct_Sym; t.val = buf.toString(); CheckLiteral(); return t; }
 				case 5:
 					if ((ch >= '0' && ch <= '9')) { buf.append(ch); NextCh(); state = 3; break;}
-					else if ((ch >= '(' && ch <= ')'
-					  || ch == '+'
+					else if ((ch == '+'
 					  || ch == '-')) { buf.append(ch); NextCh(); state = 4; break;}
 					else { t.kind = punct_Sym; t.val = buf.toString(); CheckLiteral(); return t; }
 				case 6:
@@ -214,6 +214,10 @@ public class Scanner {
 					{ t.kind = crlf_Sym; done = true; break; }
 				case 8:
 					{ t.kind = comma_Sym; done = true; break; }
+				case 9:
+					{ t.kind = lparen_Sym; done = true; break; }
+				case 10:
+					{ t.kind = rparen_Sym; done = true; break; }
 
 			}
 		}

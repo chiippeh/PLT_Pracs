@@ -17,12 +17,14 @@ public class Parser {
 	public static final int punct_Sym = 4;
 	public static final int crlf_Sym = 5;
 	public static final int comma_Sym = 6;
-	public static final int minusminus_Sym = 7;
-	public static final int Appendix_Sym = 8;
-	public static final int NOT_SYM = 9;
+	public static final int lparen_Sym = 7;
+	public static final int rparen_Sym = 8;
+	public static final int minusminus_Sym = 9;
+	public static final int Appendix_Sym = 10;
+	public static final int NOT_SYM = 11;
 	// pragmas
 
-	public static final int maxT = 9;
+	public static final int maxT = 11;
 
 	static final boolean T = true;
 	static final boolean x = false;
@@ -107,7 +109,7 @@ public class Parser {
 	}
 
 	static void Index() {
-		while (la.kind == word_Sym || la.kind == crlf_Sym) {
+		while (la.kind == word_Sym || la.kind == crlf_Sym || la.kind == lparen_Sym) {
 			Line();
 			Expect(crlf_Sym);
 		}
@@ -115,7 +117,7 @@ public class Parser {
 	}
 
 	static void Line() {
-		if (la.kind == word_Sym) {
+		if (la.kind == word_Sym || la.kind == lparen_Sym) {
 			Phrase();
 			while (la.kind == comma_Sym) {
 				Get();
@@ -132,17 +134,43 @@ public class Parser {
 				EndIndex();
 			}
 		} else if (la.kind == crlf_Sym) {
-		} else SynErr(10);
+		} else SynErr(12);
 	}
 
 	static void Phrase() {
-		Expect(word_Sym);
+		if (la.kind == word_Sym) {
+			Get();
+			while (la.kind == punct_Sym) {
+				Get();
+			}
+		} else if (la.kind == lparen_Sym) {
+			Get();
+			while (la.kind == word_Sym) {
+				Get();
+			}
+			while (la.kind == punct_Sym) {
+				Get();
+			}
+			Expect(rparen_Sym);
+		} else SynErr(13);
 		while (la.kind == punct_Sym) {
 			Get();
 		}
-		while (la.kind == word_Sym || la.kind == combo_Sym) {
+		while (la.kind == word_Sym || la.kind == combo_Sym || la.kind == lparen_Sym) {
 			if (la.kind == word_Sym) {
 				Get();
+				while (la.kind == punct_Sym) {
+					Get();
+				}
+			} else if (la.kind == lparen_Sym) {
+				Get();
+				while (la.kind == word_Sym) {
+					Get();
+				}
+				while (la.kind == punct_Sym) {
+					Get();
+				}
+				Expect(rparen_Sym);
 			} else {
 				Get();
 			}
@@ -176,10 +204,14 @@ public class Parser {
 					Get();
 				}
 			} else {
-				Get();
-				Expect(number_Sym);
+				Appendix();
 			}
 		}
+	}
+
+	static void Appendix() {
+		Expect(Appendix_Sym);
+		Expect(number_Sym);
 	}
 
 
@@ -194,8 +226,8 @@ public class Parser {
 	}
 
 	private static boolean[][] set = {
-		{T,x,x,x, x,x,x,x, x,x,x},
-		{x,x,T,T, T,x,x,x, T,x,x}
+		{T,x,x,x, x,x,x,x, x,x,x,x, x},
+		{x,x,T,T, T,x,x,x, x,x,T,x, x}
 
 	};
 
@@ -324,10 +356,13 @@ class Errors {
 			case 4: s = "punct expected"; break;
 			case 5: s = "\"\\r\\n\" expected"; break;
 			case 6: s = "\",\" expected"; break;
-			case 7: s = "\"--\" expected"; break;
-			case 8: s = "\"Appendix\" expected"; break;
-			case 9: s = "??? expected"; break;
-			case 10: s = "invalid Line"; break;
+			case 7: s = "\"(\" expected"; break;
+			case 8: s = "\")\" expected"; break;
+			case 9: s = "\"--\" expected"; break;
+			case 10: s = "\"Appendix\" expected"; break;
+			case 11: s = "??? expected"; break;
+			case 12: s = "invalid Line"; break;
+			case 13: s = "invalid Phrase"; break;
 			default: s = "error " + n; break;
 		}
 		storeError(line, col, s);

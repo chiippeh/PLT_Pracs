@@ -3,7 +3,7 @@ COMPILER Index  $CN
 CHARACTERS
   letter      = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" .
   digit       = "0123456789" .
-  punc        = "-+()" .
+  punc        = "-+" .
 
 TOKENS
   word        = letter {letter} .
@@ -14,7 +14,7 @@ TOKENS
 PRODUCTIONS
   Index       = {Line "\r\n"} EOF .
   Line        = Phrase {"," Phrase} {","| Dashed} {EndIndex} | .
-  Phrase      = word {punct} {(word | combo) {punct}} .
+  Phrase      = (word {punct} | "(" {word} {punct}")") {punct} {(word {punct}| "(" {word} {punct}")" | combo) {punct}} .
   Dashed      = "--" Phrase .
   EndIndex    = number [","] {({punct} number | combo) [","] | Appendix}  .
   Appendix    = "Appendix" number .

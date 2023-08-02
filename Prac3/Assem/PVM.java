@@ -3,6 +3,7 @@
 // - This version with bounds checks, but no timing
 // P.D. Terry, Rhodes University, 2009; Modified KL Bradshaw, 2023 
 // Solution for Practical 2 -- several changes to add character support
+// Extended by Wynne Edwards (g21E2079), Mila-Jo Davies (g21D6937), Manu Jourdan (g21J5408), Rhodes University, 2023
 
 package Assem;
 
@@ -176,9 +177,9 @@ import library.*;
         case PVM.brn:
         case PVM.bze:
         case PVM.dsp:
-		case PVM.stl:     	// +++new
-		case PVM.stlc:		// +++new
-		case PVM.ldl:		// +++new
+        case PVM.stl:     	// +++new
+        case PVM.stlc:		// +++new
+        case PVM.ldl:		// +++new
         case PVM.lda:
         case PVM.ldc:
         case PVM.prns:
@@ -430,7 +431,7 @@ import library.*;
           case PVM.stk:           // stack dump (debugging)
             stackDump(results, pcNow);
             break;
-		  case PVM.heap:           // heap dump (debugging)
+		      case PVM.heap:           // heap dump (debugging)
             heapDump(results, pcNow);
             break;
           case PVM.stoc:          // character checked store
@@ -439,12 +440,89 @@ import library.*;
               if (tos >= 0 && tos <= maxChar) mem[adr] = tos;
               else ps = badVal;
             break;
-
           case PVM.cap:           // upper
             push(Character.toUpperCase((char) pop()));
             break;
-       
-		  default:              // unrecognized opcode
+          ///////////////////////////////////////////////////////////// Created task5 opcodes (start)
+          case PVM.ldc_0:         
+            push(0);
+            break;
+          case PVM.ldc_1:
+            push(1);
+            break;
+          case PVM.ldc_2:
+            push(2);
+            break;
+          case PVM.ldc_3:
+            push(3);
+            break;            
+          case PVM.lda_0:
+            adr = cpu.fp - 1 - 0;
+            push(adr);
+            break;
+          case PVM.lda_1:
+            adr = cpu.fp - 1 - 1;
+            push(adr);
+            break;
+          case PVM.lda_2:
+            adr = cpu.fp - 1 - 2;
+            push(adr);
+            break;
+          case PVM.lda_3:
+            adr = cpu.fp - 1 - 3;
+            push(adr);
+            break;      
+          case PVM.ldl:
+            adr = cpu.fp - 1 - next();
+            if (inBounds(adr)) push(mem[adr]);
+            break;                              
+          case PVM.ldl_0:
+            adr = cpu.fp - 1 - 0;
+            push(mem[adr]);
+            break;
+          case PVM.ldl_1:
+            adr = cpu.fp - 1 - 1;
+            push(mem[adr]);
+            break;
+          case PVM.ldl_2:
+            adr = cpu.fp - 1 - 2;
+            push(mem[adr]);
+            break;
+          case PVM.ldl_3:
+            adr = cpu.fp - 1 - 3;
+            push(mem[adr]);
+            break;    
+          case PVM.stl:
+            adr = cpu.fp - 1 - next();
+            tos = pop();
+            if (inBounds(adr)) mem[adr] = tos;
+            break;                                        
+          case PVM.stl_0:
+            adr = cpu.fp - 1 - 0;
+            tos = pop();
+            mem[adr] = tos;
+            break;
+          case PVM.stl_1:
+            adr = cpu.fp - 1 - 1;
+            tos = pop();
+            mem[adr] = tos;
+            break;
+          case PVM.stl_2:
+            adr = cpu.fp - 1 - 2;
+            tos = pop();
+            mem[adr] = tos;
+            break;
+          case PVM.stl_3:
+            adr = cpu.fp - 1 - 3;
+            tos = pop();
+            mem[adr] = tos;
+            break;
+          case PVM.stlc: 
+            adr = cpu.fp - 1 - next();
+            if (inBounds(adr)) mem[adr] = (char) pop();
+            break;
+          ///////////////////////////////////////////////////////////// Created task5 opcodes (end)
+		      default:              // unrecognized opcode
             ps = badOp;
             break;
         }
@@ -521,9 +599,9 @@ import library.*;
           case PVM.brn:
           case PVM.bze:
           case PVM.dsp:
- 			case PVM.stl:     	// +++new
-			case PVM.stlc:		// +++new
-			case PVM.ldl:		// +++new
+          case PVM.stl:     	// +++new
+          case PVM.stlc:		// +++new
+          case PVM.ldl:		// +++new
           case PVM.lda:
           case PVM.ldc:
             i = (i + 1) % memSize; codeFile.write(mem[i]);
