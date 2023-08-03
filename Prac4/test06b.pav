@@ -1,0 +1,7 @@
+  void Main () {
+    char i = 'a';
+    repeat
+      i=i+1;
+    until (i == 'd');
+  } // Main
+
