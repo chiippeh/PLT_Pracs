@@ -1,8 +1,8 @@
 // Definition of simple stack machine and simple emulator for Assem level 1
 // Uses auxiliary methods push, pop and next
 // - This version with bounds checks, but no timing
-// P.D. Terry, Rhodes University, 2009; Modified KL Bradshaw, 2022 
-// Version for Practical 2 (includes INC and DEC)
+// P.D. Terry, Rhodes University, 2009; Modified KL Bradshaw, 2023 
+// Solution for Practical 2 -- several changes to add character support
 
 package Assem;
 
@@ -176,6 +176,9 @@ import library.*;
         case PVM.brn:
         case PVM.bze:
         case PVM.dsp:
+		case PVM.stl:     	// +++new
+		case PVM.stlc:		// +++new
+		case PVM.ldl:		// +++new
         case PVM.lda:
         case PVM.ldc:
         case PVM.prns:
@@ -316,6 +319,18 @@ import library.*;
             if (pop() != 0) results.write(" true  "); else results.write(" false ");
             if (tracing) results.writeLine();
             break;
+          case PVM.inpc:          // character input
+            adr = pop();
+            if (inBounds(adr)) {
+              mem[adr] = data.readChar();
+              if (data.error()) ps = badData;
+            }
+            break;
+          case PVM.prnc:          // character output
+            if (tracing) results.write(padding);
+            results.write((char) (Math.abs(pop()) % (maxChar + 1)), 1);
+            if (tracing) results.writeLine();
+            break;
           case PVM.prns:          // string output
             if (tracing) results.write(padding);
             loop = next();
@@ -331,54 +346,27 @@ import library.*;
           case PVM.neg:           // integer negation
             push(-pop());
             break;
-          //////////////////////////////////////////////////////////changed code to check for memory overflow
           case PVM.add:           // integer addition
-            tos = pop();
-            sos = pop();
-            if (maxInt - Math.abs(tos) <= Math.abs(sos)) {
-              ps = badMem;
-              break;
-            }
-            push(sos + tos);
+            tos = pop(); push(pop() + tos);
             break;
-          /////////////////////////////////////////////////////////changed code to check for memory overflow
           case PVM.sub:           // integer subtraction
-            tos = pop();
-            sos = pop(); 
-            if (maxInt - Math.abs(tos) <= Math.abs(sos)) {
-              ps = badMem;
-              break;
-            }
-            push(sos - tos);
+            tos = pop(); push(pop() - tos);
             break;
-
-          //////////////////////////////////////////////////////////changed code to check for multiplicative overflow
           case PVM.mul:           // integer multiplication
-            tos = pop(); 
+            tos = pop();
             sos = pop();
-            if ((Math.abs(maxInt/tos)) <= Math.abs(sos)) { 
-              ps = badMem;
-              break;
-            }
-            push(tos * sos);
+            if (tos != 0 && Math.abs(sos) > maxInt / Math.abs(tos)) ps = badVal;
+            else push(sos * tos);
             break;
-          //////////////////////////////////////////////////////////changed code to check for divide by zero error
           case PVM.div:           // integer division (quotient)
             tos = pop();
-            if (tos == 0) {
-              ps = divZero;
-              break;
-            }
-            push(pop() / tos);
+            if (tos == 0) ps = divZero;
+            else push(pop() / tos);
             break;
-          //////////////////////////////////////////////////////////changed code tp check for divide by zero error
           case PVM.rem:           // integer division (remainder)
-            tos = pop(); 
-            if (tos == 0){
-              ps = divZero;
-              break;
-            }
-            push(pop() % tos);
+            tos = pop();
+            if (tos == 0) ps = divZero;
+            else push(pop() % tos);
             break;
           case PVM.not:           // logical negation
             push(pop() == 0 ? 1 : 0);
@@ -445,47 +433,17 @@ import library.*;
 		  case PVM.heap:           // heap dump (debugging)
             heapDump(results, pcNow);
             break;
-          case PVM.ldc_0:         // push constant 0
-          case PVM.ldc_1:         // push constant 1
-          case PVM.ldc_2:         // push constant 2
-          case PVM.ldc_3:         // push constant 3
-          case PVM.lda_0:         // push local address 0
-          case PVM.lda_1:         // push local address 1
-          case PVM.lda_2:         // push local address 2
-          case PVM.lda_3:         // push local address 3
-          case PVM.ldl:           // push local value
-          case PVM.ldl_0:         // push value of local variable 0
-          case PVM.ldl_1:         // push value of local variable 1
-          case PVM.ldl_2:         // push value of local variable 2
-          case PVM.ldl_3:         // push value of local variable 3
-          case PVM.stl:           // store local value
-          case PVM.stlc:          // store local value
-          case PVM.stl_0:         // pop to local variable 0
-          case PVM.stl_1:         // pop to local variable 1
-          case PVM.stl_2:         // pop to local variable 2
-          case PVM.stl_3:         // pop to local variable 3
           case PVM.stoc:          // character checked store
-          //////////////////////////////////////////////////////////included a case to read a character input
-          case PVM.inpc:          // character input
-          tos = pop();
-          mem[tos] = IO.readChar();
-          break;
-          //////////////////////////////////////////////////////////included a case to print a character
-          case PVM.prnc:          // character output
-          tos = pop();
-          IO.write((char) tos);
-          break;
-          //////////////////////////////////////////////////////////included a case to capitalise a character
-          case PVM.cap:           // toUpperCase
-          char tosl = (char) pop();
-          tosl = Character.toUpperCase(tosl);
-          push(tosl);
-          break;
-          
-          case PVM.low:           // toLowerCase
-          case PVM.islet:         // isLetter
+            tos = pop(); adr = pop();
+            if (inBounds(adr))
+              if (tos >= 0 && tos <= maxChar) mem[adr] = tos;
+              else ps = badVal;
+            break;
 
-         
+          case PVM.cap:           // upper
+            push(Character.toUpperCase((char) pop()));
+            break;
+       
 		  default:              // unrecognized opcode
             ps = badOp;
             break;
@@ -563,6 +521,9 @@ import library.*;
           case PVM.brn:
           case PVM.bze:
           case PVM.dsp:
+ 			case PVM.stl:     	// +++new
+			case PVM.stlc:		// +++new
+			case PVM.ldl:		// +++new
           case PVM.lda:
           case PVM.ldc:
             i = (i + 1) % memSize; codeFile.write(mem[i]);
@@ -613,16 +574,14 @@ import library.*;
       mnemonics[PVM.anew]   = "ANEW";
       mnemonics[PVM.brn]    = "BRN";
       mnemonics[PVM.bze]    = "BZE";
-      //////////////////////////////////////////////////////////added mneumonics for CAP
-      mnemonics[PVM.cap]    = "CAP";
+	  mnemonics[PVM.cap]    = "CAP";
       mnemonics[PVM.ceq]    = "CEQ";
       mnemonics[PVM.cge]    = "CGE";
       mnemonics[PVM.cgt]    = "CGT";
       mnemonics[PVM.cle]    = "CLE";
       mnemonics[PVM.clt]    = "CLT";
       mnemonics[PVM.cne]    = "CNE";
-      //////////////////////////////////////////////////////////added mneumonics for DEC
-      mnemonics[PVM.dec]    = "DEC";
+	  mnemonics[PVM.dec]    = "DEC";
       mnemonics[PVM.div]    = "DIV";
       mnemonics[PVM.dsp]    = "DSP";
       mnemonics[PVM.halt]   = "HALT";
