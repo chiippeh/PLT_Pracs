@@ -1,6 +1,9 @@
 COMPILER Trains $CN
 /* Grammar for simple railway trains
-   P.D. Terry, Rhodes University */
+   P.D. Terry, Rhodes University 
+   Extended by:
+   Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
+
 
 IGNORECASE
 
@@ -9,10 +12,11 @@ COMMENTS FROM "(*" TO "*)" NESTED
 IGNORE CHR(0) .. CHR(31)
 
 PRODUCTIONS
-  Trains    = { OneTrain } EOF .
-  OneTrain  = LocoPart [ [ GoodsPart ] HumanPart ] SYNC "." .
-  LocoPart  = "loco" { "loco" } .
-  GoodsPart = Truck { Truck } .
-  HumanPart = "brake" | { "coach" } "guard" .
-  Truck     = "coal" | "closed" | "open" | "cattle" | "fuel" .
+  Trains         = { OneTrain } EOF .
+  OneTrain         = LocoPart [ FreightMixedPart | HumanPart | "brake"] SYNC "." . /* Allows for freight, mixed, passenger and special trains */
+  LocoPart         = "loco" { "loco" } . 
+  FreightMixedPart = Truck GoodsPart .
+  GoodsPart        = {"fuel"} (Truck (GoodsPart | HumanPart) | "brake" ) .
+  HumanPart        = { "coach" } "guard" .
+  Truck            = "coal" | "closed" | "open" | "cattle" .
 END Trains.
