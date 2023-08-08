@@ -1,0 +1,20 @@
+COMPILER TrainsV3 $CN
+/* Grammar for simple railway trains
+   P.D. Terry, Rhodes University */
+
+IGNORECASE
+
+COMMENTS FROM "(*" TO "*)" NESTED
+
+IGNORE CHR(0) .. CHR(31)
+
+PRODUCTIONS
+  TrainsV3  = { OneTrain } EOF .
+  OneTrain  = LocoPart [ FreightOrMixed | Passenger | "brake"] SYNC "." .
+  LocoPart  = "loco" { "loco" } . 
+  FreightOrMixed = Truck GoodsPart .
+  Passenger =  HumanPart .
+  GoodsPart = {"fuel"} (Truck (GoodsPart | HumanPart) | "brake" ) .
+  HumanPart = { "coach" } "guard" .
+  Truck     = "coal" | "closed" | "open" | "cattle" .
+END TrainsV3.
