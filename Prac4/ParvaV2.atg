@@ -1,9 +1,7 @@
-  COMPILER Parva $CN
+  COMPILER ParvaV2 $CN
   /* Parva level 1 grammar  - Coco/R for Java (EBNF)
      P.D. Terry, Rhodes University, modified by KL Bradshaw, 2023
-     Basic Grammar only -- for prac 4 
-     Extended by:
-     Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
+     Basic Grammar only -- for prac 4 */
 
   CHARACTERS
     lf         = CHR(10) .
@@ -27,23 +25,31 @@
   IGNORE CHR(9) .. CHR(13)
 
   PRODUCTIONS
-    Parva             = "void" identifier "(" ")" Block .
+    ParvaV2             = "void" identifier "(" ")" Block .
     Block             = "{" { Statement } "}" .
     Statement         =   Block | ";"
                         | VarDeclarations
                         | Assignment | IfStatement | WhileStatement
                         | ReturnStatement | HaltStatement
-                        | ReadStatement | WriteStatement .
-    
+                        | ReadStatement | WriteStatement 
+                        | RepeatStatement | BreakStatement 
+                        | ContinueStatement | ForLoopStatment.
+
     VarDeclarations   = Type OneVar { "," OneVar } ";" .
     OneVar            = identifier [ "=" Expression ] .
-    Assignment        = Designator "=" Expression ";" .
-
-    Designator        = identifier [ "[" Expression "]" ] .
-    IfStatement       = "if" "(" Condition ")" Statement .
+    Assignment        = (PreDesignator | Designator) ["=" Expression] ";" .
+    PreDesignator     = ("++"|"--") identifier [ "[" Expression "]" ] .
+    Designator        = identifier [ ["[" Expression "]"] ("++"|"--") ] .
+    IfStatement       = "if" "(" Condition ")" Statement ["else" Statement] .
     WhileStatement    = "while" "(" Condition ")" Statement .
+    RepeatStatement   = "repeat" {Statement} "until" "(" Condition ")" ";" .
+    ForLoopStatment   = "for" (PythonForLoop | JavaForLoop) Statement .
+    PythonForLoop     = identifier "in" "(" Expression { "," Expression } ")" .
+    JavaForLoop       = "(" Assignment Condition ";" identifier ("=" Expression | ("++"|"--")) ")" .
     ReturnStatement   = "return" ";" .
     HaltStatement     = "halt" ";" .
+    BreakStatement    = "break" ";" .
+    ContinueStatement = "continue" ";" .
     ReadStatement     = "read" "(" ReadElement
                                    { "," ReadElement } ")" ";" .
     ReadElement       = stringLit | Designator .
@@ -51,17 +57,19 @@
                                     { "," WriteElement } ")" ";" .
     WriteElement      = stringLit | Expression .
     Condition         = Expression .
-    Expression        = AddExp [ RelOp AddExp ] .
-    AddExp            = [ "+" | "-" ] Term { AddOp Term } .
-    Term              = Factor { MulOp Factor } .
+    Expression        = RelExp [ RelOp RelExp ] .
+    RelExp            = [ "+" | "-" ] Term { AddOp Term } .
+    Term              = ("new" BasicType "[" Expression "]" | Factor) { MulOp Factor } .
+
     Factor            =   Designator | Constant
-                        | "new" BasicType "[" Expression "]"
                         | "!" Factor | "(" Expression ")" .
+
 	Constant          =   number | charLit
                         | "true" | "false" | "null" . 
+                        
     Type              = BasicType [ "[]" ] .
-    BasicType         = "int" | "bool" .
+    BasicType         = "int" | "bool" | "const" .
     AddOp             = "+" | "-" | "||" .
-    MulOp             = "*" | "/" | "&&" .
+    MulOp             = "*" | "/" | "&&" | "%".
     RelOp             = "==" | "!=" | "<" | "<=" | ">" | ">=" .
-  END Parva.
+  END ParvaV2.

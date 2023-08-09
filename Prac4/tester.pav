@@ -1,0 +1,4 @@
+void Main () {
+    for (i = 1; i <= 10; i++) write(i);
+    for i in ( 3, 5, 7, k, 2 * k ) write(i);
+}

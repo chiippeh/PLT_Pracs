@@ -1,11 +1,13 @@
 COMPILER Expression
 /* Attempt to write expression grammar with exponentiation
-   P.D. Terry, Rhodes University */
+   P.D. Terry, Rhodes University 
+   Extended by:
+   Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
 
 IGNORE CHR(0) .. CHR(31)
 
 PRODUCTIONS
-  Expression = Term    { ( "+" | "-" ) Term  } .
+  Expression = Term    { ( "+" | "-" ) Term  } EOF.
   Term       = Factor  { ( "*" | "/" ) Factor } .
   Factor     = Primary [ "^" Expression ] .
   Primary    = "a" | "b" | "c" .
