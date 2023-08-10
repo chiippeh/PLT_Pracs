@@ -78,6 +78,7 @@
 
     // +++++++++++++++++++++++++++++ Character Handler ++++++++++++++++++++++++++
 
+
     static final char EOF = '\0';
     static boolean atEndOfFile = false;
 
@@ -155,6 +156,13 @@
             break;
         case '�':
             symKind = replacementSym; getChar();
+            break;
+        case '\\':
+            symKind = noSym; getChar();
+            while (ch != '\\') {
+              getChar();
+            }
+            getChar();
             break;
         default:
             symKind = atomicSym; getChar(); 
