@@ -110,7 +110,8 @@
       while (ch > EOF && ch <= ' ') getChar();
       StringBuilder symLex = new StringBuilder();
       int symKind = noSym;
-
+  
+      symLex.append(ch);
       switch (ch) {
         case EOF:
             symKind = EOFSym; getChar();
@@ -146,9 +147,10 @@
             symKind = rightParenSym; getChar();
             break;          
         case '?':
-            symKind = zeroOrOneSym; getChar();
+             symKind = zeroOrOneSym; getChar();
             break;            
         case '"':
+            //TODO: FIX ESCAPED CHARACTERS FUCKTARD <3
             symKind = doubleQuoteSym; getChar();
             break;            
         case '\'':
@@ -158,7 +160,7 @@
             symKind = replacementSym; getChar();
             break;
         case '\\':
-            symKind = noSym; getChar();
+            getChar();
             while (ch != '\\') {
               getChar();
             }
