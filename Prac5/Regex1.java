@@ -20,7 +20,7 @@
 
   } // Token
 
-  class Regex {
+  class Regex1 {
 
     // +++++++++++++++++++++++++ File Handling and Error handlers ++++++++++++++++++++
 
@@ -50,7 +50,29 @@
 
     static final int
       noSym        =  0,
-      EOFSym       =  1;
+      EOFSym       =  1,
+      leftBrackSym =  2,
+      rightBrackSym = 3,
+      rangeSym      = 4,
+      semiColonSym  = 5,
+      zeroOrMoreSym = 6,
+      dotAnyCharSym = 7,
+      orSym         = 8,
+      oneOrMoreSym  = 9,
+      leftParenSym  = 10,
+      rightParenSym = 11,
+      zeroOrOneSym  = 12,
+      doubleQuoteSym = 13,
+      singleQuoteSym = 14,
+      replacementSym = 15,
+      atomicSym      = 16;
+
+       
+
+
+
+
+
 
       // and others like this
 
@@ -88,8 +110,56 @@
       StringBuilder symLex = new StringBuilder();
       int symKind = noSym;
 
-      // over to you!
-
+      switch (ch) {
+        case EOF:
+            symKind = EOFSym; getChar();
+            break;       
+        case '[':
+            symKind = leftBrackSym; getChar();
+            break;
+        case ']':
+            symKind = rightBrackSym; getChar();
+            break;
+        case '-':
+            symKind = rangeSym; getChar();
+            break;
+        case ';':
+            symKind = semiColonSym; getChar();
+            break;
+        case '*':
+            symKind = zeroOrMoreSym; getChar();
+            break;                 
+        case '.':
+            symKind = dotAnyCharSym; getChar();
+            break;                 
+        case '|':
+            symKind = orSym; getChar();
+            break;         
+        case '+':
+            symKind = oneOrMoreSym; getChar();
+            break;                
+        case '(':
+            symKind = leftParenSym; getChar();
+            break;   
+        case ')':
+            symKind = rightParenSym; getChar();
+            break;          
+        case '?':
+            symKind = zeroOrOneSym; getChar();
+            break;            
+        case '"':
+            symKind = doubleQuoteSym; getChar();
+            break;            
+        case '\'':
+            symKind = singleQuoteSym; getChar();
+            break;
+        case '�':
+            symKind = replacementSym; getChar();
+            break;
+        default:
+            symKind = atomicSym; getChar(); 
+            break;
+      }
       sym = new Token(symKind, symLex.toString());
     } // getSym
 
@@ -137,4 +207,4 @@
        output.close();
     } // main
 
-  } // Regex
+  } // Regex1
