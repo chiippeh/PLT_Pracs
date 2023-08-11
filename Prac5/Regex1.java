@@ -65,7 +65,8 @@
       doubleQuoteSym = 13,
       singleQuoteSym = 14,
       replacementSym = 15,
-      atomicSym      = 16;
+      atomicSym      = 16,
+      escapedCharSym = 17;
 
        
 
@@ -107,68 +108,61 @@
 
     static void getSym() {
     // Scans for next sym from input
-      while (ch > EOF && ch <= ' ') getChar();
+      // while ch > 0 && ch < 32
+      while (ch > EOF && ch <= ' ') getChar(); //ignores control chars CHR(1) .. CHR(31)
       StringBuilder symLex = new StringBuilder();
       int symKind = noSym;
-  
+
       symLex.append(ch);
       switch (ch) {
         case EOF:
-            symKind = EOFSym; getChar();
-            break;       
+            symKind = EOFSym; getChar(); break;       
         case '[':
-            symKind = leftBrackSym; getChar();
-            break;
+            symKind = leftBrackSym; getChar(); break;
         case ']':
-            symKind = rightBrackSym; getChar();
-            break;
+            symKind = rightBrackSym; getChar(); break;
         case '-':
-            symKind = rangeSym; getChar();
-            break;
+            symKind = rangeSym; getChar(); break;
         case ';':
-            symKind = semiColonSym; getChar();
-            break;
+            symKind = semiColonSym; getChar(); break;
         case '*':
-            symKind = zeroOrMoreSym; getChar();
-            break;                 
+            symKind = zeroOrMoreSym; getChar(); break;                 
         case '.':
-            symKind = dotAnyCharSym; getChar();
-            break;                 
+            symKind = dotAnyCharSym; getChar(); break;                 
         case '|':
-            symKind = orSym; getChar();
-            break;         
+            symKind = orSym; getChar(); break;         
         case '+':
-            symKind = oneOrMoreSym; getChar();
-            break;                
+            symKind = oneOrMoreSym; getChar(); break;                
         case '(':
-            symKind = leftParenSym; getChar();
-            break;   
+            symKind = leftParenSym; getChar(); break;   
         case ')':
-            symKind = rightParenSym; getChar();
-            break;          
+            symKind = rightParenSym; getChar(); break;          
         case '?':
-             symKind = zeroOrOneSym; getChar();
-            break;            
-        case '"':
-            //TODO: FIX ESCAPED CHARACTERS FUCKTARD <3
-            symKind = doubleQuoteSym; getChar();
-            break;            
-        case '\'':
-            symKind = singleQuoteSym; getChar();
-            break;
+            symKind = zeroOrOneSym; getChar(); break;                     
         case '�':
-            symKind = replacementSym; getChar();
-            break;
-        case '\\':
+            symKind = replacementSym; getChar(); break;
+        case '\\': // comments
             getChar();
             while (ch != '\\') {
               getChar();
             }
+            getChar(); break;         
+        case '\'': // single quotes '
             getChar();
-            break;
+            while (ch != '\'') {
+                symLex.append(ch); getChar();
+            }
+            symLex.append(ch); // TODO: idk if this is needed but it allows the last " to be printed out
+            symKind = escapedCharSym; getChar(); break;            
+        case '"': // double quotes "
+            getChar();
+            while (ch != '"') {
+                symLex.append(ch); getChar();
+            }
+            symLex.append(ch); // TODO: idk if this is needed but it allows the last " to be printed out
+            symKind = escapedCharSym; getChar(); break;                    
         default:
-            symKind = atomicSym; getChar(); 
-            break;
+            symKind = atomicSym; getChar();  break;
       }
       sym = new Token(symKind, symLex.toString());
     } // getSym
@@ -198,7 +192,6 @@
       getChar();                                  // Lookahead character
 
   /*  To test the scanner we can use a loop like the following: */
-
       do {
         getSym();                                 // Lookahead symbol
         OutFile.StdOut.write(sym.kind, 3);
