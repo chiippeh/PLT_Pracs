@@ -64,7 +64,7 @@
       zeroOrOneSym  = 12,
       doubleQuoteSym = 13,
       singleQuoteSym = 14,
-      replacementSym = 15,
+      iGraveAccentSym = 15, //î
       atomicSym      = 16,
       escapedCharSym = 17;
 
@@ -139,8 +139,8 @@
             symKind = rightParenSym; getChar(); break;          
         case '?':
             symKind = zeroOrOneSym; getChar(); break;                     
-        case 'ï¿½':
-            symKind = replacementSym; getChar(); break;
+        case 'î':
+            symKind = iGraveAccentSym; getChar(); break;
         case '\\': // comments
             getChar();
             while (ch != '\\') {
