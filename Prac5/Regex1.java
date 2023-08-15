@@ -66,11 +66,8 @@ import library.*;
       leftParenSym  = 10,
       rightParenSym = 11,
       zeroOrOneSym  = 12,
-      doubleQuoteSym = 13,
-      singleQuoteSym = 14,
-      iGraveAccentSym = 15, //�
-      atomicSym      = 16,
-      escapedCharSym = 17;
+      atomicSym      = 13,
+      escapedCharSym = 14;
 
        
 
@@ -114,6 +111,14 @@ import library.*;
     // Scans for next sym from input
       // while ch > 0 && ch < 32
       while (ch > EOF && ch <= ' ') getChar(); //ignores control chars CHR(1) .. CHR(31)
+      if (ch == '\\') {
+        do getChar(); while(ch != '\\' && ch != EOF);
+        if (ch != EOF) {
+          getChar(); getSym(); return;
+        } else {
+          sym = new Token(EOFSym, "EOF"); return;
+        }
+      }
       StringBuilder symLex = new StringBuilder();
       int symKind = noSym;
 
@@ -143,14 +148,14 @@ import library.*;
             symKind = rightParenSym; getChar(); break;          
         case '?':
             symKind = zeroOrOneSym; getChar(); break;                     
-        case '�': //TODO: I think this needs to be ignored, it should instead be atomic
-            symKind = iGraveAccentSym; getChar(); break;
-        case '\\': // comments
-            getChar();
-            while (ch != '\\') {
-              getChar();
-            }
-            getChar(); break;         
+        // case '�': //TODO: I think this needs to be ignored, it should instead be atomic
+        //     symKind = iGraveAccentSym; getChar(); break;
+        // case '\\': // comments
+        //     getChar();
+        //     while (ch != '\\') {
+        //       getChar();
+        //     }
+        //     getChar(); break;         
         case '\'': // single quotes '
             getChar();
             while (ch != '\'') {
@@ -180,6 +185,9 @@ import library.*;
     //First(Atom)
     static IntSet FirstAtom = new IntSet(atomicSym, escapedCharSym);
 
+    // IntSet of "*" | "?" | "+" tokens
+    static IntSet repetitionSet = new IntSet(zeroOrMoreSym, zeroOrOneSym, oneOrMoreSym);
+
     static void accept(int wantedSym, String errorMessage) {
     // Checks that lookahead token is wantedSym
       if (sym.kind == wantedSym) getSym(); else abort(errorMessage);
@@ -190,9 +198,11 @@ import library.*;
 
       // First(RE) = First(Expression) .... = First(Element)
       while (FirstElement.contains(sym.kind)) { //check if sym is in first set of RE production
-        getSym(); Expression();
+        Expression();
         accept(semiColonSym, "; Expected");
       }
+      accept(EOFSym, "EOF Expected");
+
       // TODO: I don't know with EOF should be included?? *refer to the grammar
     }
 
@@ -221,16 +231,21 @@ import library.*;
     static void Factor() {
       // Factor = Element [ "*" | "?" | "+" ] .
       Element();
-      switch (sym.kind) {
-        case zeroOrMoreSym: accept(zeroOrMoreSym, "* Expected"); break;
-        case zeroOrOneSym: accept(zeroOrOneSym, "? Expected"); break;
-        case oneOrMoreSym: accept(oneOrMoreSym, "+ Expected"); break;
-        default: abort("Invalid start to Factor"); break;
+      // optional
+      if (repetitionSet.contains(sym.kind)) {
+        getSym();
       }
+      // switch (sym.kind) {
+      //   case zeroOrMoreSym: accept(zeroOrMoreSym, "* Expected"); break;
+      //   case zeroOrOneSym: accept(zeroOrOneSym, "? Expected"); break;
+      //   case oneOrMoreSym: accept(oneOrMoreSym, "+ Expected"); break;
+      //   default: abort("Invalid start to Factor"); break;
+      // }
     }
 
     static void Element() {
       // Element = Atom | Range | "(" Expression ")" .
+      OutFile.StdOut.writeLine(sym.kind + " Element ~ " + sym.val, 3);
       switch (sym.kind) {
         case atomicSym: Atom(); break; //First(Atom)
         case escapedCharSym: Atom(); break; //First(Atom)
@@ -245,16 +260,21 @@ import library.*;
 
     static void Range() {
       // Range = "[" OneRange { OneRange } "]" .
+      OutFile.StdOut.writeLine(sym.kind + " Range ~ " + sym.val, 3);
       accept(leftBrackSym, "[ Expected");
       OneRange();
+      OutFile.StdOut.writeLine(sym.kind + " before while RANGE ~ " + sym.val, 3);
       // First(OneRange) = First(Atom) = the while condition
       while (FirstAtom.contains(sym.kind)) {
-          getSym(); OneRange();
+          OutFile.StdOut.writeLine(sym.kind + " RANGE While ~ " + sym.val, 3);
+          OneRange();
       }
+      accept(rightBrackSym, "] Expected");
     }
 
     static void OneRange() {
       //  OneRange = Atom [ "-" Atom ] . 
+      OutFile.StdOut.writeLine(sym.kind + " OneRange ~ " + sym.val, 3);
       Atom();
       if (sym.kind == rangeSym) { 
           getSym(); Atom();
@@ -263,10 +283,11 @@ import library.*;
 
     static void Atom() {
       // Atom = atomic | escaped . 
+      OutFile.StdOut.writeLine(sym.kind + " Atom ~ " + sym.val, 3);
         switch (sym.kind) {
           case atomicSym: getSym(); break;
-          case escapedCharSym: getChar(); break;
-          default: abort("idk what error to put here****"); break;
+          case escapedCharSym: getSym(); break;
+          default: abort("Invalid start to Atom"); break;
         }
     }    
 
