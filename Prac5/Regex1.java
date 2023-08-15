@@ -6,8 +6,12 @@
   // Extended by:
   // Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408
 
-  import java.util.*;
-  import library.*;
+  import java.io.ObjectInputStream.GetField;
+import java.util.*;
+
+import javax.swing.text.html.parser.Element;
+
+import library.*;
 
   class Token {
     public int kind;
@@ -64,7 +68,7 @@
       zeroOrOneSym  = 12,
       doubleQuoteSym = 13,
       singleQuoteSym = 14,
-      iGraveAccentSym = 15, //î
+      iGraveAccentSym = 15, //ï¿½
       atomicSym      = 16,
       escapedCharSym = 17;
 
@@ -139,7 +143,7 @@
             symKind = rightParenSym; getChar(); break;          
         case '?':
             symKind = zeroOrOneSym; getChar(); break;                     
-        case 'î':
+        case 'ï¿½':
             symKind = iGraveAccentSym; getChar(); break;
         case '\\': // comments
             getChar();
@@ -167,16 +171,49 @@
       sym = new Token(symKind, symLex.toString());
     } // getSym
 
-  /*  ++++ Commented out for the moment
-
     // +++++++++++++++++++++++++++++++ Parser +++++++++++++++++++++++++++++++++++
+
+    // First IntSets
+    // First Element is the first for RE, Expr, Term, Factor
+    static IntSet FirstElement = new IntSet(atomicSym, escapedCharSym, leftBrackSym, leftParenSym);
+
 
     static void accept(int wantedSym, String errorMessage) {
     // Checks that lookahead token is wantedSym
       if (sym.kind == wantedSym) getSym(); else abort(errorMessage);
     } // accept
 
-  ++++++ */
+    static void RE() {
+      // RE = {Expression ";"} EOF .
+      while (FirstElement.contains(sym.kind)) { //check if sym is in first set of RE production
+        getSym(); Expression();
+        accept(semiColonSym, "; Expected");
+      }
+    }
+
+    static void Expression() {
+      // Expression = Term { "|" Term } .
+      Term();
+      while (sym.kind == orSym) { //check if sym is in first set of RE production
+        getSym(); Term();
+      }
+    }
+
+    static void Term() {
+      // Term = Factor { [ "." ] Factor } . 
+      Factor();
+      while ((sym.kind == dotAnyCharSym) || (FirstElement.contains(sym.kind))) { //check if sym is in first set of RE production
+        getSym(); Factor();
+      }
+    }
+
+    static void Factor() {
+      // Factor = Element [ "*" | "?" | "+" ] .
+      Element();
+      if (sym.kind == zeroOrMoreSym || sym.kind == zeroOrOneSym || sym.kind == oneOrMoreSym) {
+        getSym();
+      }
+    }
 
     // +++++++++++++++++++++ Main driver function +++++++++++++++++++++++++++++++
 
@@ -192,21 +229,20 @@
       getChar();                                  // Lookahead character
 
   /*  To test the scanner we can use a loop like the following: */
-      do {
-        getSym();                                 // Lookahead symbol
-        OutFile.StdOut.write(sym.kind, 3);
-        OutFile.StdOut.writeLine(" " + sym.val);
-      } while (sym.kind != EOFSym);
+      // do {
+      //   getSym();                                 // Lookahead symbol
+      //   OutFile.StdOut.write(sym.kind, 3);
+      //   OutFile.StdOut.writeLine(" " + sym.val);
+      // } while (sym.kind != EOFSym);
 
   /*  After the scanner is debugged, comment out lines 125 to 129 and uncomment lines 134 to 139. 
       In other words, replace the code immediately above with this code: */
 
-  /*
       getSym();                             // Lookahead symbol
       RE();                                 // Start to parse from the goal symbol
       // if we get back here everything must have been satisfactory
       System.out.println("Parsed correctly");
-  */
+
        output.close();
     } // main
 
