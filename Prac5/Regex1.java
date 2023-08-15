@@ -143,7 +143,7 @@ import library.*;
             symKind = rightParenSym; getChar(); break;          
         case '?':
             symKind = zeroOrOneSym; getChar(); break;                     
-        case '�':
+        case '�': //TODO: I think this needs to be ignored, it should instead be atomic
             symKind = iGraveAccentSym; getChar(); break;
         case '\\': // comments
             getChar();
@@ -176,7 +176,9 @@ import library.*;
     // First IntSets
     // First Element is the first for RE, Expr, Term, Factor
     static IntSet FirstElement = new IntSet(atomicSym, escapedCharSym, leftBrackSym, leftParenSym);
-
+    
+    //First(Atom)
+    static IntSet FirstAtom = new IntSet(atomicSym, escapedCharSym);
 
     static void accept(int wantedSym, String errorMessage) {
     // Checks that lookahead token is wantedSym
@@ -185,10 +187,13 @@ import library.*;
 
     static void RE() {
       // RE = {Expression ";"} EOF .
+
+      // First(RE) = First(Expression) .... = First(Element)
       while (FirstElement.contains(sym.kind)) { //check if sym is in first set of RE production
         getSym(); Expression();
         accept(semiColonSym, "; Expected");
       }
+      // TODO: I don't know with EOF should be included?? *refer to the grammar
     }
 
     static void Expression() {
@@ -202,18 +207,68 @@ import library.*;
     static void Term() {
       // Term = Factor { [ "." ] Factor } . 
       Factor();
+      // First(Factor) = First(Element) :)
       while ((sym.kind == dotAnyCharSym) || (FirstElement.contains(sym.kind))) { //check if sym is in first set of RE production
-        getSym(); Factor();
+        // if dot sym then getSym() + Factor()
+        // else just Factor()
+        switch (sym.kind) {
+          case dotAnyCharSym: getSym(); Factor(); break;
+          default: Factor(); break;
+        }
       }
     }
 
     static void Factor() {
       // Factor = Element [ "*" | "?" | "+" ] .
       Element();
-      if (sym.kind == zeroOrMoreSym || sym.kind == zeroOrOneSym || sym.kind == oneOrMoreSym) {
-        getSym();
+      switch (sym.kind) {
+        case zeroOrMoreSym: accept(zeroOrMoreSym, "* Expected"); break;
+        case zeroOrOneSym: accept(zeroOrOneSym, "? Expected"); break;
+        case oneOrMoreSym: accept(oneOrMoreSym, "+ Expected"); break;
+        default: abort("Invalid start to Factor"); break;
       }
     }
+
+    static void Element() {
+      // Element = Atom | Range | "(" Expression ")" .
+      switch (sym.kind) {
+        case atomicSym: Atom(); break; //First(Atom)
+        case escapedCharSym: Atom(); break; //First(Atom)
+        case leftBrackSym: Range(); break; //First(Range)
+        case leftParenSym: getSym(); // "("
+                           Expression();
+                           accept(rightParenSym, ") Expected");
+                           break;
+        default: abort("Invalid start to Element"); break;
+      }
+    }
+
+    static void Range() {
+      // Range = "[" OneRange { OneRange } "]" .
+      accept(leftBrackSym, "[ Expected");
+      OneRange();
+      // First(OneRange) = First(Atom) = the while condition
+      while (FirstAtom.contains(sym.kind)) {
+          getSym(); OneRange();
+      }
+    }
+
+    static void OneRange() {
+      //  OneRange = Atom [ "-" Atom ] . 
+      Atom();
+      if (sym.kind == rangeSym) { 
+          getSym(); Atom();
+      }
+    }
+
+    static void Atom() {
+      // Atom = atomic | escaped . 
+        switch (sym.kind) {
+          case atomicSym: getSym(); break;
+          case escapedCharSym: getChar(); break;
+          default: abort("idk what error to put here****"); break;
+        }
+    }    
 
     // +++++++++++++++++++++ Main driver function +++++++++++++++++++++++++++++++
 
