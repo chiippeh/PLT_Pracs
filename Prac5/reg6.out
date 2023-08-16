@@ -1,3 +1,2 @@
 \ comment - there are errors in this file! \
-a* s d | g | ( i o o '' ) ;
-asd.. | 2 | [ a-s BC " A-S 0-9]* (�| | f- )+ ;
+a* s d | g | ( i o o '') Expected
