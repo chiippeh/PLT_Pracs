@@ -15,16 +15,21 @@ public class Parser {
 	public static final int Number_Sym = 1;
 	public static final int Variable_Sym = 2;
 	public static final int equal_Sym = 3;
-	public static final int plus_Sym = 4;
-	public static final int minus_Sym = 5;
-	public static final int star_Sym = 6;
-	public static final int slash_Sym = 7;
-	public static final int lparen_Sym = 8;
-	public static final int rparen_Sym = 9;
-	public static final int NOT_SYM = 10;
+	public static final int semicolon_Sym = 4;
+	public static final int print_Sym = 5;
+	public static final int plus_Sym = 6;
+	public static final int minus_Sym = 7;
+	public static final int star_Sym = 8;
+	public static final int slash_Sym = 9;
+	public static final int lparen_Sym = 10;
+	public static final int rparen_Sym = 11;
+	public static final int sqrtlparen_Sym = 12;
+	public static final int maxlparen_Sym = 13;
+	public static final int comma_Sym = 14;
+	public static final int NOT_SYM = 15;
 	// pragmas
 
-	public static final int maxT = 10;
+	public static final int maxT = 15;
 
 	static final boolean T = true;
 	static final boolean x = false;
@@ -34,7 +39,7 @@ public class Parser {
 	public static Token la;       // lookahead token
 	static int errDist = minErrDist;
 
-	static double[] mem = new double[26];
+	static Double[] mem = new Double[26];                    /* Change double to Double to accomodate for null values */
 
 
 
@@ -111,22 +116,29 @@ public class Parser {
 	}
 
 	static void Calc2() {
-		int index = 0; double value = 0.0;
-		for (int i = 0; i < 26; i++) mem[i] = 0.0;
-		while (la.kind == Variable_Sym) {
-			Get();
-			index = token.val.charAt(0) - 'A';
-			Expect(equal_Sym);
-			value = Expression();
-			mem[index] = value;
-			IO.writeLine(value);
+		int index = 0; Double value = null;
+		while (la.kind == Variable_Sym || la.kind == print_Sym) {
+			if (la.kind == Variable_Sym) {
+				Get();
+				index = token.val.charAt(0) - 'A';
+				Expect(equal_Sym);
+				value = Expression();
+				mem[index] = value;
+				if (value != null) IO.writeLine(value);
+				Expect(semicolon_Sym);
+			} else {
+				Get();
+				value = Expression();
+				if (value != null) IO.writeLine(value);
+				Expect(semicolon_Sym);
+			}
 		}
 		Expect(EOF_SYM);
 	}
 
-	static double Expression() {
-		double expVal;
-		double expVal1 = 0.0;
+	static Double Expression() {
+		Double expVal;
+		Double expVal1 = null;
 		expVal = Term();
 		while (la.kind == plus_Sym || la.kind == minus_Sym) {
 			if (la.kind == plus_Sym) {
@@ -142,9 +154,9 @@ public class Parser {
 		return expVal;
 	}
 
-	static double Term() {
-		double termVal;
-		double termVal1 = 0.0;
+	static Double Term() {
+		Double termVal;
+		Double termVal1 = null;
 		termVal = Factor();
 		while (la.kind == star_Sym || la.kind == slash_Sym) {
 			if (la.kind == star_Sym) {
@@ -154,7 +166,7 @@ public class Parser {
 			} else {
 				Get();
 				termVal1 = Factor();
-				if (termVal1 == 0) {
+				if (termVal1 == 0) {                         /* ~~~~~~~ Changed ~~~~~~~ */
 				  SemError("divide by zero");
 				} else {
 				  termVal /= termVal1;
@@ -164,25 +176,44 @@ public class Parser {
 		return termVal;
 	}
 
-	static double Factor() {
-		double factVal;
-		factVal = 0.0;
+	static Double Factor() {
+		Double factVal;
+		factVal = null;
+		Double factVal1 = null;
 		if (la.kind == Number_Sym) {
 			Get();
 			try {
 			  factVal = Double.parseDouble(token.val);
 			} catch (NumberFormatException e) {
-			  factVal = 0; SemError("number out of range");
+			  SemError("number out of range");
 			}
 		} else if (la.kind == Variable_Sym) {
 			Get();
 			int index = token.val.charAt(0) - 'A';
-			factVal = mem[index];
+			if (mem[index] == null) {
+			  SemError("variable referenced before assignment");
+			} else {
+			  factVal = mem[index];
+			}
 		} else if (la.kind == lparen_Sym) {
 			Get();
 			factVal = Expression();
 			Expect(rparen_Sym);
-		} else SynErr(11);
+		} else if (la.kind == sqrtlparen_Sym) {
+			Get();
+			factVal = Expression();
+			factVal = factVal*factVal;
+			Expect(rparen_Sym);
+		} else if (la.kind == maxlparen_Sym) {
+			Get();
+			factVal = Expression();
+			while (la.kind == comma_Sym) {
+				Get();
+				factVal1 = Expression();
+				factVal = Math.max(factVal, factVal1);
+			}
+			Expect(rparen_Sym);
+		} else SynErr(16);
 		return factVal;
 	}
 
@@ -198,7 +229,7 @@ public class Parser {
 	}
 
 	private static boolean[][] set = {
-		{T,x,x,x, x,x,x,x, x,x,x,x}
+		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x}
 
 	};
 
@@ -324,14 +355,19 @@ class Errors {
 			case 1: s = "Number expected"; break;
 			case 2: s = "Variable expected"; break;
 			case 3: s = "\"=\" expected"; break;
-			case 4: s = "\"+\" expected"; break;
-			case 5: s = "\"-\" expected"; break;
-			case 6: s = "\"*\" expected"; break;
-			case 7: s = "\"/\" expected"; break;
-			case 8: s = "\"(\" expected"; break;
-			case 9: s = "\")\" expected"; break;
-			case 10: s = "??? expected"; break;
-			case 11: s = "invalid Factor"; break;
+			case 4: s = "\";\" expected"; break;
+			case 5: s = "\"print\" expected"; break;
+			case 6: s = "\"+\" expected"; break;
+			case 7: s = "\"-\" expected"; break;
+			case 8: s = "\"*\" expected"; break;
+			case 9: s = "\"/\" expected"; break;
+			case 10: s = "\"(\" expected"; break;
+			case 11: s = "\")\" expected"; break;
+			case 12: s = "\"sqrt(\" expected"; break;
+			case 13: s = "\"max(\" expected"; break;
+			case 14: s = "\",\" expected"; break;
+			case 15: s = "??? expected"; break;
+			case 16: s = "invalid Factor"; break;
 			default: s = "error " + n; break;
 		}
 		storeError(line, col, s);
