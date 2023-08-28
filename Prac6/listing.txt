@@ -1,0 +1,57 @@
+
+   1 import library.*;
+   2 
+   3 COMPILER Calc2  $CN
+   4 /* Simple four function calculator with 26 memory cells
+   5    P.D. Terry, Rhodes University; extended KL Bradshaw, 2023 */
+   6 
+   7   static double[] mem = new double[26];
+   8 
+   9 CHARACTERS
+  10   digit      = "0123456789" .
+  11   letter     = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" .
+  12 
+  13 TOKENS
+  14   Number     = digit { digit } [ "." { digit } ] .
+  15   Variable   = letter .
+  16 
+  17 IGNORE CHR(0) .. CHR(31)
+  18 
+  19 PRODUCTIONS
+  20   Calc2                               (. int index = 0; double value = 0.0;
+  21                                         for (int i = 0; i < 26; i++) mem[i] = 0.0; .)
+  22   = { Variable                       (. index = token.val.charAt(0) - 'A'; .)
+  23       "=" Expression<out value>      (. mem[index] = value;
+  24                                         IO.writeLine(value); .)
+  25     } EOF .
+  26 
+  27   Expression<out double expVal>      (. double expVal1 = 0.0; .)
+  28   = Term<out expVal>
+  29     {   "+" Term<out expVal1>        (. expVal += expVal1; .)
+  30       | "-" Term<out expVal1>        (. expVal -= expVal1; .)
+  31     } .
+  32 
+  33   Term<out double termVal>           (. double termVal1 = 0.0; .)
+  34   = Factor<out termVal>
+  35     {   "*" Factor<out termVal1>     (. termVal *= termVal1; .)
+  36       | "/" Factor<out termVal1>     (. if (termVal1 == 0) { 
+  37                                           SemError("divide by zero");
+  38                                         } else {
+  39                                           termVal /= termVal1;
+  40                                         } .)
+  41     } .
+  42 
+  43   Factor<out double factVal>         (. factVal = 0.0; .)
+  44   =   Number                         (. try {
+  45                                           factVal = Double.parseDouble(token.val);
+  46                                         } catch (NumberFormatException e) {
+  47                                           factVal = 0; SemError("number out of range");
+  48                                         } .)
+  49     | Variable                       (. int index = token.val.charAt(0) - 'A';
+  50                                         factVal = mem[index]; .)
+  51     | "(" Expression<out factVal> ")"
+  52     .
+  53 
+  54 END Calc2.
+
+0 errors detected
