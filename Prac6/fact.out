@@ -39,7 +39,7 @@
 59    PRNS  "! = " ; write ( "! = " ) ;
 61    LDA   1     
 63    LDV         
-64    PRNI         ; write ( f ) ;
+64    PRNI         ; write ( f ) ;  
 65    PRNS  "\n"   ; write ( "\n" ) ( or use PRNL )
 67    LDA   0     
 69    LDA   0     
