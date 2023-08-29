@@ -1,6 +1,13 @@
+  import library.*;                                                            /* ~~~ Changed ~~~ */
+  
   COMPILER PVMAsm $CN
   /* Grammar for subset of PVM assembler language
-     P.D. Terry, Rhodes University */
+     P.D. Terry, Rhodes University 
+
+     Extended (August 2023) by:
+     Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
+
+  public static OutFile output;                                                 /* ~~~ Changed ~~~ */
   
   CHARACTERS
     control     = CHR(0) .. CHR(31) .
@@ -20,7 +27,7 @@
   
   PRODUCTIONS
     PVMAsm      = { Statement } .
-    Statement   = [ Number ] [ Instruction ] [ Comment ] SYNC EOL .
+    Statement   = [ Number ] (. output.write("Test"); .) [ Instruction ] [ Comment ] SYNC EOL .
     Instruction = TwoWord | OneWord | PrintString .
     TwoWord     = ( "LDA" | "LDC" | "DSP" | "BRN" | "BZE"  ) Number .
     OneWord

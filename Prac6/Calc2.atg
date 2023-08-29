@@ -19,7 +19,7 @@ TOKENS
 IGNORE CHR(0) .. CHR(31)
 
 PRODUCTIONS
-  Calc2                              (. int index = 0; Double value = null; .)  /* ~~~~~~~ Changed ~~~~~~~ */
+  Calc2                              (. int index = 0; Double value = null; .)      /* ~~~~~~~ Changed ~~~~~~~ */
   = { Variable                       (. index = token.val.charAt(0) - 'A'; .)  
       "=" 
       Expression<out value>          (. mem[index] = value;
@@ -29,13 +29,13 @@ PRODUCTIONS
       ";"
     } EOF .
 
-  Expression<out Double expVal>      (. Double expVal1 = null; .)  /* ~~~~~~~ Changed ~~~~~~~ */
+  Expression<out Double expVal>      (. Double expVal1 = null; .)                    /* ~~~~~~~ Changed ~~~~~~~ */
   = Term<out expVal>
     {   "+" Term<out expVal1>        (. expVal += expVal1; .)
       | "-" Term<out expVal1>        (. expVal -= expVal1; .)
     } .
 
-  Term<out Double termVal>           (. Double termVal1 = null; .)  /* ~~~~~~~ Changed ~~~~~~~ */
+  Term<out Double termVal>           (. Double termVal1 = null; .)                   /* ~~~~~~~ Changed ~~~~~~~ */
   = Factor<out termVal>
     {   "*" Factor<out termVal1>     (. termVal *= termVal1; .)
       | "/" Factor<out termVal1>     (. if (termVal1 == 0) {                         /* ~~~~~~~ Changed ~~~~~~~ */
@@ -46,13 +46,13 @@ PRODUCTIONS
     } .
 
   Factor<out Double factVal>         (. factVal = null;
-                                        Double factVal1 = null; .)  /* ~~~~~~~ Changed ~~~~~~~ */
+                                        Double factVal1 = null; .)                   /* ~~~~~~~ Changed ~~~~~~~ */
   =   Number                         (. try {
                                           factVal = Double.parseDouble(token.val);
                                         } catch (NumberFormatException e) {
                                           SemError("number out of range");
                                         } .)
-    | Variable                       (. int index = token.val.charAt(0) - 'A'; /* ~~~~~~~ Changed ~~~~~~~ */
+    | Variable                       (. int index = token.val.charAt(0) - 'A';        /* ~~~~~~~ Changed ~~~~~~~ */
                                       
                                         if (mem[index] == null) {
                                           SemError("variable referenced before assignment");
@@ -60,9 +60,9 @@ PRODUCTIONS
                                           factVal = mem[index]; 
                                         } .)
     | "(" Expression<out factVal> ")"
-    | "sqrt(" Expression<out factVal> (. factVal = factVal*factVal; .)           /* ~~~~~~~ Changed ~~~~~~~ */
+    | "sqrt(" Expression<out factVal> (. factVal = factVal*factVal; .)                /* ~~~~~~~ Changed ~~~~~~~ */
       ")"
-    | "max(" Expression<out factVal>                                                 /* ~~~~~~~ Changed ~~~~~~~ */
+    | "max(" Expression<out factVal>                                                  /* ~~~~~~~ Changed ~~~~~~~ */
           {"," Expression<out factVal1>  (. factVal = Math.max(factVal, factVal1); .)
           } ")" 
     .

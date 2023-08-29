@@ -1,57 +1,45 @@
+  Warning: PVMAsm is deletable
 
-   1 import library.*;
-   2 
-   3 COMPILER Calc2  $CN
-   4 /* Simple four function calculator with 26 memory cells
-   5    P.D. Terry, Rhodes University; extended KL Bradshaw, 2023 */
+   1   import library.*;                                                            /* ~~~ Changed ~~~ */
+   2   
+   3   COMPILER PVMAsm $CN
+   4   /* Grammar for subset of PVM assembler language
+   5      P.D. Terry, Rhodes University 
    6 
-   7   static double[] mem = new double[26];
-   8 
-   9 CHARACTERS
-  10   digit      = "0123456789" .
-  11   letter     = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" .
-  12 
-  13 TOKENS
-  14   Number     = digit { digit } [ "." { digit } ] .
-  15   Variable   = letter .
-  16 
-  17 IGNORE CHR(0) .. CHR(31)
-  18 
-  19 PRODUCTIONS
-  20   Calc2                               (. int index = 0; double value = 0.0;
-  21                                         for (int i = 0; i < 26; i++) mem[i] = 0.0; .)
-  22   = { Variable                       (. index = token.val.charAt(0) - 'A'; .)
-  23       "=" Expression<out value>      (. mem[index] = value;
-  24                                         IO.writeLine(value); .)
-  25     } EOF .
-  26 
-  27   Expression<out double expVal>      (. double expVal1 = 0.0; .)
-  28   = Term<out expVal>
-  29     {   "+" Term<out expVal1>        (. expVal += expVal1; .)
-  30       | "-" Term<out expVal1>        (. expVal -= expVal1; .)
-  31     } .
-  32 
-  33   Term<out double termVal>           (. double termVal1 = 0.0; .)
-  34   = Factor<out termVal>
-  35     {   "*" Factor<out termVal1>     (. termVal *= termVal1; .)
-  36       | "/" Factor<out termVal1>     (. if (termVal1 == 0) { 
-  37                                           SemError("divide by zero");
-  38                                         } else {
-  39                                           termVal /= termVal1;
-  40                                         } .)
-  41     } .
-  42 
-  43   Factor<out double factVal>         (. factVal = 0.0; .)
-  44   =   Number                         (. try {
-  45                                           factVal = Double.parseDouble(token.val);
-  46                                         } catch (NumberFormatException e) {
-  47                                           factVal = 0; SemError("number out of range");
-  48                                         } .)
-  49     | Variable                       (. int index = token.val.charAt(0) - 'A';
-  50                                         factVal = mem[index]; .)
-  51     | "(" Expression<out factVal> ")"
-  52     .
-  53 
-  54 END Calc2.
+   7      Extended (August 2023) by:
+   8      Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
+   9 
+  10   public static OutFile output;                                                 /* ~~~ Changed ~~~ */
+  11   
+  12   CHARACTERS
+  13     control     = CHR(0) .. CHR(31) .
+  14     Printable   = ANY - control .
+  15     InString    = Printable - '"' .
+  16     Digits      = "0123456789" .
+  17     LF          = CHR(10) .
+  18     CR          = CHR(13) .
+  19   
+  20   TOKENS
+  21     Number      = [ "-" ] Digits { Digits } .
+  22     String      = '"' { InString } '"' .
+  23     EOL         = LF .
+  24     Comment     = ";" { Printable } CR .
+  25   
+  26   IGNORE control - LF
+  27   
+  28   PRODUCTIONS
+  29     PVMAsm      = { Statement } .
+  30     Statement   = [ Number ] (. output.write("Test"); .) [ Instruction ] [ Comment ] SYNC EOL .
+  31     Instruction = TwoWord | OneWord | PrintString .
+  32     TwoWord     = ( "LDA" | "LDC" | "DSP" | "BRN" | "BZE"  ) Number .
+  33     OneWord
+  34     = (   "ADD"  | "AND"  | "ANEW" | "CEQ"  | "CGE"  | "CGT"  | "CLE"  | "CLT"
+  35         | "CNE"  | "DIV"  | "HALT" | "INPB" | "INPI" | "LDV"  | "LDXA" | "MUL"
+  36         | "NEG"  | "NOP"  | "NOT"  | "OR"   | "PRNB" | "PRNI" | "PRNL" | "REM"
+  37         | "STO"  | "SUB" ) .
+  38     PrintString = "PRNS" String .
+  39   
+  40   END PVMAsm.
 
 0 errors detected
+1 warnings detected
