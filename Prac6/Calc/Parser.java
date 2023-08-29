@@ -116,7 +116,6 @@ public class Parser {
 		while (la.kind == Variable_Sym) {
 			Get();
 			index = token.val.charAt(0) - 'A';
-			// test = t - 'A'
 			Expect(equal_Sym);
 			value = Expression();
 			mem[index] = value;

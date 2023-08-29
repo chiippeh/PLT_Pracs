@@ -67,31 +67,36 @@ public class Scanner {
 	static final char EOL = '\n';
 	static final int  eofSym = 0;
 	static final int charSetSize = 256;
-	static final int maxT = 10;
-	static final int noSym = 10;
+	static final int maxT = 15;
+	static final int noSym = 15;
 	// terminals
 	static final int EOF_SYM = 0;
 	static final int Number_Sym = 1;
 	static final int Variable_Sym = 2;
 	static final int equal_Sym = 3;
-	static final int plus_Sym = 4;
-	static final int minus_Sym = 5;
-	static final int star_Sym = 6;
-	static final int slash_Sym = 7;
-	static final int lparen_Sym = 8;
-	static final int rparen_Sym = 9;
-	static final int NOT_SYM = 10;
+	static final int semicolon_Sym = 4;
+	static final int print_Sym = 5;
+	static final int plus_Sym = 6;
+	static final int minus_Sym = 7;
+	static final int star_Sym = 8;
+	static final int slash_Sym = 9;
+	static final int lparen_Sym = 10;
+	static final int rparen_Sym = 11;
+	static final int sqrt_Sym = 12;
+	static final int max_Sym = 13;
+	static final int comma_Sym = 14;
+	static final int NOT_SYM = 15;
 	// pragmas
 
 	static short[] start = {
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	  0,  0,  0,  0,  0,  0,  0,  0,  9, 10,  7,  5,  0,  6,  0,  8,
-	  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0,  4,  0,  0,
+	  0,  0,  0,  0,  0,  0,  0,  0, 15, 16, 13, 11, 24, 12,  0, 14,
+	  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0,  5,  0,  4,  0,  0,
 	  0,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,
 	  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  0,  0,  0,  0,  0,
-	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 21,  0,  0,
+	  6,  0,  0, 17,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -207,17 +212,54 @@ public class Scanner {
 				case 4:
 					{ t.kind = equal_Sym; done = true; break; }
 				case 5:
-					{ t.kind = plus_Sym; done = true; break; }
+					{ t.kind = semicolon_Sym; done = true; break; }
 				case 6:
-					{ t.kind = minus_Sym; done = true; break; }
+					if (ch == 'r') { buf.append(ch); NextCh(); state = 7; break;}
+					else { t.kind = noSym; done = true; break; }
 				case 7:
-					{ t.kind = star_Sym; done = true; break; }
+					if (ch == 'i') { buf.append(ch); NextCh(); state = 8; break;}
+					else { t.kind = noSym; done = true; break; }
 				case 8:
-					{ t.kind = slash_Sym; done = true; break; }
+					if (ch == 'n') { buf.append(ch); NextCh(); state = 9; break;}
+					else { t.kind = noSym; done = true; break; }
 				case 9:
-					{ t.kind = lparen_Sym; done = true; break; }
+					if (ch == 't') { buf.append(ch); NextCh(); state = 10; break;}
+					else { t.kind = noSym; done = true; break; }
 				case 10:
+					{ t.kind = print_Sym; done = true; break; }
+				case 11:
+					{ t.kind = plus_Sym; done = true; break; }
+				case 12:
+					{ t.kind = minus_Sym; done = true; break; }
+				case 13:
+					{ t.kind = star_Sym; done = true; break; }
+				case 14:
+					{ t.kind = slash_Sym; done = true; break; }
+				case 15:
+					{ t.kind = lparen_Sym; done = true; break; }
+				case 16:
 					{ t.kind = rparen_Sym; done = true; break; }
+				case 17:
+					if (ch == 'q') { buf.append(ch); NextCh(); state = 18; break;}
+					else { t.kind = noSym; done = true; break; }
+				case 18:
+					if (ch == 'r') { buf.append(ch); NextCh(); state = 19; break;}
+					else { t.kind = noSym; done = true; break; }
+				case 19:
+					if (ch == 't') { buf.append(ch); NextCh(); state = 20; break;}
+					else { t.kind = noSym; done = true; break; }
+				case 20:
+					{ t.kind = sqrt_Sym; done = true; break; }
+				case 21:
+					if (ch == 'a') { buf.append(ch); NextCh(); state = 22; break;}
+					else { t.kind = noSym; done = true; break; }
+				case 22:
+					if (ch == 'x') { buf.append(ch); NextCh(); state = 23; break;}
+					else { t.kind = noSym; done = true; break; }
+				case 23:
+					{ t.kind = max_Sym; done = true; break; }
+				case 24:
+					{ t.kind = comma_Sym; done = true; break; }
 
 			}
 		}

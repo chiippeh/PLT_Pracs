@@ -2,10 +2,13 @@ A = 4 + 5.6;
 B = A * 7;
 C = 1;
 D = 2;
-E = (C + D) * 3;
+E = (C + D * 3;
 print A;
 print E;
-print E + sqrt(E);
+print E + sqrtE);
 print C;
-print max(C, E, A);
-print max(E, C);
+print max(C, E, A;
+print maxE, C;
+W = ;
+Z 1;
+

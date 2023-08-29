@@ -1,45 +1,74 @@
-  Warning: PVMAsm is deletable
 
-   1   import library.*;                                                            /* ~~~ Changed ~~~ */
-   2   
-   3   COMPILER PVMAsm $CN
-   4   /* Grammar for subset of PVM assembler language
-   5      P.D. Terry, Rhodes University 
-   6 
-   7      Extended (August 2023) by:
-   8      Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
-   9 
-  10   public static OutFile output;                                                 /* ~~~ Changed ~~~ */
-  11   
-  12   CHARACTERS
-  13     control     = CHR(0) .. CHR(31) .
-  14     Printable   = ANY - control .
-  15     InString    = Printable - '"' .
-  16     Digits      = "0123456789" .
-  17     LF          = CHR(10) .
-  18     CR          = CHR(13) .
-  19   
-  20   TOKENS
-  21     Number      = [ "-" ] Digits { Digits } .
-  22     String      = '"' { InString } '"' .
-  23     EOL         = LF .
-  24     Comment     = ";" { Printable } CR .
-  25   
-  26   IGNORE control - LF
-  27   
-  28   PRODUCTIONS
-  29     PVMAsm      = { Statement } .
-  30     Statement   = [ Number ] (. output.write("Test"); .) [ Instruction ] [ Comment ] SYNC EOL .
-  31     Instruction = TwoWord | OneWord | PrintString .
-  32     TwoWord     = ( "LDA" | "LDC" | "DSP" | "BRN" | "BZE"  ) Number .
-  33     OneWord
-  34     = (   "ADD"  | "AND"  | "ANEW" | "CEQ"  | "CGE"  | "CGT"  | "CLE"  | "CLT"
-  35         | "CNE"  | "DIV"  | "HALT" | "INPB" | "INPI" | "LDV"  | "LDXA" | "MUL"
-  36         | "NEG"  | "NOP"  | "NOT"  | "OR"   | "PRNB" | "PRNI" | "PRNL" | "REM"
-  37         | "STO"  | "SUB" ) .
-  38     PrintString = "PRNS" String .
-  39   
-  40   END PVMAsm.
+   1 import library.*;
+   2 
+   3 COMPILER Calc2  $CN
+   4 /* Simple four function calculator with 26 memory cells
+   5    P.D. Terry, Rhodes University; extended KL Bradshaw, 2023 
+   6    Extended by:
+   7    Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
+   8 
+   9   static Double[] mem = new Double[26];                    /* Change double to Double to accomodate for null values */
+  10 
+  11 CHARACTERS
+  12   digit      = "0123456789" .
+  13   letter     = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" .
+  14 
+  15 TOKENS
+  16   Number     = digit { digit } [ "." { digit } ] .
+  17   Variable   = letter .
+  18 
+  19 IGNORE CHR(0) .. CHR(31)
+  20 
+  21 PRODUCTIONS
+  22   Calc2                              (. int index = 0; Double value = null; .)      /* ~~~~~~~ Changed ~~~~~~~ */
+  23   = SYNC { Variable                       (. index = token.val.charAt(0) - 'A'; .)  
+  24       WEAK "=" 
+  25       Expression<out value>          (. mem[index] = value;
+  26                                         if (value != null) IO.writeLine(value); .)  /* ~~~~~~~ Changed ~~~~~~~ */
+  27       SYNC ";"
+  28       | "print" Expression<out value> (. if (value != null) IO.writeLine(value); .)  /* ~~~~~~~ Changed ~~~~~~~ */
+  29       SYNC ";"
+  30     } EOF .
+  31 
+  32   Expression<out Double expVal>      (. Double expVal1 = null; .)                    /* ~~~~~~~ Changed ~~~~~~~ */
+  33   = Term<out expVal>
+  34     SYNC {   "+" Term<out expVal1>        (. expVal += expVal1; .)
+  35       | "-" Term<out expVal1>        (. expVal -= expVal1; .)
+  36     } .
+  37 
+  38   Term<out Double termVal>           (. Double termVal1 = null; .)                   /* ~~~~~~~ Changed ~~~~~~~ */
+  39   = Factor<out termVal>
+  40     SYNC {   "*" Factor<out termVal1>     (. termVal *= termVal1; .)
+  41       | "/" Factor<out termVal1>     (. if (termVal1 == 0) {                         /* ~~~~~~~ Changed ~~~~~~~ */
+  42                                           SemError("divide by zero");
+  43                                         } else {
+  44                                           termVal /= termVal1;
+  45                                         } .)
+  46     } .
+  47 
+  48   Factor<out Double factVal>         (. factVal = null;
+  49                                         Double factVal1 = null; .)                   /* ~~~~~~~ Changed ~~~~~~~ */
+  50   = SYNC ( Number                         (. try {
+  51                                           factVal = Double.parseDouble(token.val);
+  52                                         } catch (NumberFormatException e) {
+  53                                           SemError("number out of range");
+  54                                         } .)
+  55     | Variable                       (. int index = token.val.charAt(0) - 'A';        /* ~~~~~~~ Changed ~~~~~~~ */
+  56                                       
+  57                                         if (mem[index] == null) {
+  58                                           SemError("variable referenced before assignment");
+  59                                         } else {
+  60                                           factVal = mem[index]; 
+  61                                         } .)
+  62     | "(" Expression<out factVal> WEAK ")"
+  63     | "sqrt" WEAK "(" Expression<out factVal> (. factVal = factVal*factVal; .)                /* ~~~~~~~ Changed ~~~~~~~ */
+  64       WEAK ")"
+  65     | "max" WEAK "(" Expression<out factVal>                                                  /* ~~~~~~~ Changed ~~~~~~~ */
+  66           {"," Expression<out factVal1>  (. factVal = Math.max(factVal, factVal1); .)
+  67           } WEAK ")" 
+  68     )
+  69     .
+  70 
+  71 END Calc2.
 
 0 errors detected
-1 warnings detected

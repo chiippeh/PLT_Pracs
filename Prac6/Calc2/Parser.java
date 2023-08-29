@@ -23,8 +23,8 @@ public class Parser {
 	public static final int slash_Sym = 9;
 	public static final int lparen_Sym = 10;
 	public static final int rparen_Sym = 11;
-	public static final int sqrtlparen_Sym = 12;
-	public static final int maxlparen_Sym = 13;
+	public static final int sqrt_Sym = 12;
+	public static final int max_Sym = 13;
 	public static final int comma_Sym = 14;
 	public static final int NOT_SYM = 15;
 	// pragmas
@@ -117,19 +117,22 @@ public class Parser {
 
 	static void Calc2() {
 		int index = 0; Double value = null;
+		while (!(la.kind == EOF_SYM || la.kind == Variable_Sym || la.kind == print_Sym)) {SynErr(16); Get();}
 		while (la.kind == Variable_Sym || la.kind == print_Sym) {
 			if (la.kind == Variable_Sym) {
 				Get();
 				index = token.val.charAt(0) - 'A';
-				Expect(equal_Sym);
+				ExpectWeak(equal_Sym, 1);
 				value = Expression();
 				mem[index] = value;
 				if (value != null) IO.writeLine(value);
+				while (!(la.kind == EOF_SYM || la.kind == semicolon_Sym)) {SynErr(17); Get();}
 				Expect(semicolon_Sym);
 			} else {
 				Get();
 				value = Expression();
 				if (value != null) IO.writeLine(value);
+				while (!(la.kind == EOF_SYM || la.kind == semicolon_Sym)) {SynErr(18); Get();}
 				Expect(semicolon_Sym);
 			}
 		}
@@ -140,6 +143,7 @@ public class Parser {
 		Double expVal;
 		Double expVal1 = null;
 		expVal = Term();
+		while (!(StartOf(2))) {SynErr(19); Get();}
 		while (la.kind == plus_Sym || la.kind == minus_Sym) {
 			if (la.kind == plus_Sym) {
 				Get();
@@ -158,6 +162,7 @@ public class Parser {
 		Double termVal;
 		Double termVal1 = null;
 		termVal = Factor();
+		while (!(StartOf(3))) {SynErr(20); Get();}
 		while (la.kind == star_Sym || la.kind == slash_Sym) {
 			if (la.kind == star_Sym) {
 				Get();
@@ -180,16 +185,18 @@ public class Parser {
 		Double factVal;
 		factVal = null;
 		Double factVal1 = null;
+		while (!(StartOf(4))) {SynErr(21); Get();}
 		if (la.kind == Number_Sym) {
 			Get();
 			try {
-			  factVal = Double.parseDouble(token.val);
+			factVal = Double.parseDouble(token.val);
 			} catch (NumberFormatException e) {
-			  SemError("number out of range");
+			SemError("number out of range");
 			}
 		} else if (la.kind == Variable_Sym) {
 			Get();
-			int index = token.val.charAt(0) - 'A';
+			int index = token.val.charAt(0) - 'A';        /* ~~~~~~~ Changed ~~~~~~~ */
+			
 			if (mem[index] == null) {
 			  SemError("variable referenced before assignment");
 			} else {
@@ -198,22 +205,24 @@ public class Parser {
 		} else if (la.kind == lparen_Sym) {
 			Get();
 			factVal = Expression();
-			Expect(rparen_Sym);
-		} else if (la.kind == sqrtlparen_Sym) {
+			ExpectWeak(rparen_Sym, 1);
+		} else if (la.kind == sqrt_Sym) {
 			Get();
+			ExpectWeak(lparen_Sym, 1);
 			factVal = Expression();
 			factVal = factVal*factVal;
-			Expect(rparen_Sym);
-		} else if (la.kind == maxlparen_Sym) {
+			ExpectWeak(rparen_Sym, 1);
+		} else if (la.kind == max_Sym) {
 			Get();
+			ExpectWeak(lparen_Sym, 1);
 			factVal = Expression();
 			while (la.kind == comma_Sym) {
 				Get();
 				factVal1 = Expression();
 				factVal = Math.max(factVal, factVal1);
 			}
-			Expect(rparen_Sym);
-		} else SynErr(16);
+			ExpectWeak(rparen_Sym, 1);
+		} else SynErr(22);
 		return factVal;
 	}
 
@@ -229,7 +238,11 @@ public class Parser {
 	}
 
 	private static boolean[][] set = {
-		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x}
+		{T,T,T,x, T,T,T,T, T,T,T,T, T,T,T,x, x},
+		{T,T,T,x, T,T,T,T, T,T,T,T, T,T,T,x, x},
+		{T,x,x,x, T,x,T,T, x,x,x,T, x,x,T,x, x},
+		{T,x,x,x, T,x,T,T, T,T,x,T, x,x,T,x, x},
+		{T,T,T,x, x,x,x,x, x,x,T,x, T,T,x,x, x}
 
 	};
 
@@ -363,11 +376,17 @@ class Errors {
 			case 9: s = "\"/\" expected"; break;
 			case 10: s = "\"(\" expected"; break;
 			case 11: s = "\")\" expected"; break;
-			case 12: s = "\"sqrt(\" expected"; break;
-			case 13: s = "\"max(\" expected"; break;
+			case 12: s = "\"sqrt\" expected"; break;
+			case 13: s = "\"max\" expected"; break;
 			case 14: s = "\",\" expected"; break;
 			case 15: s = "??? expected"; break;
-			case 16: s = "invalid Factor"; break;
+			case 16: s = "this symbol not expected in Calc2"; break;
+			case 17: s = "this symbol not expected in Calc2"; break;
+			case 18: s = "this symbol not expected in Calc2"; break;
+			case 19: s = "this symbol not expected in Expression"; break;
+			case 20: s = "this symbol not expected in Term"; break;
+			case 21: s = "this symbol not expected in Factor"; break;
+			case 22: s = "invalid Factor"; break;
 			default: s = "error " + n; break;
 		}
 		storeError(line, col, s);
