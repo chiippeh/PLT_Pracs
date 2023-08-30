@@ -1,4 +1,4 @@
-  import library.*;                                                            /* ~~~ Changed ~~~ */
+  import library.*;                                                        /* ~~~ Changed ~~~ */
   
   COMPILER PVMAsm $CN
   /* Grammar for subset of PVM assembler language
@@ -7,7 +7,9 @@
      Extended (August 2023) by:
      Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
 
-  public static OutFile output;                                                 /* ~~~ Changed ~~~ */
+  public static OutFile output;                                            /* ~~~ Changed ~~~ */
+  public static int globalCount = 0;                                       /* ~~~ Changed ~~~ */
+  public static int longestString = 0;                                     /* ~~~ Changed ~~~ */ 
   
   CHARACTERS
     control     = CHR(0) .. CHR(31) .
@@ -26,15 +28,64 @@
   IGNORE control - LF
   
   PRODUCTIONS
-    PVMAsm      = { Statement } .
-    Statement   = [ Number ] (. output.write("Test"); .) [ Instruction ] [ Comment ] SYNC EOL .
-    Instruction = TwoWord | OneWord | PrintString .
-    TwoWord     = ( "LDA" | "LDC" | "DSP" | "BRN" | "BZE"  ) Number .
-    OneWord
+    PVMAsm                            
+    = { Statement } .   
+    
+    Statement                                                                        /* ~~~ Changed ~~~ */
+    = [ Number ]
+      (. output.write(globalCount); .)
+      [ Instruction ]
+      [ Comment  
+        (. output.write(token.val); .)
+      ] 
+      SYNC EOL (. output.write("\n"); .) .
+
+    Instruction                                                                        /* ~~~ Changed ~~~ */
+    = 
+      (. int spaceBeforeLabel = 6 - Integer.toString(globalCount).length();
+         output.write(" ".repeat(spaceBeforeLabel)); .)
+      ( 
+        TwoWord (. globalCount += 2;  .)
+        | OneWord (. globalCount += 1; .)
+        | PrintString (. globalCount += 2; .)
+      )
+      .
+
+    TwoWord                                                                        /* ~~~ Changed ~~~ */    
+    =   ("LDA" | "LDC" | "DSP" | "BRN" | "BZE") 
+        (. output.write(token.val); .) 
+        Number
+        (. output.write("   "); .) 
+        (. output.write(token.val); .)
+        (. int spaceAfterLabel = 7 - token.val.length(); .)
+        (. output.write(" ".repeat(spaceAfterLabel)); .) 
+        . 
+    
+    OneWord                                                                       /* ~~~ Changed ~~~ */
     = (   "ADD"  | "AND"  | "ANEW" | "CEQ"  | "CGE"  | "CGT"  | "CLE"  | "CLT"
         | "CNE"  | "DIV"  | "HALT" | "INPB" | "INPI" | "LDV"  | "LDXA" | "MUL"
         | "NEG"  | "NOP"  | "NOT"  | "OR"   | "PRNB" | "PRNI" | "PRNL" | "REM"
-        | "STO"  | "SUB" ) .
-    PrintString = "PRNS" String .
+        | "STO"  | "SUB" ) 
+      (. output.write(token.val); .)
+      (. if (token.val.length() < 4) {
+            output.write("          ");
+         } else {
+            output.write("         ");
+         }  
+      .) 
+      . 
+
+    PrintString                                                                       /* ~~~ Changed ~~~ */ 
+    = "PRNS" 
+      (. output.write("PRNS"); .) 
+      (. output.write("  "); .) 
+      String 
+      (. if (token.val.length() > longestString) {
+           longestString = token.val.length(); 
+         }
+      .)
+      (. output.write(token.val); .)
+      (. output.write(" ".repeat((longestString - token.val.length()) + 1)); .)
+      .
   
   END PVMAsm.

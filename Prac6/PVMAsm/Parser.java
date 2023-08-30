@@ -1,6 +1,6 @@
 package PVMAsm;
 
-import library.*;                                                            /* ~~~ Changed ~~~ */
+import library.*;                                                        /* ~~~ Changed ~~~ */
 
 
 
@@ -63,7 +63,9 @@ public class Parser {
 	public static Token la;       // lookahead token
 	static int errDist = minErrDist;
 
-	public static OutFile output;                                                 /* ~~~ Changed ~~~ */
+	public static OutFile output;                                            /* ~~~ Changed ~~~ */
+  public static int globalCount = 0;                                       /* ~~~ Changed ~~~ */
+  public static int longestString = 0;                                     /* ~~~ Changed ~~~ */
 
 
 
@@ -149,24 +151,31 @@ public class Parser {
 		if (la.kind == Number_Sym) {
 			Get();
 		}
-		output.write("Test");
+		output.write(globalCount);
 		if (StartOf(2)) {
 			Instruction();
 		}
 		if (la.kind == Comment_Sym) {
 			Get();
+			output.write(token.val);
 		}
 		while (!(la.kind == EOF_SYM || la.kind == EOL_Sym)) {SynErr(38); Get();}
 		Expect(EOL_Sym);
+		output.write("\n");
 	}
 
 	static void Instruction() {
+		int spaceBeforeLabel = 6 - Integer.toString(globalCount).length();
+		output.write(" ".repeat(spaceBeforeLabel));
 		if (StartOf(3)) {
 			TwoWord();
+			globalCount += 2;
 		} else if (StartOf(4)) {
 			OneWord();
+			globalCount += 1;
 		} else if (la.kind == PRNS_Sym) {
 			PrintString();
+			globalCount += 2;
 		} else SynErr(39);
 	}
 
@@ -182,7 +191,12 @@ public class Parser {
 		} else if (la.kind == BZE_Sym) {
 			Get();
 		} else SynErr(40);
+		output.write(token.val);
 		Expect(Number_Sym);
+		output.write("   ");
+		output.write(token.val);
+		int spaceAfterLabel = 7 - token.val.length();
+		output.write(" ".repeat(spaceAfterLabel));
 	}
 
 	static void OneWord() {
@@ -293,11 +307,26 @@ public class Parser {
 		}
 		default: SynErr(41); break;
 		}
+		output.write(token.val);
+		if (token.val.length() < 4) {
+		   output.write("          ");
+		} else {
+		   output.write("         ");
+		}
+		
 	}
 
 	static void PrintString() {
 		Expect(PRNS_Sym);
+		output.write("PRNS");
+		output.write("  ");
 		Expect(String_Sym);
+		if (token.val.length() > longestString) {
+		  longestString = token.val.length();
+		}
+		
+		output.write(token.val);
+		output.write(" ".repeat((longestString - token.val.length()) + 1));
 	}
 
 

@@ -1,15 +1,15 @@
 
    1 import library.*;
    2 
-   3 COMPILER RE2 $CN
+   3 COMPILER RE $CN
    4 /* Regular expression grammar - determine underlying alphabet 
    5   and where terminals are used (Java version)
    6   P.D. Terry, Rhodes University; modified KL Bradshaw 2023 
    7   Extended (August 2023) by:
    8   Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
    9 
-  10 public static OutFile output;
-  11 public static int lineCounter = 1;
+  10 public static OutFile output;                                                   /* ~~~ Changed ~~~ */                                        
+  11 public static int lineCounter = 1; // counts each new regex line               /* ~~~ Changed ~~~ */
   12 
   13 CHARACTERS
   14   lf       = CHR(10) .
@@ -27,50 +27,51 @@
   26 IGNORE  control - lf
   27 
   28 PRODUCTIONS
-  29   RE2                                 
+  29   RE                                                                        /* ~~~ Changed ~~~ */
   30   = { Expression (. lineCounter++; .) 
   31       EOL 
   32     } 
   33     (. Table.printTable(output); .)
-  34     (. Table.printAlphabet(1); .)
-  35     (. Table.printAlphabet(2); .)
-  36     (. Table.printAlphabet(3); .)
-  37     EOF .
-  38 
-  39   Expression = Term { "|" Term } .
-  40   Term       = Factor { [ "." ] Factor } .
-  41   Factor     = Element [ "*" | "?" | "+" ] .
-  42   Element    = Atom | Range | "(" Expression ")" .
-  43   Range      = "[" OneRange { OneRange } "]" .
-  44 
-  45   OneRange (. char atomVal1 = 'x'; char atomVal2 = 'x'; .)
-  46   = Atom (. if (token.val.length() > 1) {
-  47               atomVal1 = token.val.charAt(1);
-  48             } else {
-  49               atomVal1 = token.val.charAt(0); 
-  50             } .)
-  51     [ "-" 
-  52     Atom (. if (token.val.length() > 1) {
-  53               atomVal2 = token.val.charAt(1);
-  54             } else {
-  55               atomVal2 = token.val.charAt(0); 
-  56             } .)
-  57     ] (. for (int i = (atomVal1)+1; i < atomVal2; i++) {
-  58              Table.addRef((char) i, lineCounter);
-  59          }.) 
-  60     .
-  61 
-  62   Atom
-  63   = (atomic | escaped) 
-  64   (. if (token.val.length() > 1) { //single quote
-  65         char c = token.val.charAt(1);
-  66         Table.addRef((char) c, lineCounter);
-  67       } else {
-  68         char c = token.val.charAt(0);
-  69         Table.addRef(c, lineCounter);
-  70       } .)
-  71   .
-  72 
-  73 END RE2.
+  34     (. Table.printAlphabet(output, 1); .)
+  35     (. Table.printAlphabet(output, 2); .)
+  36     (. Table.printAlphabet(output, 3); .)
+  37     (. System.out.println("\nSee RE.out file for results :)\n"); .)
+  38     EOF .
+  39 
+  40   Expression = Term { "|" Term } .
+  41   Term       = Factor { [ "." ] Factor } .
+  42   Factor     = Element [ "*" | "?" | "+" ] .
+  43   Element    = Atom | Range | "(" Expression ")" .
+  44   Range      = "[" OneRange { OneRange } "]" .
+  45 
+  46   OneRange (. char atomVal1 = 'x'; char atomVal2 = 'x'; .)                   /* ~~~ Changed ~~~ */
+  47   = Atom (. if (token.val.length() > 1) { //if escaped
+  48               atomVal1 = token.val.charAt(1);
+  49             } else {
+  50               atomVal1 = token.val.charAt(0); 
+  51             } .)
+  52     [ "-" 
+  53     Atom (. if (token.val.length() > 1) { //if escaped
+  54               atomVal2 = token.val.charAt(1);
+  55             } else {
+  56               atomVal2 = token.val.charAt(0); 
+  57             } .)
+  58     ] (. for (int i = (atomVal1)+1; i < atomVal2; i++) { //for each char in range, add to table
+  59              Table.addRef((char) i, lineCounter);
+  60          }.) 
+  61     .
+  62 
+  63   Atom                                                                       /* ~~~ Changed ~~~ */
+  64   = (atomic | escaped) 
+  65   (. if (token.val.length() > 1) { //if escaped
+  66         char c = token.val.charAt(1);
+  67         Table.addRef((char) c, lineCounter);
+  68       } else { //if atomic
+  69         char c = token.val.charAt(0);
+  70         Table.addRef(c, lineCounter);
+  71       } .)
+  72   .
+  73 
+  74 END RE.
 
 0 errors detected

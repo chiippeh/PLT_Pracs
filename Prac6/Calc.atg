@@ -2,9 +2,11 @@ import library.*;
 
 COMPILER Calc  $CN
 /* Simple four function calculator with 26 memory cells
-   P.D. Terry, Rhodes University; extended KL Bradshaw, 2023 */
+   P.D. Terry, Rhodes University; extended KL Bradshaw, 2023 
+   Extended (August 2023) by:
+   Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
 
-  static double[] mem = new double[26];
+  static Double[] mem = new Double[26];                    /* Change double to Double to accomodate for null values */
 
 CHARACTERS
   digit      = "0123456789" .
@@ -17,34 +19,53 @@ TOKENS
 IGNORE CHR(0) .. CHR(31)
 
 PRODUCTIONS
-  Calc                               (. int index = 0; double value = 0.0;
-                                        for (int i = 0; i < 26; i++) mem[i] = 0.0; .)
-  = { Variable                       (. index = token.val.charAt(0) - 'A'; .)
-      "=" Expression<out value>      (. mem[index] = value;
-                                        IO.writeLine(value); .)
+  Calc                              (. int index = 0; Double value = null; .)       /* ~~~~~~~ Changed ~~~~~~~ */
+  = SYNC { Variable                       (. index = token.val.charAt(0) - 'A'; .)  
+      WEAK "=" 
+      Expression<out value>          (. mem[index] = value;
+                                        if (value != null) IO.writeLine(value); .)   /* ~~~~~~~ Changed ~~~~~~~ */
+      SYNC ";"
+      | "print" Expression<out value> (. if (value != null) IO.writeLine(value); .)  /* ~~~~~~~ Changed ~~~~~~~ */
+      SYNC ";"
     } EOF .
 
-  Expression<out double expVal>      (. double expVal1 = 0.0; .)
+  Expression<out Double expVal>      (. Double expVal1 = null; .)                    /* ~~~~~~~ Changed ~~~~~~~ */
   = Term<out expVal>
-    {   "+" Term<out expVal1>        (. expVal += expVal1; .)
+    SYNC {   "+" Term<out expVal1>        (. expVal += expVal1; .)
       | "-" Term<out expVal1>        (. expVal -= expVal1; .)
     } .
 
-  Term<out double termVal>           (. double termVal1 = 0.0; .)
+  Term<out Double termVal>           (. Double termVal1 = null; .)                   /* ~~~~~~~ Changed ~~~~~~~ */
   = Factor<out termVal>
-    {   "*" Factor<out termVal1>     (. termVal *= termVal1; .)
-      | "/" Factor<out termVal1>     (. termVal /= termVal1; .)
+    SYNC {   "*" Factor<out termVal1>     (. termVal *= termVal1; .)
+      | "/" Factor<out termVal1>     (. if (termVal1 == 0) {                         /* ~~~~~~~ Changed ~~~~~~~ */
+                                          SemError("divide by zero");
+                                        } else {
+                                          termVal /= termVal1;
+                                        } .)
     } .
 
-  Factor<out double factVal>         (. factVal = 0.0; .)
-  =   Number                         (. try {
+  Factor<out Double factVal>         (. factVal = null;
+                                        Double factVal1 = null; .)                   /* ~~~~~~~ Changed ~~~~~~~ */
+  = SYNC ( Number                         (. try {
                                           factVal = Double.parseDouble(token.val);
                                         } catch (NumberFormatException e) {
-                                          factVal = 0; SemError("number out of range");
+                                          SemError("number out of range");
                                         } .)
-    | Variable                       (. int index = token.val.charAt(0) - 'A';
-                                        factVal = mem[index]; .)
-    | "(" Expression<out factVal> ")"
+    | Variable                       (. int index = token.val.charAt(0) - 'A';        /* ~~~~~~~ Changed ~~~~~~~ */
+                                      
+                                        if (mem[index] == null) {
+                                          SemError("variable referenced before assignment");
+                                        } else {
+                                          factVal = mem[index]; 
+                                        } .)
+    | "(" Expression<out factVal> WEAK ")"
+    | "sqrt" WEAK "(" Expression<out factVal> (. factVal = factVal*factVal; .)        /* ~~~~~~~ Changed ~~~~~~~ */
+      WEAK ")"
+    | "max" WEAK "(" Expression<out factVal>                                          /* ~~~~~~~ Changed ~~~~~~~ */
+          {"," Expression<out factVal1>  (. factVal = Math.max(factVal, factVal1); .)
+          } WEAK ")" 
+    )
     .
 
 END Calc.
