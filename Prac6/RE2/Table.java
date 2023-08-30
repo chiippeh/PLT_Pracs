@@ -14,11 +14,6 @@ class Entry { // Cross reference table entries
     this.name = name;
     this.refs = new ArrayList<Integer>();
   }
-
-  // public static Entry addRef (Entry i) {
-  // Entry entry = new Entry(name);
-
-  // }
 } // Entry
 
 class Table {
@@ -35,7 +30,10 @@ class Table {
     boolean found = false;
     for (Entry entry : list) {
       if (entry.name == name) {
-        entry.refs.add(regnum);
+        // check for duplicate references
+        if (!entry.refs.contains(regnum)) {
+          entry.refs.add(regnum);
+        }
         found = true;
         break;
       }
@@ -58,22 +56,20 @@ class Table {
       }
       System.out.println("");
     }
-    
   } // printTable
 
   public static void printAlphabet(int regnum) {
     // Prints out all terminals in table for particular regex number
 
-
   } // printAlphabet
 
-  public static void main(String[] args) {
-    // Table table = new Table();
-    Table.addRef('a', 1);
-    Table.addRef('b', 3);
-    Table.addRef('c', 1);
-    Table.addRef('c', 2);
-    Table.printTable();
-  }
+  // public static void main(String[] args) {
+  // // Table table = new Table();
+  // // table.addRef('a', 1);
+  // // table.addRef('b', 3);
+  // // Table.addRef('c', 1);
+  // // Table.addRef('c', 2);
+  // // Table.printTable();
+  // }
 
 } // Table

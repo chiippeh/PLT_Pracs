@@ -40,7 +40,6 @@ public class Parser {
 	static int errDist = minErrDist;
 
 	public static OutFile output;
-      public static Table table;
       public static int lineCounter = 1;
 
 

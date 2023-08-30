@@ -2,13 +2,12 @@
      
      COMPILER RE2 $CN
      /* Regular expression grammar - determine underlying alphabet 
-		and where terminals are used (Java version)
-		P.D. Terry, Rhodes University; modified KL Bradshaw 2023 
+		    and where terminals are used (Java version)
+		    P.D. Terry, Rhodes University; modified KL Bradshaw 2023 
         Extended (August 2023) by:
         Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
 
       public static OutFile output;
-      public static Table table;
       public static int lineCounter = 1;
 
       CHARACTERS
@@ -39,17 +38,24 @@
         Factor     = Element [ "*" | "?" | "+" ] .
         Element    = Atom | Range | "(" Expression ")" .
         Range      = "[" OneRange { OneRange } "]" .
-        OneRange   = Atom [ "-" Atom ] .
-        Atom       
+
+        OneRange     
+        = Atom
+        [ "-" 
+          Atom
+        ]
+        .
+
+        Atom
         = (atomic | escaped) 
-        (. 
-           if (token.val.length() > 1) { //single quote
+        (. if (token.val.length() > 1) { //single quote
              char c = token.val.charAt(1);
              Table.addRef((char) c, lineCounter);
            } else {
              char c = token.val.charAt(0);
              Table.addRef(c, lineCounter);
            } .)
+
         .
 
       END RE2.

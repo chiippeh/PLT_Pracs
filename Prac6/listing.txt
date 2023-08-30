@@ -3,56 +3,62 @@
    2      
    3      COMPILER RE2 $CN
    4      /* Regular expression grammar - determine underlying alphabet 
-   5 		and where terminals are used (Java version)
-   6 		P.D. Terry, Rhodes University; modified KL Bradshaw 2023 
+   5 		    and where terminals are used (Java version)
+   6 		    P.D. Terry, Rhodes University; modified KL Bradshaw 2023 
    7         Extended (August 2023) by:
    8         Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
    9 
   10       public static OutFile output;
-  11       public static Table table;
-  12       public static int lineCounter = 1;
-  13 
-  14       CHARACTERS
-  15         lf       = CHR(10) .
-  16 		    control  = CHR(1) .. CHR(31) .
-  17         noquote1 = ANY - control - "'" - CHR(0) .
-  18         noquote2 = ANY - control - '"' - CHR(0) .
-  19         meta     = "()*|.;[]-?+" .
-  20         simple   = ANY - control - "'" - '"' - meta - CHR(0) .
-  21 
-  22       TOKENS
-  23         atomic  = simple .
-  24         escaped = "'" noquote1 "'" | '"' noquote2 '"' .
-  25 		    EOL     = lf .
-  26 		
-  27       IGNORE  control - lf
-  28 
-  29       PRODUCTIONS
-  30         RE2                                 
-  31         = { Expression (. lineCounter++; .) 
-  32             EOL 
-  33           } 
-  34           (. Table.printTable(); .)
-  35           EOF .
-  36 
-  37         Expression = Term { "|" Term } .
-  38         Term       = Factor { [ "." ] Factor } .
-  39         Factor     = Element [ "*" | "?" | "+" ] .
-  40         Element    = Atom | Range | "(" Expression ")" .
-  41         Range      = "[" OneRange { OneRange } "]" .
-  42         OneRange   = Atom [ "-" Atom ] .
-  43         Atom       
-  44         = (atomic | escaped) 
-  45         (. 
-  46            if (token.val.length() > 1) { //single quote
-  47              char c = token.val.charAt(1);
-  48              Table.addRef((char) c, lineCounter);
-  49            } else {
-  50              char c = token.val.charAt(0);
-  51              Table.addRef(c, lineCounter);
-  52            } .)
-  53         .
-  54 
-  55       END RE2.
+  11       public static int lineCounter = 1;
+  12 
+  13       CHARACTERS
+  14         lf       = CHR(10) .
+  15 		    control  = CHR(1) .. CHR(31) .
+  16         noquote1 = ANY - control - "'" - CHR(0) .
+  17         noquote2 = ANY - control - '"' - CHR(0) .
+  18         meta     = "()*|.;[]-?+" .
+  19         simple   = ANY - control - "'" - '"' - meta - CHR(0) .
+  20 
+  21       TOKENS
+  22         atomic  = simple .
+  23         escaped = "'" noquote1 "'" | '"' noquote2 '"' .
+  24 		    EOL     = lf .
+  25 		
+  26       IGNORE  control - lf
+  27 
+  28       PRODUCTIONS
+  29         RE2                                 
+  30         = { Expression (. lineCounter++; .) 
+  31             EOL 
+  32           } 
+  33           (. Table.printTable(); .)
+  34           EOF .
+  35 
+  36         Expression = Term { "|" Term } .
+  37         Term       = Factor { [ "." ] Factor } .
+  38         Factor     = Element [ "*" | "?" | "+" ] .
+  39         Element    = Atom | Range | "(" Expression ")" .
+  40         Range      = "[" OneRange { OneRange } "]" .
+  41 
+  42         OneRange     
+  43         = Atom
+  44         [ "-" 
+  45           Atom
+  46         ]
+  47         .
+  48 
+  49         Atom
+  50         = (atomic | escaped) 
+  51         (. if (token.val.length() > 1) { //single quote
+  52              char c = token.val.charAt(1);
+  53              Table.addRef((char) c, lineCounter);
+  54            } else {
+  55              char c = token.val.charAt(0);
+  56              Table.addRef(c, lineCounter);
+  57            } .)
+  58 
+  59         .
+  60 
+  61       END RE2.
 
 0 errors detected
