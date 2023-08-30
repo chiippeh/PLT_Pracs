@@ -25,6 +25,10 @@
         Factor     = Element [ "*" | "?" | "+" ] .
         Element    = Atom | Range | "(" Expression ")" .
         Range      = "[" OneRange { OneRange } "]" .
-        OneRange   = Atom [ "-" Atom ] .
-        Atom       = atomic | escaped .
+        OneRange                          (.int one = 0; int two = 0;.)   
+                  = Atom (. one = token.val.charAt(0) .) 
+                  [ "-" Atom 
+                  ] .
+        Atom                  (. tokenVal = ""; .) 
+        = (atomic | escaped) (. tokenVal = "test"; .) .
       END RE.
