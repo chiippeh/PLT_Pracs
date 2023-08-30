@@ -1,0 +1,55 @@
+     import library.*;
+     
+     COMPILER RE2 $CN
+     /* Regular expression grammar - determine underlying alphabet 
+		and where terminals are used (Java version)
+		P.D. Terry, Rhodes University; modified KL Bradshaw 2023 
+        Extended (August 2023) by:
+        Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
+
+      public static OutFile output;
+      public static Table table;
+      public static int lineCounter = 1;
+
+      CHARACTERS
+        lf       = CHR(10) .
+		    control  = CHR(1) .. CHR(31) .
+        noquote1 = ANY - control - "'" - CHR(0) .
+        noquote2 = ANY - control - '"' - CHR(0) .
+        meta     = "()*|.;[]-?+" .
+        simple   = ANY - control - "'" - '"' - meta - CHR(0) .
+
+      TOKENS
+        atomic  = simple .
+        escaped = "'" noquote1 "'" | '"' noquote2 '"' .
+		    EOL     = lf .
+		
+      IGNORE  control - lf
+
+      PRODUCTIONS
+        RE2                                 
+        = { Expression (. lineCounter++; .) 
+            EOL 
+          } 
+          (. Table.printTable(); .)
+          EOF .
+
+        Expression = Term { "|" Term } .
+        Term       = Factor { [ "." ] Factor } .
+        Factor     = Element [ "*" | "?" | "+" ] .
+        Element    = Atom | Range | "(" Expression ")" .
+        Range      = "[" OneRange { OneRange } "]" .
+        OneRange   = Atom [ "-" Atom ] .
+        Atom       
+        = (atomic | escaped) 
+        (. 
+           if (token.val.length() > 1) { //single quote
+             char c = token.val.charAt(1);
+             Table.addRef((char) c, lineCounter);
+           } else {
+             char c = token.val.charAt(0);
+             Table.addRef(c, lineCounter);
+           } .)
+        .
+
+      END RE2.

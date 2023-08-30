@@ -6,6 +6,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Table",
+            "request": "launch",
+            "mainClass": "RE2.Table",
+            "projectName": "PLT_Pracs_cefcabaf"
+        },
+        {
+            "type": "java",
+            "name": "ListDemo2",
+            "request": "launch",
+            "mainClass": "ListDemo2",
+            "projectName": "PLT_Pracs_cefcabaf"
+        },
+        {
+            "type": "java",
+            "name": "ListDemo1",
+            "request": "launch",
+            "mainClass": "ListDemo1",
+            "projectName": "PLT_Pracs_cefcabaf"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
