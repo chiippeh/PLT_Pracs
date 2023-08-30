@@ -1,5 +1,7 @@
 // Skeleton to handle cross reference table for RE productions
 // P.D. Terry, Rhodes University; modified 2023  (Java 1.5)
+// Extended (August 2023) by:
+// Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408
 
 package RE2;
 
@@ -45,31 +47,48 @@ class Table {
       list.add(e);
     }
   } // addRef
-
-  public static void printTable() {
-    // Prints out all references in the table (eliminate duplicate regex numbers)
+  public static void printTable(){
+      // Prints out all references in the table (eliminate duplicate regex numbers)
+    StringBuilder sb = new StringBuilder();
     for (Entry entry : list) {
-      System.out.print(entry.name + " ");
+      sb.append(entry.name + " ");
       ArrayList<Integer> refList = entry.refs;
       for (Integer ref : refList) {
-        System.out.print(ref + " ");
+        sb.append(ref + " ");
       }
-      System.out.println("");
+      sb.append("\n");
     }
+
+    System.out.println(sb);
+  }
+
+  public static void printTable(OutFile output) { // prints to output file
+    // Prints out all references in the table (eliminate duplicate regex numbers)
+    StringBuilder sb = new StringBuilder();
+    for (Entry entry : list) {
+      sb.append(entry.name + " ");
+      ArrayList<Integer> refList = entry.refs;
+      for (Integer ref : refList) {
+        sb.append(ref + " ");
+      }
+      sb.append("\n");
+    }
+
+    output.write(sb);
   } // printTable
 
   public static void printAlphabet(int regnum) {
     // Prints out all terminals in table for particular regex number
+    StringBuilder sb = new StringBuilder();
+    sb.append("Alphabet " + regnum + " =");
+    for (Entry entry : list) {
+      ArrayList<Integer> refList = entry.refs;
 
+      if (refList.contains(regnum)) {
+        sb.append(" ");
+        sb.append(entry.name);
+      }
+    }
+    System.out.println(sb);
   } // printAlphabet
-
-  // public static void main(String[] args) {
-  // // Table table = new Table();
-  // // table.addRef('a', 1);
-  // // table.addRef('b', 3);
-  // // Table.addRef('c', 1);
-  // // Table.addRef('c', 2);
-  // // Table.printTable();
-  // }
-
 } // Table

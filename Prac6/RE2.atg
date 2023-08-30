@@ -1,61 +1,73 @@
-     import library.*;
-     
-     COMPILER RE2 $CN
-     /* Regular expression grammar - determine underlying alphabet 
-		    and where terminals are used (Java version)
-		    P.D. Terry, Rhodes University; modified KL Bradshaw 2023 
-        Extended (August 2023) by:
-        Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
+import library.*;
 
-      public static OutFile output;
-      public static int lineCounter = 1;
+COMPILER RE2 $CN
+/* Regular expression grammar - determine underlying alphabet 
+  and where terminals are used (Java version)
+  P.D. Terry, Rhodes University; modified KL Bradshaw 2023 
+  Extended (August 2023) by:
+  Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
 
-      CHARACTERS
-        lf       = CHR(10) .
-		    control  = CHR(1) .. CHR(31) .
-        noquote1 = ANY - control - "'" - CHR(0) .
-        noquote2 = ANY - control - '"' - CHR(0) .
-        meta     = "()*|.;[]-?+" .
-        simple   = ANY - control - "'" - '"' - meta - CHR(0) .
+public static OutFile output;
+public static int lineCounter = 1;
 
-      TOKENS
-        atomic  = simple .
-        escaped = "'" noquote1 "'" | '"' noquote2 '"' .
-		    EOL     = lf .
-		
-      IGNORE  control - lf
+CHARACTERS
+  lf       = CHR(10) .
+  control  = CHR(1) .. CHR(31) .
+  noquote1 = ANY - control - "'" - CHR(0) .
+  noquote2 = ANY - control - '"' - CHR(0) .
+  meta     = "()*|.;[]-?+" .
+  simple   = ANY - control - "'" - '"' - meta - CHR(0) .
 
-      PRODUCTIONS
-        RE2                                 
-        = { Expression (. lineCounter++; .) 
-            EOL 
-          } 
-          (. Table.printTable(); .)
-          EOF .
+TOKENS
+  atomic  = simple .
+  escaped = "'" noquote1 "'" | '"' noquote2 '"' .
+  EOL     = lf .
 
-        Expression = Term { "|" Term } .
-        Term       = Factor { [ "." ] Factor } .
-        Factor     = Element [ "*" | "?" | "+" ] .
-        Element    = Atom | Range | "(" Expression ")" .
-        Range      = "[" OneRange { OneRange } "]" .
+IGNORE  control - lf
 
-        OneRange     
-        = Atom
-        [ "-" 
-          Atom
-        ]
-        .
+PRODUCTIONS
+  RE2                                 
+  = { Expression (. lineCounter++; .) 
+      EOL 
+    } 
+    (. Table.printTable(output); .)
+    (. Table.printAlphabet(1); .)
+    (. Table.printAlphabet(2); .)
+    (. Table.printAlphabet(3); .)
+    EOF .
 
-        Atom
-        = (atomic | escaped) 
-        (. if (token.val.length() > 1) { //single quote
-             char c = token.val.charAt(1);
-             Table.addRef((char) c, lineCounter);
-           } else {
-             char c = token.val.charAt(0);
-             Table.addRef(c, lineCounter);
-           } .)
+  Expression = Term { "|" Term } .
+  Term       = Factor { [ "." ] Factor } .
+  Factor     = Element [ "*" | "?" | "+" ] .
+  Element    = Atom | Range | "(" Expression ")" .
+  Range      = "[" OneRange { OneRange } "]" .
 
-        .
+  OneRange (. char atomVal1 = 'x'; char atomVal2 = 'x'; .)
+  = Atom (. if (token.val.length() > 1) {
+              atomVal1 = token.val.charAt(1);
+            } else {
+              atomVal1 = token.val.charAt(0); 
+            } .)
+    [ "-" 
+    Atom (. if (token.val.length() > 1) {
+              atomVal2 = token.val.charAt(1);
+            } else {
+              atomVal2 = token.val.charAt(0); 
+            } .)
+    ] (. for (int i = (atomVal1)+1; i < atomVal2; i++) {
+             Table.addRef((char) i, lineCounter);
+         }.) 
+    .
 
-      END RE2.
+  Atom
+  = (atomic | escaped) 
+  (. if (token.val.length() > 1) { //single quote
+        char c = token.val.charAt(1);
+        Table.addRef((char) c, lineCounter);
+      } else {
+        char c = token.val.charAt(0);
+        Table.addRef(c, lineCounter);
+      } .)
+  .
+
+END RE2.

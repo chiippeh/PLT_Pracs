@@ -40,7 +40,7 @@ public class Parser {
 	static int errDist = minErrDist;
 
 	public static OutFile output;
-      public static int lineCounter = 1;
+public static int lineCounter = 1;
 
 
 
@@ -122,7 +122,10 @@ public class Parser {
 			lineCounter++;
 			Expect(EOL_Sym);
 		}
-		Table.printTable();
+		Table.printTable(output);
+		Table.printAlphabet(1);
+		Table.printAlphabet(2);
+		Table.printAlphabet(3);
 		Expect(EOF_SYM);
 	}
 
@@ -176,12 +179,12 @@ public class Parser {
 			Get();
 		} else SynErr(16);
 		if (token.val.length() > 1) { //single quote
-		  char c = token.val.charAt(1);
-		  Table.addRef((char) c, lineCounter);
-		} else {
-		  char c = token.val.charAt(0);
-		  Table.addRef(c, lineCounter);
-		}
+		   char c = token.val.charAt(1);
+		   Table.addRef((char) c, lineCounter);
+		 } else {
+		   char c = token.val.charAt(0);
+		   Table.addRef(c, lineCounter);
+		 }
 	}
 
 	static void Range() {
@@ -194,10 +197,24 @@ public class Parser {
 	}
 
 	static void OneRange() {
+		char atomVal1 = 'x'; char atomVal2 = 'x';
 		Atom();
+		if (token.val.length() > 1) {
+		  atomVal1 = token.val.charAt(1);
+		} else {
+		  atomVal1 = token.val.charAt(0);
+		}
 		if (la.kind == minus_Sym) {
 			Get();
 			Atom();
+			if (token.val.length() > 1) {
+			  atomVal2 = token.val.charAt(1);
+			} else {
+			  atomVal2 = token.val.charAt(0);
+			}
+		}
+		for (int i = (atomVal1)+1; i < atomVal2; i++) {
+		    Table.addRef((char) i, lineCounter);
 		}
 	}
 
