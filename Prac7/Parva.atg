@@ -16,6 +16,8 @@ COMPILER Parva $NC
   static final boolean
     known = true;
 
+  public static OutFile output;
+
   // This next method might better be located in the code generator.  Traditionally
   // it has been left in the ATG file, but that might change in future years
   //
@@ -99,6 +101,11 @@ TOKENS
 PRAGMAS
   DebugOn     = "$D+" .                      (. debug     = true; .)
   DebugOff    = "$D-" .                      (. debug     = false; .)
+  ProdCODOn   = "$C+" .                      (. listCode  = true; .)
+  ProdCODOff  = "$C-" .                      (. listCode  = false; .)
+  PrintSymbolTable = "$ST" .                 (. if (debug) Table.printTable(output); .) 
+  PrintRuntimeStack = "$SD" .                (. if (debug) CodeGen.stack(); .)
+  PrintRuntimeHeap = "$HD" .                 (. if (debug) CodeGen.heap(); .)
 
 
 COMMENTS FROM "//" TO lf

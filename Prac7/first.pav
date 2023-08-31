@@ -8,7 +8,7 @@ void main() { $C+
     write(i);
     list[i] = -2 * i;
     i = i + 1;
-    $SD
+    $SD // stack
   }
   $ST   // symbol table
   $HD   // heap
