@@ -1,0 +1,176 @@
+ PC:    0 FP: 8192 SP: 8192 HP:   52 TOS: ????  DSP         3
+ PC:    2 FP: 8192 SP: 8189 HP:   52 TOS:    0  LDA         0
+ PC:    4 FP: 8192 SP: 8188 HP:   52 TOS: 8191  LDC         6
+ PC:    6 FP: 8192 SP: 8187 HP:   52 TOS:    6  ANEW  
+ PC:    7 FP: 8192 SP: 8187 HP:   59 TOS:   52  STO   
+ PC:    8 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   10 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDC         0
+ PC:   12 FP: 8192 SP: 8187 HP:   59 TOS:    0  STO   
+ PC:   13 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   15 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDV   
+ PC:   16 FP: 8192 SP: 8188 HP:   59 TOS:    0  LDC         6
+ PC:   18 FP: 8192 SP: 8187 HP:   59 TOS:    6  CLT   
+ PC:   19 FP: 8192 SP: 8188 HP:   59 TOS:    1  BZE        51
+ PC:   21 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   23 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDV   
+ PC:   24 FP: 8192 SP: 8188 HP:   59 TOS:    0  PRNI  
+                                                                 0
+ PC:   25 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         0
+ PC:   27 FP: 8192 SP: 8188 HP:   59 TOS: 8191  LDV   
+ PC:   28 FP: 8192 SP: 8188 HP:   59 TOS:   52  LDA         1
+ PC:   30 FP: 8192 SP: 8187 HP:   59 TOS: 8190  LDV   
+ PC:   31 FP: 8192 SP: 8187 HP:   59 TOS:    0  LDXA  
+ PC:   32 FP: 8192 SP: 8188 HP:   59 TOS:   53  LDC         2
+ PC:   34 FP: 8192 SP: 8187 HP:   59 TOS:    2  NEG   
+ PC:   35 FP: 8192 SP: 8187 HP:   59 TOS:   -2  LDA         1
+ PC:   37 FP: 8192 SP: 8186 HP:   59 TOS: 8190  LDV   
+ PC:   38 FP: 8192 SP: 8186 HP:   59 TOS:    0  MUL   
+ PC:   39 FP: 8192 SP: 8187 HP:   59 TOS:    0  STO   
+ PC:   40 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   42 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDA         1
+ PC:   44 FP: 8192 SP: 8187 HP:   59 TOS: 8190  LDV   
+ PC:   45 FP: 8192 SP: 8187 HP:   59 TOS:    0  LDC         1
+ PC:   47 FP: 8192 SP: 8186 HP:   59 TOS:    1  ADD   
+ PC:   48 FP: 8192 SP: 8187 HP:   59 TOS:    1  STO   
+ PC:   49 FP: 8192 SP: 8189 HP:   59 TOS:    0  BRN        13
+ PC:   13 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   15 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDV   
+ PC:   16 FP: 8192 SP: 8188 HP:   59 TOS:    1  LDC         6
+ PC:   18 FP: 8192 SP: 8187 HP:   59 TOS:    6  CLT   
+ PC:   19 FP: 8192 SP: 8188 HP:   59 TOS:    1  BZE        51
+ PC:   21 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   23 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDV   
+ PC:   24 FP: 8192 SP: 8188 HP:   59 TOS:    1  PRNI  
+                                                                 1
+ PC:   25 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         0
+ PC:   27 FP: 8192 SP: 8188 HP:   59 TOS: 8191  LDV   
+ PC:   28 FP: 8192 SP: 8188 HP:   59 TOS:   52  LDA         1
+ PC:   30 FP: 8192 SP: 8187 HP:   59 TOS: 8190  LDV   
+ PC:   31 FP: 8192 SP: 8187 HP:   59 TOS:    1  LDXA  
+ PC:   32 FP: 8192 SP: 8188 HP:   59 TOS:   54  LDC         2
+ PC:   34 FP: 8192 SP: 8187 HP:   59 TOS:    2  NEG   
+ PC:   35 FP: 8192 SP: 8187 HP:   59 TOS:   -2  LDA         1
+ PC:   37 FP: 8192 SP: 8186 HP:   59 TOS: 8190  LDV   
+ PC:   38 FP: 8192 SP: 8186 HP:   59 TOS:    1  MUL   
+ PC:   39 FP: 8192 SP: 8187 HP:   59 TOS:   -2  STO   
+ PC:   40 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   42 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDA         1
+ PC:   44 FP: 8192 SP: 8187 HP:   59 TOS: 8190  LDV   
+ PC:   45 FP: 8192 SP: 8187 HP:   59 TOS:    1  LDC         1
+ PC:   47 FP: 8192 SP: 8186 HP:   59 TOS:    1  ADD   
+ PC:   48 FP: 8192 SP: 8187 HP:   59 TOS:    2  STO   
+ PC:   49 FP: 8192 SP: 8189 HP:   59 TOS:    0  BRN        13
+ PC:   13 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   15 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDV   
+ PC:   16 FP: 8192 SP: 8188 HP:   59 TOS:    2  LDC         6
+ PC:   18 FP: 8192 SP: 8187 HP:   59 TOS:    6  CLT   
+ PC:   19 FP: 8192 SP: 8188 HP:   59 TOS:    1  BZE        51
+ PC:   21 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   23 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDV   
+ PC:   24 FP: 8192 SP: 8188 HP:   59 TOS:    2  PRNI  
+                                                                 2
+ PC:   25 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         0
+ PC:   27 FP: 8192 SP: 8188 HP:   59 TOS: 8191  LDV   
+ PC:   28 FP: 8192 SP: 8188 HP:   59 TOS:   52  LDA         1
+ PC:   30 FP: 8192 SP: 8187 HP:   59 TOS: 8190  LDV   
+ PC:   31 FP: 8192 SP: 8187 HP:   59 TOS:    2  LDXA  
+ PC:   32 FP: 8192 SP: 8188 HP:   59 TOS:   55  LDC         2
+ PC:   34 FP: 8192 SP: 8187 HP:   59 TOS:    2  NEG   
+ PC:   35 FP: 8192 SP: 8187 HP:   59 TOS:   -2  LDA         1
+ PC:   37 FP: 8192 SP: 8186 HP:   59 TOS: 8190  LDV   
+ PC:   38 FP: 8192 SP: 8186 HP:   59 TOS:    2  MUL   
+ PC:   39 FP: 8192 SP: 8187 HP:   59 TOS:   -4  STO   
+ PC:   40 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   42 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDA         1
+ PC:   44 FP: 8192 SP: 8187 HP:   59 TOS: 8190  LDV   
+ PC:   45 FP: 8192 SP: 8187 HP:   59 TOS:    2  LDC         1
+ PC:   47 FP: 8192 SP: 8186 HP:   59 TOS:    1  ADD   
+ PC:   48 FP: 8192 SP: 8187 HP:   59 TOS:    3  STO   
+ PC:   49 FP: 8192 SP: 8189 HP:   59 TOS:    0  BRN        13
+ PC:   13 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   15 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDV   
+ PC:   16 FP: 8192 SP: 8188 HP:   59 TOS:    3  LDC         6
+ PC:   18 FP: 8192 SP: 8187 HP:   59 TOS:    6  CLT   
+ PC:   19 FP: 8192 SP: 8188 HP:   59 TOS:    1  BZE        51
+ PC:   21 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   23 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDV   
+ PC:   24 FP: 8192 SP: 8188 HP:   59 TOS:    3  PRNI  
+                                                                 3
+ PC:   25 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         0
+ PC:   27 FP: 8192 SP: 8188 HP:   59 TOS: 8191  LDV   
+ PC:   28 FP: 8192 SP: 8188 HP:   59 TOS:   52  LDA         1
+ PC:   30 FP: 8192 SP: 8187 HP:   59 TOS: 8190  LDV   
+ PC:   31 FP: 8192 SP: 8187 HP:   59 TOS:    3  LDXA  
+ PC:   32 FP: 8192 SP: 8188 HP:   59 TOS:   56  LDC         2
+ PC:   34 FP: 8192 SP: 8187 HP:   59 TOS:    2  NEG   
+ PC:   35 FP: 8192 SP: 8187 HP:   59 TOS:   -2  LDA         1
+ PC:   37 FP: 8192 SP: 8186 HP:   59 TOS: 8190  LDV   
+ PC:   38 FP: 8192 SP: 8186 HP:   59 TOS:    3  MUL   
+ PC:   39 FP: 8192 SP: 8187 HP:   59 TOS:   -6  STO   
+ PC:   40 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   42 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDA         1
+ PC:   44 FP: 8192 SP: 8187 HP:   59 TOS: 8190  LDV   
+ PC:   45 FP: 8192 SP: 8187 HP:   59 TOS:    3  LDC         1
+ PC:   47 FP: 8192 SP: 8186 HP:   59 TOS:    1  ADD   
+ PC:   48 FP: 8192 SP: 8187 HP:   59 TOS:    4  STO   
+ PC:   49 FP: 8192 SP: 8189 HP:   59 TOS:    0  BRN        13
+ PC:   13 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   15 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDV   
+ PC:   16 FP: 8192 SP: 8188 HP:   59 TOS:    4  LDC         6
+ PC:   18 FP: 8192 SP: 8187 HP:   59 TOS:    6  CLT   
+ PC:   19 FP: 8192 SP: 8188 HP:   59 TOS:    1  BZE        51
+ PC:   21 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   23 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDV   
+ PC:   24 FP: 8192 SP: 8188 HP:   59 TOS:    4  PRNI  
+                                                                 4
+ PC:   25 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         0
+ PC:   27 FP: 8192 SP: 8188 HP:   59 TOS: 8191  LDV   
+ PC:   28 FP: 8192 SP: 8188 HP:   59 TOS:   52  LDA         1
+ PC:   30 FP: 8192 SP: 8187 HP:   59 TOS: 8190  LDV   
+ PC:   31 FP: 8192 SP: 8187 HP:   59 TOS:    4  LDXA  
+ PC:   32 FP: 8192 SP: 8188 HP:   59 TOS:   57  LDC         2
+ PC:   34 FP: 8192 SP: 8187 HP:   59 TOS:    2  NEG   
+ PC:   35 FP: 8192 SP: 8187 HP:   59 TOS:   -2  LDA         1
+ PC:   37 FP: 8192 SP: 8186 HP:   59 TOS: 8190  LDV   
+ PC:   38 FP: 8192 SP: 8186 HP:   59 TOS:    4  MUL   
+ PC:   39 FP: 8192 SP: 8187 HP:   59 TOS:   -8  STO   
+ PC:   40 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   42 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDA         1
+ PC:   44 FP: 8192 SP: 8187 HP:   59 TOS: 8190  LDV   
+ PC:   45 FP: 8192 SP: 8187 HP:   59 TOS:    4  LDC         1
+ PC:   47 FP: 8192 SP: 8186 HP:   59 TOS:    1  ADD   
+ PC:   48 FP: 8192 SP: 8187 HP:   59 TOS:    5  STO   
+ PC:   49 FP: 8192 SP: 8189 HP:   59 TOS:    0  BRN        13
+ PC:   13 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   15 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDV   
+ PC:   16 FP: 8192 SP: 8188 HP:   59 TOS:    5  LDC         6
+ PC:   18 FP: 8192 SP: 8187 HP:   59 TOS:    6  CLT   
+ PC:   19 FP: 8192 SP: 8188 HP:   59 TOS:    1  BZE        51
+ PC:   21 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   23 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDV   
+ PC:   24 FP: 8192 SP: 8188 HP:   59 TOS:    5  PRNI  
+                                                                 5
+ PC:   25 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         0
+ PC:   27 FP: 8192 SP: 8188 HP:   59 TOS: 8191  LDV   
+ PC:   28 FP: 8192 SP: 8188 HP:   59 TOS:   52  LDA         1
+ PC:   30 FP: 8192 SP: 8187 HP:   59 TOS: 8190  LDV   
+ PC:   31 FP: 8192 SP: 8187 HP:   59 TOS:    5  LDXA  
+ PC:   32 FP: 8192 SP: 8188 HP:   59 TOS:   58  LDC         2
+ PC:   34 FP: 8192 SP: 8187 HP:   59 TOS:    2  NEG   
+ PC:   35 FP: 8192 SP: 8187 HP:   59 TOS:   -2  LDA         1
+ PC:   37 FP: 8192 SP: 8186 HP:   59 TOS: 8190  LDV   
+ PC:   38 FP: 8192 SP: 8186 HP:   59 TOS:    5  MUL   
+ PC:   39 FP: 8192 SP: 8187 HP:   59 TOS:  -10  STO   
+ PC:   40 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   42 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDA         1
+ PC:   44 FP: 8192 SP: 8187 HP:   59 TOS: 8190  LDV   
+ PC:   45 FP: 8192 SP: 8187 HP:   59 TOS:    5  LDC         1
+ PC:   47 FP: 8192 SP: 8186 HP:   59 TOS:    1  ADD   
+ PC:   48 FP: 8192 SP: 8187 HP:   59 TOS:    6  STO   
+ PC:   49 FP: 8192 SP: 8189 HP:   59 TOS:    0  BRN        13
+ PC:   13 FP: 8192 SP: 8189 HP:   59 TOS:    0  LDA         1
+ PC:   15 FP: 8192 SP: 8188 HP:   59 TOS: 8190  LDV   
+ PC:   16 FP: 8192 SP: 8188 HP:   59 TOS:    6  LDC         6
+ PC:   18 FP: 8192 SP: 8187 HP:   59 TOS:    6  CLT   
+ PC:   19 FP: 8192 SP: 8188 HP:   59 TOS:    0  BZE        51
+ PC:   51 FP: 8192 SP: 8189 HP:   59 TOS:    0  HALT  

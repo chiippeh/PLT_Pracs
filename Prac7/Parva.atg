@@ -16,8 +16,6 @@ COMPILER Parva $NC
   static final boolean
     known = true;
 
-  public static OutFile output;
-
   public static String newFileName(String s, String ext) {
       int i = s.lastIndexOf('.');
       if (i < 0) return s + ext; else return s.substring(0, i) + ext;
@@ -108,7 +106,7 @@ PRAGMAS
   DebugOff    = "$D-" .                      (. debug     = false; .)
   ProdCODOn   = "$C+" .                      (. listCode  = true; .)
   ProdCODOff  = "$C-" .                      (. listCode  = false; .)
-  PrintSymbolTable = "$ST" .                 (. System.out.println(output); if (debug) Table.printTable(output); .) 
+  PrintSymbolTable = "$ST" .                 (. if (debug) Table.printTable(OutFile.StdOut); .) 
   PrintRuntimeStack = "$SD" .                (. if (debug) CodeGen.stack(); .)
   PrintRuntimeHeap = "$HD" .                 (. if (debug) CodeGen.heap(); .)
 

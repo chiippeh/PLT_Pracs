@@ -52,6 +52,7 @@ import library.*;
       System.out.println("Parva compiler 1.2014");
 
       for (int i = 0; i < args.length; i++) {
+        System.out.println(args[i]);
         if (args[i].toLowerCase().equals("-l")) mergeErrors = true;
         else if (args[i].toLowerCase().equals("-d")) Parser.debug = true;
         else if (args[i].toLowerCase().equals("-w")) Parser.warnings = false;

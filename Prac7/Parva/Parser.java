@@ -92,8 +92,6 @@ public class Parser {
   static final boolean
     known = true;
 
-  public static OutFile output;
-
   public static String newFileName(String s, String ext) {
       int i = s.lastIndexOf('.');
       if (i < 0) return s + ext; else return s.substring(0, i) + ext;
@@ -215,7 +213,7 @@ public class Parser {
 				listCode  = false;
 			}
 			if (la.kind == PrintSymbolTable_Sym) {
-				System.out.println(output); if (debug) Table.printTable(output);
+				if (debug) Table.printTable(OutFile.StdOut);
 			}
 			if (la.kind == PrintRuntimeStack_Sym) {
 				if (debug) CodeGen.stack();
