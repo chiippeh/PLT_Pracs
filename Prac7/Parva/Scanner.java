@@ -67,8 +67,8 @@ public class Scanner {
 	static final char EOL = '\n';
 	static final int  eofSym = 0;
 	static final int charSetSize = 256;
-	static final int maxT = 43;
-	static final int noSym = 43;
+	static final int maxT = 45;
+	static final int noSym = 45;
 	// terminals
 	static final int EOF_SYM = 0;
 	static final int identifier_Sym = 1;
@@ -93,43 +93,45 @@ public class Scanner {
 	static final int lbrack_Sym = 20;
 	static final int rbrack_Sym = 21;
 	static final int if_Sym = 22;
-	static final int while_Sym = 23;
-	static final int halt_Sym = 24;
-	static final int read_Sym = 25;
-	static final int write_Sym = 26;
-	static final int barbar_Sym = 27;
-	static final int andand_Sym = 28;
-	static final int plus_Sym = 29;
-	static final int minus_Sym = 30;
-	static final int bang_Sym = 31;
-	static final int new_Sym = 32;
-	static final int star_Sym = 33;
-	static final int slash_Sym = 34;
-	static final int percent_Sym = 35;
-	static final int equalequal_Sym = 36;
-	static final int bangequal_Sym = 37;
-	static final int less_Sym = 38;
-	static final int lessequal_Sym = 39;
-	static final int greater_Sym = 40;
-	static final int greaterequal_Sym = 41;
-	static final int equal_Sym = 42;
-	static final int NOT_SYM = 43;
+	static final int then_Sym = 23;
+	static final int while_Sym = 24;
+	static final int halt_Sym = 25;
+	static final int read_Sym = 26;
+	static final int write_Sym = 27;
+	static final int barbar_Sym = 28;
+	static final int andand_Sym = 29;
+	static final int plus_Sym = 30;
+	static final int minus_Sym = 31;
+	static final int bang_Sym = 32;
+	static final int new_Sym = 33;
+	static final int star_Sym = 34;
+	static final int slash_Sym = 35;
+	static final int percent_Sym = 36;
+	static final int equalequal_Sym = 37;
+	static final int bangequal_Sym = 38;
+	static final int less_Sym = 39;
+	static final int lessequal_Sym = 40;
+	static final int greater_Sym = 41;
+	static final int greaterequal_Sym = 42;
+	static final int equal_Sym = 43;
+	static final int colonequal_Sym = 44;
+	static final int NOT_SYM = 45;
 	// pragmas
-	static final int DebugOn_Sym = 44;
-	static final int DebugOff_Sym = 45;
-	static final int ProdCODOn_Sym = 46;
-	static final int ProdCODOff_Sym = 47;
-	static final int PrintSymbolTable_Sym = 48;
-	static final int PrintRuntimeStack_Sym = 49;
-	static final int PrintRuntimeHeap_Sym = 50;
+	static final int DebugOn_Sym = 46;
+	static final int DebugOff_Sym = 47;
+	static final int ProdCODOn_Sym = 48;
+	static final int ProdCODOff_Sym = 49;
+	static final int PrintSymbolTable_Sym = 50;
+	static final int PrintRuntimeStack_Sym = 51;
+	static final int PrintRuntimeHeap_Sym = 52;
 
 	static short[] start = {
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	  0, 45,  4,  0, 19, 39, 33,  7, 23, 24, 37, 35, 28, 36,  0, 38,
-	  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  0, 27, 47, 46, 48,  0,
+	  0, 47,  4,  0, 19, 39, 33,  7, 23, 24, 37, 35, 28, 36,  0, 38,
+	  3,  3,  3,  3,  3,  3,  3,  3,  3,  3, 44, 27, 49, 48, 50,  0,
 	  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
-	  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 44,  0, 30,  0,  0,
+	  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 46,  0, 30,  0,  0,
 	  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
 	  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 25, 31, 26,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -263,6 +265,7 @@ public class Scanner {
 		else if (lit.compareTo("bool") == 0) t.kind = bool_Sym;
 		else if (lit.compareTo("char") == 0) t.kind = char_Sym;
 		else if (lit.compareTo("if") == 0) t.kind = if_Sym;
+		else if (lit.compareTo("then") == 0) t.kind = then_Sym;
 		else if (lit.compareTo("while") == 0) t.kind = while_Sym;
 		else if (lit.compareTo("halt") == 0) t.kind = halt_Sym;
 		else if (lit.compareTo("read") == 0) t.kind = read_Sym;
@@ -405,18 +408,23 @@ public class Scanner {
 				case 43:
 					{ t.kind = greaterequal_Sym; done = true; break; }
 				case 44:
+					if (ch == '=') { buf.append(ch); NextCh(); state = 45; break;}
+					else { t.kind = noSym; done = true; break; }
+				case 45:
+					{ t.kind = colonequal_Sym; done = true; break; }
+				case 46:
 					if (ch == ']') { buf.append(ch); NextCh(); state = 29; break;}
 					else { t.kind = lbrack_Sym; done = true; break; }
-				case 45:
+				case 47:
 					if (ch == '=') { buf.append(ch); NextCh(); state = 41; break;}
 					else { t.kind = bang_Sym; done = true; break; }
-				case 46:
+				case 48:
 					if (ch == '=') { buf.append(ch); NextCh(); state = 40; break;}
 					else { t.kind = equal_Sym; done = true; break; }
-				case 47:
+				case 49:
 					if (ch == '=') { buf.append(ch); NextCh(); state = 42; break;}
 					else { t.kind = less_Sym; done = true; break; }
-				case 48:
+				case 50:
 					if (ch == '=') { buf.append(ch); NextCh(); state = 43; break;}
 					else { t.kind = greater_Sym; done = true; break; }
 

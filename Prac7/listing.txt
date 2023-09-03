@@ -247,256 +247,257 @@
  246   IfStatement<StackFrame frame>
  247                                              (. Label falseLabel = new Label(!known); .)
  248   =  "if" "(" Condition ")"                  (. CodeGen.branchFalse(falseLabel); .)
- 249        Statement<frame>                      (. falseLabel.here(); .)
- 250   .
- 251 
- 252   WhileStatement<StackFrame frame>           (. Label loopExit  = new Label(!known);
- 253                                                 Label loopStart = new Label(known); .)
- 254   =  "while" "(" Condition ")"               (. CodeGen.branchFalse(loopExit); .)
- 255      Statement<frame>                        (. CodeGen.branch(loopStart);
- 256                                                 loopExit.here(); .)
- 257   .
- 258 
- 259  
- 260   HaltStatement
- 261   =  "halt"                                  (. CodeGen.leaveProgram(); .)
- 262      WEAK ";"
- 263   .
- 264 
- 265   ReadStatement
- 266   = "read" "(" ReadList")"
- 267     WEAK ";"
- 268   .
- 269 
- 270   ReadList
- 271   = ReadElement { WEAK "," ReadElement }
- 272   .
- 273 
- 274   ReadElement                                (. String str;
- 275                                                 DesType des; .)
- 276   =   StringConst<out str>                   (. CodeGen.writeString(str); .)
- 277     | Designator<out des>                    (. if (des.entry.kind != Kinds.Var)
- 278                                                   SemError("wrong kind of identifier");
- 279                                                 switch (des.type) {
- 280                                                   case Types.intType:
- 281                                                   case Types.boolType:
- 282 												  case Types.charType:
- 283                                                     CodeGen.read(des.type); break;
- 284                                                   default:
- 285                                                     SemError("cannot read this type"); break;
- 286                                                 } .)
- 287   .
- 288 
- 289   WriteStatement
- 290   = "write" "(" WriteList ")"
- 291     WEAK ";"
- 292   .
- 293 
- 294   WriteList
- 295   = WriteElement { WEAK "," WriteElement }
- 296   .
- 297 
- 298   WriteElement                               (. int expType;
- 299                                                 String str; .)
- 300   =   StringConst<out str>                   (. CodeGen.writeString(str); .)
- 301     | Expression<out expType>                (. if (!(isArith(expType) || expType == Types.boolType))
- 302                                                   SemError("cannot write this type");
- 303                                                 switch (expType) {
- 304                                                   case Types.intType:
- 305                                                   case Types.boolType:
- 306 												  case Types.charType:
- 307                                                     CodeGen.write(expType); break;
- 308                                                   default:
- 309                                                     break;
- 310                                                 } .)
- 311   .
- 312 
- 313   Condition                                  (. int type; .)
- 314   =  Expression<out type>                    (. if (!isBool(type))
- 315                                                   SemError("boolean expression needed"); .)
- 316   .
- 317 
- 318   Expression<out int type>                   (. int type2;
- 319                                                 Label shortcircuit = new Label(!known); .)
- 320   =  AndExp<out type>
- 321      { "||"                                  (. CodeGen.booleanOp(shortcircuit, CodeGen.or); .)
- 322        AndExp<out type2>                     (. if (!isBool(type) || !isBool(type2))
- 323                                                   SemError("Boolean operands needed");
- 324                                                 type = Types.boolType; .)
- 325      }                                       (. shortcircuit.here(); .)
- 326   .
- 327 
- 328   AndExp<out int type>                       (. int type2;
- 329                                                 Label shortcircuit = new Label(!known); .)
- 330   =  EqlExp<out type>
- 331      { "&&"                                  (. CodeGen.booleanOp(shortcircuit, CodeGen.and); .)
- 332        EqlExp<out type2>                     (. if (!isBool(type) || !isBool(type2))
- 333                                                   SemError("Boolean operands needed");
- 334                                                 type = Types.boolType; .)
- 335      }                                       (. shortcircuit.here(); .)
- 336   .
- 337 
- 338   EqlExp<out int type>                       (. int type2;
- 339                                                 int op; .)
- 340   =  RelExp<out type>
- 341      { EqualOp<out op>
- 342        RelExp<out type2>                     (. if (!compatible(type, type2))
- 343                                                   SemError("incomparable operand types");
- 344                                                 CodeGen.comparison(op, type);
- 345                                                 type = Types.boolType; .)
- 346      }
- 347   .
- 348 
- 349   RelExp<out int type>                       (. int type2;
- 350                                                 int op; .)
- 351   =  AddExp<out type>
- 352      [ RelOp<out op>
- 353        AddExp<out type2>                     (. if (!isArith(type) || !isArith(type2))
- 354                                                   SemError("incomparable operand types");
- 355                                                 CodeGen.comparison(op, type);
- 356                                                 type = Types.boolType; .)
- 357      ]
- 358   .
- 359 
- 360   AddExp<out int type>                       (. int type2;
- 361                                                 int op; .)
- 362   =  MultExp<out type>
- 363      { AddOp<out op>
- 364        MultExp<out type2>                    (. if (!isArith(type) || !isArith(type2)) {
- 365                                                   SemError("arithmetic operands needed");
- 366                                                   type = Types.noType;
- 367                                                 }
- 368                                                 else type = Types.intType;
- 369                                                 CodeGen.binaryOp(op); .)
- 370      }
- 371   .
- 372 
- 373   MultExp<out int type>                      (. int type2;
- 374                                                 int op; .)
- 375   =  Factor<out type>
- 376      { MulOp<out op>
- 377        Factor<out type2>                     (. if (!isArith(type) || !isArith(type2)) {
- 378                                                   SemError("arithmetic operands needed");
- 379                                                   type = Types.noType;
- 380                                                 }
- 381                                                 else type = Types.intType;
- 382                                                 CodeGen.binaryOp(op); .)
- 383      }
- 384   .
- 385 
- 386   Factor<out int type>                       (. type = Types.noType; .)
- 387   =    Primary<out type>
- 388      | "+" Factor<out type>                  (. if (!isArith(type)) {
- 389                                                   SemError("arithmetic operand needed");
- 390                                                   type = Types.noType;
- 391                                                 }
- 392                                                 else type = Types.intType; .)
- 393      | "-" Factor<out type>                  (. if (!isArith(type)) {
- 394                                                   SemError("arithmetic operand needed");
- 395                                                   type = Types.noType;
- 396                                                 }
- 397                                                 else type = Types.intType;
- 398                                                 CodeGen.negateInteger(); .)
- 399      | "!" Factor<out type>                  (. if (!isBool(type))
- 400                                                   SemError("Boolean operand needed");
- 401                                                 type = Types.boolType;
- 402                                                 CodeGen.negateBoolean(); .)
- 403   .
- 404 
- 405   Primary<out int type>                      (. type = Types.noType;
- 406                                                 int size;
- 407                                                 DesType des;
- 408                                                 ConstRec con; .)
- 409   =    Designator<out des>                   (. type = des.type;
- 410                                                 switch (des.entry.kind) {
- 411                                                   case Kinds.Var:
- 412                                                     CodeGen.dereference();
- 413                                                     break;
- 414                                                   case Kinds.Con:
- 415                                                     CodeGen.loadConstant(des.entry.value);
- 416                                                     break;
- 417                                                   default:
- 418                                                     SemError("wrong kind of identifier");
- 419                                                     break;
- 420                                                 } .)
- 421      | Constant<out con>                     (. type = con.type;
- 422                                                 CodeGen.loadConstant(con.value); .)
- 423      | "new"
- 424        (   BasicType<out type>
- 425            "[" Expression<out size>          (. if (!isArith(size))
- 426                                                   SemError("array size must be integer");
- 427                                                 type++; .)
- 428            "]"
- 429        )                                     (. CodeGen.allocate(); .)
- 430 
- 431      | "(" Expression<out type> ")"
- 432   .
- 433 
- 434   AddOp<out int op>                          (. op = CodeGen.nop; .)
- 435   =    "+"                                   (. op = CodeGen.add; .)
- 436      | "-"                                   (. op = CodeGen.sub; .)
- 437   .
- 438 
- 439   MulOp<out int op>                          (. op = CodeGen.nop; .)
- 440   =    "*"                                   (. op = CodeGen.mul; .)
- 441      | "/"                                   (. op = CodeGen.div; .)
- 442      | "%"                                   (. op = CodeGen.rem; .)
- 443   .
- 444 
- 445   EqualOp<out int op>                        (. op = CodeGen.nop; .)
- 446   =    "=="                                  (. op = CodeGen.ceq; .)
- 447      | "!="                                  (. op = CodeGen.cne; .)
- 448   .
- 449 
- 450   RelOp<out int op>                          (. op = CodeGen.nop; .)
- 451   =    "<"                                   (. op = CodeGen.clt; .)
- 452      | "<="                                  (. op = CodeGen.cle; .)
- 453      | ">"                                   (. op = CodeGen.cgt; .)
- 454      | ">="                                  (. op = CodeGen.cge; .)
- 455   .
- 456 
- 457   AssignOp = "=" .
- 458 
- 459   Ident<out String name>
- 460   =  identifier                              (. name = token.val; .)
- 461   .
- 462 
- 463   StringConst<out String str>
- 464   =  stringLit                               (. str = token.val;
- 465                                                 str = unescape(str.substring(1, str.length() - 1)); 
- 466                                                 String str1;
- 467                                                 while ( la.kind == stringLit_Sym || la.kind == charLit_Sym || la.kind == plus_Sym ) {
- 468                                                   // if next symbol is + then make sure there is a string or char after it 
- 469                                                   if (la.kind == plus_Sym) {
- 470                                                     Get();
- 471                                                     if (la.kind != stringLit_Sym && la.kind != charLit_Sym) {
- 472                                                       // throw error
- 473                                                       SemError("String or Character expected");
- 474                                                     }
- 475                                                   }
- 476                                                   str1 = la.val;
- 477                                                   str1 = unescape(str1.substring(1, str1.length() - 1));
- 478                                                   str += str1;
- 479                                                   Get();
- 480                                                 }
- 481                                                 .)
- 482   .
- 483 
- 484   CharConst<out int value>
- 485   =  charLit                                 (. String str = token.val;
- 486                                                 str = unescape(str.substring(1, str.length() - 1));
- 487                                                 value = str.charAt(0); .)
- 488   .
- 489 
- 490   IntConst<out int value>
- 491   =  number                                  (. try {
- 492                                                   value = Integer.parseInt(token.val);
- 493                                                 } catch (NumberFormatException e) {
- 494                                                   value = 0; SemError("number out of range");
- 495                                                 } .)
- 496   .
- 497 
- 498 END Parva.
- 499 
+ 249       Statement<frame> | "then" Statement<frame>  (. falseLabel.here(); .)
+ 250        
+ 251   .
+ 252 
+ 253   WhileStatement<StackFrame frame>           (. Label loopExit  = new Label(!known);
+ 254                                                 Label loopStart = new Label(known); .)
+ 255   =  "while" "(" Condition ")"               (. CodeGen.branchFalse(loopExit); .)
+ 256      Statement<frame>                        (. CodeGen.branch(loopStart);
+ 257                                                 loopExit.here(); .)
+ 258   .
+ 259 
+ 260  
+ 261   HaltStatement
+ 262   =  "halt"                                  (. CodeGen.leaveProgram(); .)
+ 263      WEAK ";"
+ 264   .
+ 265 
+ 266   ReadStatement
+ 267   = "read" "(" ReadList")"
+ 268     WEAK ";"
+ 269   .
+ 270 
+ 271   ReadList
+ 272   = ReadElement { WEAK "," ReadElement }
+ 273   .
+ 274 
+ 275   ReadElement                                (. String str;
+ 276                                                 DesType des; .)
+ 277   =   StringConst<out str>                   (. CodeGen.writeString(str); .)
+ 278     | Designator<out des>                    (. if (des.entry.kind != Kinds.Var)
+ 279                                                   SemError("wrong kind of identifier");
+ 280                                                 switch (des.type) {
+ 281                                                   case Types.intType:
+ 282                                                   case Types.boolType:
+ 283 												  case Types.charType:
+ 284                                                     CodeGen.read(des.type); break;
+ 285                                                   default:
+ 286                                                     SemError("cannot read this type"); break;
+ 287                                                 } .)
+ 288   .
+ 289 
+ 290   WriteStatement
+ 291   = "write" "(" WriteList ")"
+ 292     WEAK ";"
+ 293   .
+ 294 
+ 295   WriteList
+ 296   = WriteElement { WEAK "," WriteElement }
+ 297   .
+ 298 
+ 299   WriteElement                               (. int expType;
+ 300                                                 String str; .)
+ 301   =   StringConst<out str>                   (. CodeGen.writeString(str); .)
+ 302     | Expression<out expType>                (. if (!(isArith(expType) || expType == Types.boolType))
+ 303                                                   SemError("cannot write this type");
+ 304                                                 switch (expType) {
+ 305                                                   case Types.intType:
+ 306                                                   case Types.boolType:
+ 307 												  case Types.charType:
+ 308                                                     CodeGen.write(expType); break;
+ 309                                                   default:
+ 310                                                     break;
+ 311                                                 } .)
+ 312   .
+ 313 
+ 314   Condition                                  (. int type; .)
+ 315   =  Expression<out type>                    (. if (!isBool(type))
+ 316                                                   SemError("boolean expression needed"); .)
+ 317   .
+ 318 
+ 319   Expression<out int type>                   (. int type2;
+ 320                                                 Label shortcircuit = new Label(!known); .)
+ 321   =  AndExp<out type>
+ 322      { "||"                                  (. CodeGen.booleanOp(shortcircuit, CodeGen.or); .)
+ 323        AndExp<out type2>                     (. if (!isBool(type) || !isBool(type2))
+ 324                                                   SemError("Boolean operands needed");
+ 325                                                 type = Types.boolType; .)
+ 326      }                                       (. shortcircuit.here(); .)
+ 327   .
+ 328 
+ 329   AndExp<out int type>                       (. int type2;
+ 330                                                 Label shortcircuit = new Label(!known); .)
+ 331   =  EqlExp<out type>
+ 332      { "&&"                                  (. CodeGen.booleanOp(shortcircuit, CodeGen.and); .)
+ 333        EqlExp<out type2>                     (. if (!isBool(type) || !isBool(type2))
+ 334                                                   SemError("Boolean operands needed");
+ 335                                                 type = Types.boolType; .)
+ 336      }                                       (. shortcircuit.here(); .)
+ 337   .
+ 338 
+ 339   EqlExp<out int type>                       (. int type2;
+ 340                                                 int op; .)
+ 341   =  RelExp<out type>
+ 342      { EqualOp<out op>
+ 343        RelExp<out type2>                     (. if (!compatible(type, type2))
+ 344                                                   SemError("incomparable operand types");
+ 345                                                 CodeGen.comparison(op, type);
+ 346                                                 type = Types.boolType; .)
+ 347      }
+ 348   .
+ 349 
+ 350   RelExp<out int type>                       (. int type2;
+ 351                                                 int op; .)
+ 352   =  AddExp<out type>
+ 353      [ RelOp<out op>
+ 354        AddExp<out type2>                     (. if (!isArith(type) || !isArith(type2))
+ 355                                                   SemError("incomparable operand types");
+ 356                                                 CodeGen.comparison(op, type);
+ 357                                                 type = Types.boolType; .)
+ 358      ]
+ 359   .
+ 360 
+ 361   AddExp<out int type>                       (. int type2;
+ 362                                                 int op; .)
+ 363   =  MultExp<out type>
+ 364      { AddOp<out op>
+ 365        MultExp<out type2>                    (. if (!isArith(type) || !isArith(type2)) {
+ 366                                                   SemError("arithmetic operands needed");
+ 367                                                   type = Types.noType;
+ 368                                                 }
+ 369                                                 else type = Types.intType;
+ 370                                                 CodeGen.binaryOp(op); .)
+ 371      }
+ 372   .
+ 373 
+ 374   MultExp<out int type>                      (. int type2;
+ 375                                                 int op; .)
+ 376   =  Factor<out type>
+ 377      { MulOp<out op>
+ 378        Factor<out type2>                     (. if (!isArith(type) || !isArith(type2)) {
+ 379                                                   SemError("arithmetic operands needed");
+ 380                                                   type = Types.noType;
+ 381                                                 }
+ 382                                                 else type = Types.intType;
+ 383                                                 CodeGen.binaryOp(op); .)
+ 384      }
+ 385   .
+ 386 
+ 387   Factor<out int type>                       (. type = Types.noType; .)
+ 388   =    Primary<out type>
+ 389      | "+" Factor<out type>                  (. if (!isArith(type)) {
+ 390                                                   SemError("arithmetic operand needed");
+ 391                                                   type = Types.noType;
+ 392                                                 }
+ 393                                                 else type = Types.intType; .)
+ 394      | "-" Factor<out type>                  (. if (!isArith(type)) {
+ 395                                                   SemError("arithmetic operand needed");
+ 396                                                   type = Types.noType;
+ 397                                                 }
+ 398                                                 else type = Types.intType;
+ 399                                                 CodeGen.negateInteger(); .)
+ 400      | "!" Factor<out type>                  (. if (!isBool(type))
+ 401                                                   SemError("Boolean operand needed");
+ 402                                                 type = Types.boolType;
+ 403                                                 CodeGen.negateBoolean(); .)
+ 404   .
+ 405 
+ 406   Primary<out int type>                      (. type = Types.noType;
+ 407                                                 int size;
+ 408                                                 DesType des;
+ 409                                                 ConstRec con; .)
+ 410   =    Designator<out des>                   (. type = des.type;
+ 411                                                 switch (des.entry.kind) {
+ 412                                                   case Kinds.Var:
+ 413                                                     CodeGen.dereference();
+ 414                                                     break;
+ 415                                                   case Kinds.Con:
+ 416                                                     CodeGen.loadConstant(des.entry.value);
+ 417                                                     break;
+ 418                                                   default:
+ 419                                                     SemError("wrong kind of identifier");
+ 420                                                     break;
+ 421                                                 } .)
+ 422      | Constant<out con>                     (. type = con.type;
+ 423                                                 CodeGen.loadConstant(con.value); .)
+ 424      | "new"
+ 425        (   BasicType<out type>
+ 426            "[" Expression<out size>          (. if (!isArith(size))
+ 427                                                   SemError("array size must be integer");
+ 428                                                 type++; .)
+ 429            "]"
+ 430        )                                     (. CodeGen.allocate(); .)
+ 431 
+ 432      | "(" Expression<out type> ")"
+ 433   .
+ 434 
+ 435   AddOp<out int op>                          (. op = CodeGen.nop; .)
+ 436   =    "+"                                   (. op = CodeGen.add; .)
+ 437      | "-"                                   (. op = CodeGen.sub; .)
+ 438   .
+ 439 
+ 440   MulOp<out int op>                          (. op = CodeGen.nop; .)
+ 441   =    "*"                                   (. op = CodeGen.mul; .)
+ 442      | "/"                                   (. op = CodeGen.div; .)
+ 443      | "%"                                   (. op = CodeGen.rem; .)
+ 444   .
+ 445 
+ 446   EqualOp<out int op>                        (. op = CodeGen.nop; .)
+ 447   =    "=="                                  (. op = CodeGen.ceq; .)
+ 448      | "!="                                  (. op = CodeGen.cne; .)
+ 449   .
+ 450 
+ 451   RelOp<out int op>                          (. op = CodeGen.nop; .)
+ 452   =    "<"                                   (. op = CodeGen.clt; .)
+ 453      | "<="                                  (. op = CodeGen.cle; .)
+ 454      | ">"                                   (. op = CodeGen.cgt; .)
+ 455      | ">="                                  (. op = CodeGen.cge; .)
+ 456   .
+ 457 
+ 458   AssignOp = "=" | ":=" .
+ 459 
+ 460   Ident<out String name>
+ 461   =  identifier                              (. name = token.val; .)
+ 462   .
+ 463 
+ 464   StringConst<out String str>
+ 465   =  stringLit                               (. str = token.val;
+ 466                                                 str = unescape(str.substring(1, str.length() - 1)); 
+ 467                                                 String str1;
+ 468                                                 while ( la.kind == stringLit_Sym || la.kind == charLit_Sym || la.kind == plus_Sym ) {
+ 469                                                   // if next symbol is + then make sure there is a string or char after it 
+ 470                                                   if (la.kind == plus_Sym) {
+ 471                                                     Get();
+ 472                                                     if (la.kind != stringLit_Sym && la.kind != charLit_Sym) {
+ 473                                                       // throw error
+ 474                                                       SemError("String or Character expected");
+ 475                                                     }
+ 476                                                   }
+ 477                                                   str1 = la.val;
+ 478                                                   str1 = unescape(str1.substring(1, str1.length() - 1));
+ 479                                                   str += str1;
+ 480                                                   Get();
+ 481                                                 }
+ 482                                                 .)
+ 483   .
+ 484 
+ 485   CharConst<out int value>
+ 486   =  charLit                                 (. String str = token.val;
+ 487                                                 str = unescape(str.substring(1, str.length() - 1));
+ 488                                                 value = str.charAt(0); .)
+ 489   .
+ 490 
+ 491   IntConst<out int value>
+ 492   =  number                                  (. try {
+ 493                                                   value = Integer.parseInt(token.val);
+ 494                                                 } catch (NumberFormatException e) {
+ 495                                                   value = 0; SemError("number out of range");
+ 496                                                 } .)
+ 497   .
+ 498 
+ 499 END Parva.
+ 500 
 
 0 errors detected

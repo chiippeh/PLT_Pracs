@@ -245,8 +245,10 @@ PRODUCTIONS
 
   IfStatement<StackFrame frame>
                                              (. Label falseLabel = new Label(!known); .)
-  =  "if" "(" Condition ")"                  (. CodeGen.branchFalse(falseLabel); .)
-       Statement<frame>                      (. falseLabel.here(); .)
+  =  "if" "("   Condition 
+              | AssignmentStatement ")"                  (. CodeGen.branchFalse(falseLabel); .)
+      Statement<frame> | "then" Statement<frame>  (. falseLabel.here(); .)
+       
   .
 
   WhileStatement<StackFrame frame>           (. Label loopExit  = new Label(!known);
@@ -454,7 +456,7 @@ PRODUCTIONS
      | ">="                                  (. op = CodeGen.cge; .)
   .
 
-  AssignOp = "=" .
+  AssignOp = "=" | ":=" .
 
   Ident<out String name>
   =  identifier                              (. name = token.val; .)
