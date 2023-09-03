@@ -28,14 +28,16 @@ import library.*;
         if (args[i].toLowerCase().equals("-l")) mergeErrors = true;
         else if (args[i].toLowerCase().equals("-d")) Parser.debug = true;
         else if (args[i].toLowerCase().equals("-w")) Parser.warnings = false;
+        else if (args[i].toLowerCase().equals("-c")) Parser.listCode = true;
         else inputName = args[i];
       }
       if (inputName == null) {
         System.err.println("No input file specified");
-        System.err.println("Usage: Parva [-l] [-d] [-w] source.pav");
+        System.err.println("Usage: Parva [-c] [-l] [-d] [-w] source.pav");
         System.err.println("-l directs source listing to listing.txt");
         System.err.println("-d turns on debug mode");
         System.err.println("-w suppresses warnings");
+        System.err.println("-c creates .cod output file");
         System.exit(1);
       }
 
@@ -61,7 +63,9 @@ import library.*;
       int initSP = CodeGen.getInitSP();
       String codeName = newFileName(inputName, ".cod");
       int codeLength = CodeGen.getCodeLength();
-      PVM.listCode(codeName, codeLength);
+      if (Parser.listCode == true) {
+        PVM.listCode(codeName, codeLength);
+      }
       if (!assembledOK || codeLength == 0) {
         System.err.println("Unable to execute code");
         System.exit(1);

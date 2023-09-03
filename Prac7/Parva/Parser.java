@@ -94,6 +94,11 @@ public class Parser {
 
   public static OutFile output;
 
+  public static String newFileName(String s, String ext) {
+      int i = s.lastIndexOf('.');
+      if (i < 0) return s + ext; else return s.substring(0, i) + ext;
+  }
+
   // This next method might better be located in the code generator.  Traditionally
   // it has been left in the ATG file, but that might change in future years
   //
@@ -210,7 +215,7 @@ public class Parser {
 				listCode  = false;
 			}
 			if (la.kind == PrintSymbolTable_Sym) {
-				if (debug) Table.printTable(output);
+				System.out.println(output); if (debug) Table.printTable(output);
 			}
 			if (la.kind == PrintRuntimeStack_Sym) {
 				if (debug) CodeGen.stack();
@@ -610,6 +615,22 @@ public class Parser {
 		Expect(stringLit_Sym);
 		str = token.val;
 		str = unescape(str.substring(1, str.length() - 1));
+		String str1;
+		while ( la.kind == stringLit_Sym || la.kind == charLit_Sym || la.kind == plus_Sym ) {
+		  // if next symbol is + then make sure there is a string or char after it
+		  if (la.kind == plus_Sym) {
+		    Get();
+		    if (la.kind != stringLit_Sym && la.kind != charLit_Sym) {
+		      // throw error
+		      SemError("idiota");
+		    }
+		  }
+		  str1 = la.val;
+		  str1 = unescape(str1.substring(1, str1.length() - 1));
+		  str += str1;
+		  Get();
+		}
+		
 		return str;
 	}
 

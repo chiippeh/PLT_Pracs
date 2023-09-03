@@ -1,0 +1,5 @@
+void main () {
+// char01.pav
+// Very simple allowable operations on characters
+    write("test" + 's' + "s" "demorgan");
+}

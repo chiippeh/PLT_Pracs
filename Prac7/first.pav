@@ -1,4 +1,4 @@
-void main() { $C+
+void main() { $D-
 // showing directives/pragmas
   const max = 6;
   int[] list = new int[max];
