@@ -620,7 +620,7 @@ public class Parser {
 		    Get();
 		    if (la.kind != stringLit_Sym && la.kind != charLit_Sym) {
 		      // throw error
-		      SemError("idiota");
+		      SemError("String or Character expected");
 		    }
 		  }
 		  str1 = la.val;

@@ -1,19 +1,502 @@
 
-   1 void main() {
-   2 // showing directives/pragmas
-   3   const max = 6;
-   4   int[] list = new int[max];
-   5   int i = 0;
-   6   while (i < max) {
-   7     bool test;
-   8     write(i);
-   9     list[i] = -2 * i;
-  10     i = i + 1;
-  11     $SD // stack
-  12   }
-  13   $ST   // symbol table
-  14   $HD   // heap
-  15 }
-  16 
+   1 import java.util.*;
+   2 import library.*;
+   3 
+   4 COMPILER Parva $NC
+   5 /* Parva level 1 grammar  - Coco/R for Java
+   6    P.D. Terry, Rhodes University; Modified by KL Bradshaw, 2023
+   7    Java operator precedences with short circuit evaluation
+   8    Includes character type
+   9    No functions; no optimization */
+  10 
+  11   public static boolean
+  12     debug    = false,
+  13     listCode = false,
+  14     warnings = true;
+  15 
+  16   static final boolean
+  17     known = true;
+  18 
+  19   public static String newFileName(String s, String ext) {
+  20       int i = s.lastIndexOf('.');
+  21       if (i < 0) return s + ext; else return s.substring(0, i) + ext;
+  22   }
+  23 
+  24   // This next method might better be located in the code generator.  Traditionally
+  25   // it has been left in the ATG file, but that might change in future years
+  26   //
+  27   // Not that while sequences like \n \r and \t result in special mappings to lf, cr and tab
+  28   // other sequences like \x \: and \9 simply map to x, ; and 9. This is not generally known.
+  29 
+  30   static String unescape(String s) {
+  31   /* Replaces escape sequences in s by their Unicode values */
+  32     StringBuilder buf = new StringBuilder();
+  33     int i = 0;
+  34     while (i < s.length()) {
+  35       if (s.charAt(i) == '\\') {
+  36         switch (s.charAt(i+1)) {
+  37           case '\\': buf.append('\\'); break;
+  38           case '\'': buf.append('\''); break;
+  39           case '\"': buf.append('\"'); break;
+  40           case  'r': buf.append('\r'); break;
+  41           case  'n': buf.append('\n'); break;
+  42           case  't': buf.append('\t'); break;
+  43           case  'b': buf.append('\b'); break;
+  44           case  'f': buf.append('\f'); break;
+  45           default:   buf.append(s.charAt(i+1)); break;
+  46         }
+  47         i += 2;
+  48       }
+  49       else {
+  50         buf.append(s.charAt(i));
+  51         i++;
+  52       }
+  53     }
+  54     return buf.toString();
+  55   } // unescape
+  56 
+  57  static boolean isArith(int type) {
+  58     return type == Types.intType || type == Types.charType || type == Types.noType;
+  59   } // isArith
+  60 
+  61   static boolean isBool(int type) {
+  62     return type == Types.boolType || type == Types.noType;
+  63   } // isBool
+  64 
+  65   static boolean isArray(int type) {
+  66     return (type % 2) == 1;
+  67   } // isArray
+  68 
+  69   static boolean compatible(int typeOne, int typeTwo) {
+  70   // Returns true if typeOne is compatible (and comparable for equality) with typeTwo
+  71     return    typeOne == typeTwo
+  72            || isArith(typeOne) && isArith(typeTwo)
+  73            || typeOne == Types.noType || typeTwo == Types.noType
+  74            || isArray(typeOne) && typeTwo == Types.nullType
+  75            || isArray(typeTwo) && typeOne == Types.nullType;
+  76   } // compatible
+  77 
+  78   static boolean assignable(int typeOne, int typeTwo) {
+  79   // Returns true if a variable of typeOne may be assigned a value of typeTwo
+  80     return    typeOne == typeTwo
+  81            || typeOne == Types.intType && typeTwo == Types.charType
+  82            || typeOne == Types.noType || typeTwo == Types.noType
+  83            || isArray(typeOne) && typeTwo == Types.nullType;
+  84   } // assignable
+  85 
+  86 /* -------------------------------------------------------------------------- */
+  87 
+  88 CHARACTERS
+  89   lf         = CHR(10) .
+  90   backslash  = CHR(92) .
+  91   control    = CHR(0) .. CHR(31) .
+  92   letter     = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" .
+  93   digit      = "0123456789" .
+  94   stringCh   = ANY - '"' - control - backslash .
+  95   charCh     = ANY - "'" - control - backslash .
+  96   printable  = ANY - control .
+  97 
+  98 TOKENS
+  99   identifier = letter { { "_" } (letter | digit) } .
+ 100   number     = digit { digit } .
+ 101   stringLit  = '"' { stringCh | backslash printable } '"' .
+ 102   charLit    = "'" ( charCh   | backslash printable ) "'" .
+ 103 
+ 104 PRAGMAS
+ 105   DebugOn     = "$D+" .                      (. debug     = true; .)
+ 106   DebugOff    = "$D-" .                      (. debug     = false; .)
+ 107   ProdCODOn   = "$C+" .                      (. listCode  = true; .)
+ 108   ProdCODOff  = "$C-" .                      (. listCode  = false; .)
+ 109   PrintSymbolTable = "$ST" .                 (. if (debug) Table.printTable(OutFile.StdOut); .) 
+ 110   PrintRuntimeStack = "$SD" .                (. if (debug) CodeGen.stack(); .)
+ 111   PrintRuntimeHeap = "$HD" .                 (. if (debug) CodeGen.heap(); .)
+ 112 
+ 113 
+ 114 COMMENTS FROM "//" TO lf
+ 115 COMMENTS FROM "/*" TO "*/"
+ 116 
+ 117 IGNORE CHR(9) .. CHR(13)
+ 118 
+ 119 PRODUCTIONS
+ 120 
+ 121   Parva
+ 122   =  "void"                                  (. Entry program = new Entry(); .)
+ 123      Ident<out program.name> "(" ")"         (. program.kind = Kinds.Fun;
+ 124                                                 program.type = Types.voidType;
+ 125                                                 Table.insert(program);
+ 126                                                 StackFrame frame = new StackFrame();
+ 127                                                 Table.openScope();
+ 128                                                 Label DSPLabel = new Label(known);
+ 129                                                 CodeGen.openStackFrame(0); .)
+ 130      WEAK "{" { Statement<frame> }
+ 131      WEAK "}"                                (. CodeGen.fixDSP(DSPLabel.address(), frame.size);
+ 132                                                 CodeGen.leaveProgram();
+ 133                                                 Table.closeScope(); .)
+ 134   .
+ 135 
+ 136   Statement<StackFrame frame>
+ 137   =  SYNC (   Block<frame>
+ 138             | ConstDeclarations
+ 139             | VarDeclarations<frame>
+ 140             | AssignmentStatement
+ 141             | IfStatement<frame>
+ 142             | WhileStatement<frame>
+ 143             | HaltStatement
+ 144             | ReadStatement
+ 145             | WriteStatement
+ 146             | ";"
+ 147           )
+ 148   .
+ 149 
+ 150   Block<StackFrame frame>
+ 151   =                                          (. Table.openScope(); .)
+ 152      "{" { Statement<frame> }
+ 153      WEAK "}"                                (. Table.closeScope(); .)
+ 154   .
+ 155 
+ 156   ConstDeclarations
+ 157   = "const" OneConst { WEAK "," OneConst }
+ 158     WEAK ";"
+ 159   .
+ 160 
+ 161   OneConst                                   (. Entry constant = new Entry();
+ 162                                                 ConstRec con; .)
+ 163   =  Ident<out constant.name>                (. constant.kind = Kinds.Con; .)
+ 164      AssignOp Constant<out con>              (. constant.value = con.value;
+ 165                                                 constant.type = con.type;
+ 166                                                 Table.insert(constant); .)
+ 167   .
+ 168 
+ 169   Constant<out ConstRec con>                 (. con = new ConstRec(); .)
+ 170   =   IntConst<out con.value>                (. con.type = Types.intType; .)
+ 171     | CharConst<out con.value>               (. con.type = Types.charType; .)
+ 172     | "true"                                 (. con.type = Types.boolType; con.value = 1; .)
+ 173     | "false"                                (. con.type = Types.boolType; con.value = 0; .)
+ 174     | "null"                                 (. con.type = Types.nullType; con.value = 0; .)
+ 175   .
+ 176 
+ 177   VarDeclarations<StackFrame frame>          (. int type; .)
+ 178   =  Type<out type>
+ 179      VarList<frame, type>
+ 180      WEAK ";"
+ 181   .
+ 182 
+ 183   Type<out int type>
+ 184   =  BasicType<out type>
+ 185      [ "[]"                                  (. if (type != Types.noType) type++; .)
+ 186      ]
+ 187   .
+ 188 
+ 189   BasicType<out int type>                    (. type = Types.noType; .)
+ 190   =   "int"                                  (. type = Types.intType; .)
+ 191     | "bool"                                 (. type = Types.boolType; .)
+ 192 	| "char"                                 (. type = Types.charType; .)
+ 193   .
+ 194 
+ 195   VarList<StackFrame frame, int type>
+ 196   =  OneVar<frame, type>
+ 197      { WEAK "," OneVar<frame, type> }
+ 198   .
+ 199 
+ 200   OneVar<StackFrame frame, int type>         (. int expType;
+ 201                                                 Entry var = new Entry(); .)
+ 202   =  Ident<out var.name>                     (. var.kind = Kinds.Var;
+ 203                                                 var.type = type;
+ 204                                                 var.offset = frame.size;
+ 205                                                 frame.size++; .)
+ 206      [ AssignOp                              (. CodeGen.loadAddress(var); .)
+ 207        Expression<out expType>               (. if (!assignable(var.type, expType))
+ 208                                                   SemError("incompatible types in assignment");
+ 209                                                 CodeGen.assign(var.type); .)
+ 210      ]                                       (. Table.insert(var); .)
+ 211   .
+ 212 
+ 213   AssignmentStatement
+ 214                                              (. int expType;
+ 215                                                 DesType des; .)
+ 216   = Designator<out des>                      (. if (des.entry.kind != Kinds.Var)
+ 217                                                   SemError("cannot assign to " + Kinds.kindNames[des.entry.kind]); .)
+ 218     AssignOp
+ 219     Expression<out expType>                  (. if (!assignable(des.type, expType))
+ 220                                                   SemError("incompatible types in assignment");
+ 221                                                 CodeGen.assign(des.type); .)
+ 222     WEAK ";"
+ 223   .
+ 224 
+ 225   Designator<out DesType des>                (. String name;
+ 226                                                 int indexType; .)
+ 227   =  Ident<out name>                         (. Entry entry = Table.find(name);
+ 228                                                 if (!entry.declared)
+ 229                                                   SemError("undeclared identifier");
+ 230                                                 des = new DesType(entry);
+ 231                                                 if (entry.kind == Kinds.Var)
+ 232                                                   CodeGen.loadAddress(entry); .)
+ 233      [     "["                               (. if (isArray(des.type)) des.type--;
+ 234                                                 else SemError("unexpected subscript");
+ 235                                                 if (des.entry.kind != Kinds.Var)
+ 236                                                   SemError("unexpected subscript");
+ 237                                                 CodeGen.dereference(); .)
+ 238               Expression<out indexType>      (. if (!isArith(indexType))
+ 239                                                   SemError("invalid subscript type");
+ 240                                                 CodeGen.index(); .)
+ 241 
+ 242            "]"
+ 243      ]
+ 244   .
+ 245 
+ 246   IfStatement<StackFrame frame>
+ 247                                              (. Label falseLabel = new Label(!known); .)
+ 248   =  "if" "(" Condition ")"                  (. CodeGen.branchFalse(falseLabel); .)
+ 249        Statement<frame>                      (. falseLabel.here(); .)
+ 250   .
+ 251 
+ 252   WhileStatement<StackFrame frame>           (. Label loopExit  = new Label(!known);
+ 253                                                 Label loopStart = new Label(known); .)
+ 254   =  "while" "(" Condition ")"               (. CodeGen.branchFalse(loopExit); .)
+ 255      Statement<frame>                        (. CodeGen.branch(loopStart);
+ 256                                                 loopExit.here(); .)
+ 257   .
+ 258 
+ 259  
+ 260   HaltStatement
+ 261   =  "halt"                                  (. CodeGen.leaveProgram(); .)
+ 262      WEAK ";"
+ 263   .
+ 264 
+ 265   ReadStatement
+ 266   = "read" "(" ReadList")"
+ 267     WEAK ";"
+ 268   .
+ 269 
+ 270   ReadList
+ 271   = ReadElement { WEAK "," ReadElement }
+ 272   .
+ 273 
+ 274   ReadElement                                (. String str;
+ 275                                                 DesType des; .)
+ 276   =   StringConst<out str>                   (. CodeGen.writeString(str); .)
+ 277     | Designator<out des>                    (. if (des.entry.kind != Kinds.Var)
+ 278                                                   SemError("wrong kind of identifier");
+ 279                                                 switch (des.type) {
+ 280                                                   case Types.intType:
+ 281                                                   case Types.boolType:
+ 282 												  case Types.charType:
+ 283                                                     CodeGen.read(des.type); break;
+ 284                                                   default:
+ 285                                                     SemError("cannot read this type"); break;
+ 286                                                 } .)
+ 287   .
+ 288 
+ 289   WriteStatement
+ 290   = "write" "(" WriteList ")"
+ 291     WEAK ";"
+ 292   .
+ 293 
+ 294   WriteList
+ 295   = WriteElement { WEAK "," WriteElement }
+ 296   .
+ 297 
+ 298   WriteElement                               (. int expType;
+ 299                                                 String str; .)
+ 300   =   StringConst<out str>                   (. CodeGen.writeString(str); .)
+ 301     | Expression<out expType>                (. if (!(isArith(expType) || expType == Types.boolType))
+ 302                                                   SemError("cannot write this type");
+ 303                                                 switch (expType) {
+ 304                                                   case Types.intType:
+ 305                                                   case Types.boolType:
+ 306 												  case Types.charType:
+ 307                                                     CodeGen.write(expType); break;
+ 308                                                   default:
+ 309                                                     break;
+ 310                                                 } .)
+ 311   .
+ 312 
+ 313   Condition                                  (. int type; .)
+ 314   =  Expression<out type>                    (. if (!isBool(type))
+ 315                                                   SemError("boolean expression needed"); .)
+ 316   .
+ 317 
+ 318   Expression<out int type>                   (. int type2;
+ 319                                                 Label shortcircuit = new Label(!known); .)
+ 320   =  AndExp<out type>
+ 321      { "||"                                  (. CodeGen.booleanOp(shortcircuit, CodeGen.or); .)
+ 322        AndExp<out type2>                     (. if (!isBool(type) || !isBool(type2))
+ 323                                                   SemError("Boolean operands needed");
+ 324                                                 type = Types.boolType; .)
+ 325      }                                       (. shortcircuit.here(); .)
+ 326   .
+ 327 
+ 328   AndExp<out int type>                       (. int type2;
+ 329                                                 Label shortcircuit = new Label(!known); .)
+ 330   =  EqlExp<out type>
+ 331      { "&&"                                  (. CodeGen.booleanOp(shortcircuit, CodeGen.and); .)
+ 332        EqlExp<out type2>                     (. if (!isBool(type) || !isBool(type2))
+ 333                                                   SemError("Boolean operands needed");
+ 334                                                 type = Types.boolType; .)
+ 335      }                                       (. shortcircuit.here(); .)
+ 336   .
+ 337 
+ 338   EqlExp<out int type>                       (. int type2;
+ 339                                                 int op; .)
+ 340   =  RelExp<out type>
+ 341      { EqualOp<out op>
+ 342        RelExp<out type2>                     (. if (!compatible(type, type2))
+ 343                                                   SemError("incomparable operand types");
+ 344                                                 CodeGen.comparison(op, type);
+ 345                                                 type = Types.boolType; .)
+ 346      }
+ 347   .
+ 348 
+ 349   RelExp<out int type>                       (. int type2;
+ 350                                                 int op; .)
+ 351   =  AddExp<out type>
+ 352      [ RelOp<out op>
+ 353        AddExp<out type2>                     (. if (!isArith(type) || !isArith(type2))
+ 354                                                   SemError("incomparable operand types");
+ 355                                                 CodeGen.comparison(op, type);
+ 356                                                 type = Types.boolType; .)
+ 357      ]
+ 358   .
+ 359 
+ 360   AddExp<out int type>                       (. int type2;
+ 361                                                 int op; .)
+ 362   =  MultExp<out type>
+ 363      { AddOp<out op>
+ 364        MultExp<out type2>                    (. if (!isArith(type) || !isArith(type2)) {
+ 365                                                   SemError("arithmetic operands needed");
+ 366                                                   type = Types.noType;
+ 367                                                 }
+ 368                                                 else type = Types.intType;
+ 369                                                 CodeGen.binaryOp(op); .)
+ 370      }
+ 371   .
+ 372 
+ 373   MultExp<out int type>                      (. int type2;
+ 374                                                 int op; .)
+ 375   =  Factor<out type>
+ 376      { MulOp<out op>
+ 377        Factor<out type2>                     (. if (!isArith(type) || !isArith(type2)) {
+ 378                                                   SemError("arithmetic operands needed");
+ 379                                                   type = Types.noType;
+ 380                                                 }
+ 381                                                 else type = Types.intType;
+ 382                                                 CodeGen.binaryOp(op); .)
+ 383      }
+ 384   .
+ 385 
+ 386   Factor<out int type>                       (. type = Types.noType; .)
+ 387   =    Primary<out type>
+ 388      | "+" Factor<out type>                  (. if (!isArith(type)) {
+ 389                                                   SemError("arithmetic operand needed");
+ 390                                                   type = Types.noType;
+ 391                                                 }
+ 392                                                 else type = Types.intType; .)
+ 393      | "-" Factor<out type>                  (. if (!isArith(type)) {
+ 394                                                   SemError("arithmetic operand needed");
+ 395                                                   type = Types.noType;
+ 396                                                 }
+ 397                                                 else type = Types.intType;
+ 398                                                 CodeGen.negateInteger(); .)
+ 399      | "!" Factor<out type>                  (. if (!isBool(type))
+ 400                                                   SemError("Boolean operand needed");
+ 401                                                 type = Types.boolType;
+ 402                                                 CodeGen.negateBoolean(); .)
+ 403   .
+ 404 
+ 405   Primary<out int type>                      (. type = Types.noType;
+ 406                                                 int size;
+ 407                                                 DesType des;
+ 408                                                 ConstRec con; .)
+ 409   =    Designator<out des>                   (. type = des.type;
+ 410                                                 switch (des.entry.kind) {
+ 411                                                   case Kinds.Var:
+ 412                                                     CodeGen.dereference();
+ 413                                                     break;
+ 414                                                   case Kinds.Con:
+ 415                                                     CodeGen.loadConstant(des.entry.value);
+ 416                                                     break;
+ 417                                                   default:
+ 418                                                     SemError("wrong kind of identifier");
+ 419                                                     break;
+ 420                                                 } .)
+ 421      | Constant<out con>                     (. type = con.type;
+ 422                                                 CodeGen.loadConstant(con.value); .)
+ 423      | "new"
+ 424        (   BasicType<out type>
+ 425            "[" Expression<out size>          (. if (!isArith(size))
+ 426                                                   SemError("array size must be integer");
+ 427                                                 type++; .)
+ 428            "]"
+ 429        )                                     (. CodeGen.allocate(); .)
+ 430 
+ 431      | "(" Expression<out type> ")"
+ 432   .
+ 433 
+ 434   AddOp<out int op>                          (. op = CodeGen.nop; .)
+ 435   =    "+"                                   (. op = CodeGen.add; .)
+ 436      | "-"                                   (. op = CodeGen.sub; .)
+ 437   .
+ 438 
+ 439   MulOp<out int op>                          (. op = CodeGen.nop; .)
+ 440   =    "*"                                   (. op = CodeGen.mul; .)
+ 441      | "/"                                   (. op = CodeGen.div; .)
+ 442      | "%"                                   (. op = CodeGen.rem; .)
+ 443   .
+ 444 
+ 445   EqualOp<out int op>                        (. op = CodeGen.nop; .)
+ 446   =    "=="                                  (. op = CodeGen.ceq; .)
+ 447      | "!="                                  (. op = CodeGen.cne; .)
+ 448   .
+ 449 
+ 450   RelOp<out int op>                          (. op = CodeGen.nop; .)
+ 451   =    "<"                                   (. op = CodeGen.clt; .)
+ 452      | "<="                                  (. op = CodeGen.cle; .)
+ 453      | ">"                                   (. op = CodeGen.cgt; .)
+ 454      | ">="                                  (. op = CodeGen.cge; .)
+ 455   .
+ 456 
+ 457   AssignOp = "=" .
+ 458 
+ 459   Ident<out String name>
+ 460   =  identifier                              (. name = token.val; .)
+ 461   .
+ 462 
+ 463   StringConst<out String str>
+ 464   =  stringLit                               (. str = token.val;
+ 465                                                 str = unescape(str.substring(1, str.length() - 1)); 
+ 466                                                 String str1;
+ 467                                                 while ( la.kind == stringLit_Sym || la.kind == charLit_Sym || la.kind == plus_Sym ) {
+ 468                                                   // if next symbol is + then make sure there is a string or char after it 
+ 469                                                   if (la.kind == plus_Sym) {
+ 470                                                     Get();
+ 471                                                     if (la.kind != stringLit_Sym && la.kind != charLit_Sym) {
+ 472                                                       // throw error
+ 473                                                       SemError("String or Character expected");
+ 474                                                     }
+ 475                                                   }
+ 476                                                   str1 = la.val;
+ 477                                                   str1 = unescape(str1.substring(1, str1.length() - 1));
+ 478                                                   str += str1;
+ 479                                                   Get();
+ 480                                                 }
+ 481                                                 .)
+ 482   .
+ 483 
+ 484   CharConst<out int value>
+ 485   =  charLit                                 (. String str = token.val;
+ 486                                                 str = unescape(str.substring(1, str.length() - 1));
+ 487                                                 value = str.charAt(0); .)
+ 488   .
+ 489 
+ 490   IntConst<out int value>
+ 491   =  number                                  (. try {
+ 492                                                   value = Integer.parseInt(token.val);
+ 493                                                 } catch (NumberFormatException e) {
+ 494                                                   value = 0; SemError("number out of range");
+ 495                                                 } .)
+ 496   .
+ 497 
+ 498 END Parva.
+ 499 
 
 0 errors detected
