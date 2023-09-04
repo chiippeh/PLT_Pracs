@@ -1,14 +1,15 @@
 void main () {
 // char01.pav
 // Very simple allowable operations on characters
-    int a = 5;
-    int b = 5;
-    int c = 0;
-    int d = 2;
-    if (a == b) c := d;
-    write(d);
-    if (a = b) then c := d;
-    write(d);
-    if (a = b) then c := d;   int a int b
-    write(d);
+    write("a" "b" + "cccc" "y");
+    // int a = 5;
+    // int b = 5;
+    // int c = 0;
+    // int d = 2;
+    // if (a == b) c := d;
+    // write(d);
+    // if (a = b) then c := d;
+    // write(d);
+    // if (a = b) then c := d;   int a int b
+    // write(d);
 }

@@ -94,11 +94,6 @@ public class Parser {
   static final boolean
     known = true;
 
-  public static String newFileName(String s, String ext) {
-      int i = s.lastIndexOf('.');
-      if (i < 0) return s + ext; else return s.substring(0, i) + ext;
-  }
-
   // This next method might better be located in the code generator.  Traditionally
   // it has been left in the ATG file, but that might change in future years
   //
@@ -307,7 +302,7 @@ public class Parser {
 			AssignmentStatement();
 			break;
 		}
-		case if_Sym: case then_Sym: {
+		case if_Sym: {
 			IfStatement(frame);
 			break;
 		}
@@ -377,18 +372,16 @@ public class Parser {
 
 	static void IfStatement(StackFrame frame) {
 		Label falseLabel = new Label(!known);
-		if (la.kind == if_Sym) {
+		Expect(if_Sym);
+		Expect(lparen_Sym);
+		Condition();
+		Expect(rparen_Sym);
+		if (la.kind == then_Sym) {
 			Get();
-			Expect(lparen_Sym);
-			Condition();
-			Expect(rparen_Sym);
-			CodeGen.branchFalse(falseLabel);
-			Statement(frame);
-		} else if (la.kind == then_Sym) {
-			Get();
-			Statement(frame);
-			falseLabel.here();
-		} else SynErr(48);
+		}
+		CodeGen.branchFalse(falseLabel);
+		Statement(frame);
+		falseLabel.here();
 	}
 
 	static void WhileStatement(StackFrame frame) {
@@ -443,7 +436,7 @@ public class Parser {
 			Get();
 		} else if (la.kind == colonequal_Sym) {
 			Get();
-		} else SynErr(49);
+		} else SynErr(48);
 	}
 
 	static ConstRec Constant() {
@@ -464,7 +457,7 @@ public class Parser {
 		} else if (la.kind == null_Sym) {
 			Get();
 			con.type = Types.nullType; con.value = 0;
-		} else SynErr(50);
+		} else SynErr(49);
 		return con;
 	}
 
@@ -517,7 +510,7 @@ public class Parser {
 		} else if (la.kind == char_Sym) {
 			Get();
 			type = Types.charType;
-		} else SynErr(51);
+		} else SynErr(50);
 		return type;
 	}
 
@@ -616,7 +609,7 @@ public class Parser {
 			  default:
 			    SemError("cannot read this type"); break;
 			}
-		} else SynErr(52);
+		} else SynErr(51);
 	}
 
 	static String StringConst() {
@@ -624,22 +617,15 @@ public class Parser {
 		Expect(stringLit_Sym);
 		str = token.val;
 		str = unescape(str.substring(1, str.length() - 1));
-		String str1;
-		while ( la.kind == stringLit_Sym || la.kind == charLit_Sym || la.kind == plus_Sym ) {
-		  // if next symbol is + then make sure there is a string or char after it
-		  if (la.kind == plus_Sym) {
-		    Get();
-		    if (la.kind != stringLit_Sym && la.kind != charLit_Sym) {
-		      // throw error
-		      SemError("String or Character expected");
-		    }
-		  }
-		  str1 = la.val;
-		  str1 = unescape(str1.substring(1, str1.length() - 1));
-		  str += str1;
-		  Get();
+		while (la.kind == stringLit_Sym || la.kind == plus_Sym) {
+			if (la.kind == plus_Sym) {
+				Get();
+			}
+			Expect(stringLit_Sym);
+			String str1 = token.val;
+			str1 = unescape(str1.substring(1, str1.length() - 1));
+			str += str1;
 		}
-		
 		return str;
 	}
 
@@ -668,7 +654,7 @@ public class Parser {
 			  default:
 			    break;
 			}
-		} else SynErr(53);
+		} else SynErr(52);
 	}
 
 	static int AndExp() {
@@ -729,7 +715,7 @@ public class Parser {
 		} else if (la.kind == bangequal_Sym) {
 			Get();
 			op = CodeGen.cne;
-		} else SynErr(54);
+		} else SynErr(53);
 		return op;
 	}
 
@@ -766,7 +752,7 @@ public class Parser {
 		} else if (la.kind == greaterequal_Sym) {
 			Get();
 			op = CodeGen.cge;
-		} else SynErr(55);
+		} else SynErr(54);
 		return op;
 	}
 
@@ -797,7 +783,7 @@ public class Parser {
 		} else if (la.kind == minus_Sym) {
 			Get();
 			op = CodeGen.sub;
-		} else SynErr(56);
+		} else SynErr(55);
 		return op;
 	}
 
@@ -830,7 +816,7 @@ public class Parser {
 			  SemError("Boolean operand needed");
 			type = Types.boolType;
 			CodeGen.negateBoolean();
-		} else SynErr(57);
+		} else SynErr(56);
 		return type;
 	}
 
@@ -846,7 +832,7 @@ public class Parser {
 		} else if (la.kind == percent_Sym) {
 			Get();
 			op = CodeGen.rem;
-		} else SynErr(58);
+		} else SynErr(57);
 		return op;
 	}
 
@@ -888,7 +874,7 @@ public class Parser {
 			Get();
 			type = Expression();
 			Expect(rparen_Sym);
-		} else SynErr(59);
+		} else SynErr(58);
 		return type;
 	}
 
@@ -904,10 +890,10 @@ public class Parser {
 	}
 
 	private static boolean[][] set = {
-		{T,T,x,x, x,x,x,x, T,x,T,T, x,x,x,x, x,T,T,T, x,x,T,T, T,T,T,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
-		{T,T,x,x, x,x,x,x, T,T,T,T, x,x,x,x, x,T,T,T, x,x,T,T, T,T,T,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
-		{x,T,x,x, x,x,x,x, T,x,T,T, x,x,x,x, x,T,T,T, x,x,T,T, T,T,T,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
-		{T,T,x,x, x,x,x,x, T,x,T,T, x,x,x,x, x,T,T,T, x,x,T,T, T,T,T,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
+		{T,T,x,x, x,x,x,x, T,x,T,T, x,x,x,x, x,T,T,T, x,x,T,x, T,T,T,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
+		{T,T,x,x, x,x,x,x, T,T,T,T, x,x,x,x, x,T,T,T, x,x,T,x, T,T,T,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
+		{x,T,x,x, x,x,x,x, T,x,T,T, x,x,x,x, x,T,T,T, x,x,T,x, T,T,T,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
+		{T,T,x,x, x,x,x,x, T,x,T,T, x,x,x,x, x,T,T,T, x,x,T,x, T,T,T,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
 		{x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
 		{x,x,x,x, x,x,x,x, x,x,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
 		{x,T,x,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
@@ -1086,18 +1072,17 @@ class Errors {
 			case 45: s = "??? expected"; break;
 			case 46: s = "this symbol not expected in Statement"; break;
 			case 47: s = "invalid Statement"; break;
-			case 48: s = "invalid IfStatement"; break;
-			case 49: s = "invalid AssignOp"; break;
-			case 50: s = "invalid Constant"; break;
-			case 51: s = "invalid BasicType"; break;
-			case 52: s = "invalid ReadElement"; break;
-			case 53: s = "invalid WriteElement"; break;
-			case 54: s = "invalid EqualOp"; break;
-			case 55: s = "invalid RelOp"; break;
-			case 56: s = "invalid AddOp"; break;
-			case 57: s = "invalid Factor"; break;
-			case 58: s = "invalid MulOp"; break;
-			case 59: s = "invalid Primary"; break;
+			case 48: s = "invalid AssignOp"; break;
+			case 49: s = "invalid Constant"; break;
+			case 50: s = "invalid BasicType"; break;
+			case 51: s = "invalid ReadElement"; break;
+			case 52: s = "invalid WriteElement"; break;
+			case 53: s = "invalid EqualOp"; break;
+			case 54: s = "invalid RelOp"; break;
+			case 55: s = "invalid AddOp"; break;
+			case 56: s = "invalid Factor"; break;
+			case 57: s = "invalid MulOp"; break;
+			case 58: s = "invalid Primary"; break;
 			default: s = "error " + n; break;
 		}
 		storeError(line, col, s);

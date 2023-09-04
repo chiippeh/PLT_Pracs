@@ -16,11 +16,6 @@ COMPILER Parva $NC
   static final boolean
     known = true;
 
-  public static String newFileName(String s, String ext) {
-      int i = s.lastIndexOf('.');
-      if (i < 0) return s + ext; else return s.substring(0, i) + ext;
-  }
-
   // This next method might better be located in the code generator.  Traditionally
   // it has been left in the ATG file, but that might change in future years
   //
@@ -244,10 +239,9 @@ PRODUCTIONS
   .
 
   IfStatement<StackFrame frame>
-                                             (. Label falseLabel = new Label(!known); .)
-  =  "if" "("   Condition 
-              | AssignmentStatement ")"                  (. CodeGen.branchFalse(falseLabel); .)
-      Statement<frame> | "then" Statement<frame>  (. falseLabel.here(); .)
+                                                  (. Label falseLabel = new Label(!known); .)
+  =  "if" "("   Condition ")" ["then"]            (. CodeGen.branchFalse(falseLabel); .)
+      Statement<frame>                            (. falseLabel.here(); .)
        
   .
 
@@ -299,7 +293,7 @@ PRODUCTIONS
 
   WriteElement                               (. int expType;
                                                 String str; .)
-  =   StringConst<out str>                   (. CodeGen.writeString(str); .)
+  =   StringConst<out str>                 (. CodeGen.writeString(str); .)
     | Expression<out expType>                (. if (!(isArith(expType) || expType == Types.boolType))
                                                   SemError("cannot write this type");
                                                 switch (expType) {
@@ -464,23 +458,11 @@ PRODUCTIONS
 
   StringConst<out String str>
   =  stringLit                               (. str = token.val;
-                                                str = unescape(str.substring(1, str.length() - 1)); 
-                                                String str1;
-                                                while ( la.kind == stringLit_Sym || la.kind == charLit_Sym || la.kind == plus_Sym ) {
-                                                  // if next symbol is + then make sure there is a string or char after it 
-                                                  if (la.kind == plus_Sym) {
-                                                    Get();
-                                                    if (la.kind != stringLit_Sym && la.kind != charLit_Sym) {
-                                                      // throw error
-                                                      SemError("String or Character expected");
-                                                    }
-                                                  }
-                                                  str1 = la.val;
-                                                  str1 = unescape(str1.substring(1, str1.length() - 1));
-                                                  str += str1;
-                                                  Get();
-                                                }
-                                                .)
+                                                str = unescape(str.substring(1, str.length() - 1)); .)  
+    {["+"] stringLit                         (. String str1 = token.val;
+                                                str1 = unescape(str1.substring(1, str1.length() - 1));
+                                                str += str1; .)
+    }                                                      
   .
 
   CharConst<out int value>
