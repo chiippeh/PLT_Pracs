@@ -12,6 +12,10 @@ void main () {
     write(d);
     if (a = b) then c := d;
     write(d);
+    if (a = b) c = d;
+    write(d);
+    if (a <> b) c = d;
+    write(d);
 
     // legal version
     if (a == b) c = d;

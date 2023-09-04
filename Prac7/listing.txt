@@ -20,9 +20,16 @@
 ****                ^ incorrect use of "then" instead use "{" and "}" 
 ****                       ^ incorrect use of ':=', use '=' instead
   14     write(d);
-  15 
-  16     if (a == b) c = d;
-  17     write(d);
-  18 }
+  15     if (a = b) c = d;
+****           ^ incorrect use of '=', use '==' instead
+  16     write(d);
+  17     if (a <> b) c = d;
+****           ^ incorrect use of '<>', use '!=' instead
+  18     write(d);
+  19 
+  20     // legal version
+  21     if (a == b) c = d;
+  22     write(d);
+  23 }
 
-7 errors detected
+9 errors detected

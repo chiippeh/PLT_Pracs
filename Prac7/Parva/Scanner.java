@@ -67,8 +67,8 @@ public class Scanner {
 	static final char EOL = '\n';
 	static final int  eofSym = 0;
 	static final int charSetSize = 256;
-	static final int maxT = 45;
-	static final int noSym = 45;
+	static final int maxT = 46;
+	static final int noSym = 46;
 	// terminals
 	static final int EOF_SYM = 0;
 	static final int identifier_Sym = 1;
@@ -110,28 +110,29 @@ public class Scanner {
 	static final int equalequal_Sym = 37;
 	static final int bangequal_Sym = 38;
 	static final int equal_Sym = 39;
-	static final int less_Sym = 40;
-	static final int lessequal_Sym = 41;
-	static final int greater_Sym = 42;
-	static final int greaterequal_Sym = 43;
-	static final int colonequal_Sym = 44;
-	static final int NOT_SYM = 45;
+	static final int lessgreater_Sym = 40;
+	static final int less_Sym = 41;
+	static final int lessequal_Sym = 42;
+	static final int greater_Sym = 43;
+	static final int greaterequal_Sym = 44;
+	static final int colonequal_Sym = 45;
+	static final int NOT_SYM = 46;
 	// pragmas
-	static final int DebugOn_Sym = 46;
-	static final int DebugOff_Sym = 47;
-	static final int ProdCODOn_Sym = 48;
-	static final int ProdCODOff_Sym = 49;
-	static final int PrintSymbolTable_Sym = 50;
-	static final int PrintRuntimeStack_Sym = 51;
-	static final int PrintRuntimeHeap_Sym = 52;
+	static final int DebugOn_Sym = 47;
+	static final int DebugOff_Sym = 48;
+	static final int ProdCODOn_Sym = 49;
+	static final int ProdCODOff_Sym = 50;
+	static final int PrintSymbolTable_Sym = 51;
+	static final int PrintRuntimeStack_Sym = 52;
+	static final int PrintRuntimeHeap_Sym = 53;
 
 	static short[] start = {
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	  0, 47,  4,  0, 19, 39, 33,  7, 23, 24, 37, 35, 28, 36,  0, 38,
-	  3,  3,  3,  3,  3,  3,  3,  3,  3,  3, 44, 27, 49, 48, 50,  0,
+	  0, 48,  4,  0, 19, 39, 33,  7, 23, 24, 37, 35, 28, 36,  0, 38,
+	  3,  3,  3,  3,  3,  3,  3,  3,  3,  3, 45, 27, 50, 49, 51,  0,
 	  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
-	  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 46,  0, 30,  0,  0,
+	  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 47,  0, 30,  0,  0,
 	  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
 	  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1, 25, 31, 26,  0,  0,
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -404,28 +405,31 @@ public class Scanner {
 				case 41:
 					{ t.kind = bangequal_Sym; done = true; break; }
 				case 42:
-					{ t.kind = lessequal_Sym; done = true; break; }
+					{ t.kind = lessgreater_Sym; done = true; break; }
 				case 43:
-					{ t.kind = greaterequal_Sym; done = true; break; }
+					{ t.kind = lessequal_Sym; done = true; break; }
 				case 44:
-					if (ch == '=') { buf.append(ch); NextCh(); state = 45; break;}
-					else { t.kind = noSym; done = true; break; }
+					{ t.kind = greaterequal_Sym; done = true; break; }
 				case 45:
-					{ t.kind = colonequal_Sym; done = true; break; }
+					if (ch == '=') { buf.append(ch); NextCh(); state = 46; break;}
+					else { t.kind = noSym; done = true; break; }
 				case 46:
+					{ t.kind = colonequal_Sym; done = true; break; }
+				case 47:
 					if (ch == ']') { buf.append(ch); NextCh(); state = 29; break;}
 					else { t.kind = lbrack_Sym; done = true; break; }
-				case 47:
+				case 48:
 					if (ch == '=') { buf.append(ch); NextCh(); state = 41; break;}
 					else { t.kind = bang_Sym; done = true; break; }
-				case 48:
+				case 49:
 					if (ch == '=') { buf.append(ch); NextCh(); state = 40; break;}
 					else { t.kind = equal_Sym; done = true; break; }
-				case 49:
-					if (ch == '=') { buf.append(ch); NextCh(); state = 42; break;}
-					else { t.kind = less_Sym; done = true; break; }
 				case 50:
-					if (ch == '=') { buf.append(ch); NextCh(); state = 43; break;}
+					if (ch == '>') { buf.append(ch); NextCh(); state = 42; break;}
+					else if (ch == '=') { buf.append(ch); NextCh(); state = 43; break;}
+					else { t.kind = less_Sym; done = true; break; }
+				case 51:
+					if (ch == '=') { buf.append(ch); NextCh(); state = 44; break;}
 					else { t.kind = greater_Sym; done = true; break; }
 
 			}

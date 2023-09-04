@@ -443,6 +443,7 @@ PRODUCTIONS
   =    "=="                                  (. op = CodeGen.ceq; .)
      | "!="                                  (. op = CodeGen.cne; .)
      | "="                                   (. SemError("incorrect use of '=', use '==' instead"); .)
+     | "<>"                                  (. SemError("incorrect use of '<>', use '!=' instead"); .)
   .
 
   RelOp<out int op>                          (. op = CodeGen.nop; .)
