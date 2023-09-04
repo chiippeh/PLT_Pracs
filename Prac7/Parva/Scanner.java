@@ -109,11 +109,11 @@ public class Scanner {
 	static final int percent_Sym = 36;
 	static final int equalequal_Sym = 37;
 	static final int bangequal_Sym = 38;
-	static final int less_Sym = 39;
-	static final int lessequal_Sym = 40;
-	static final int greater_Sym = 41;
-	static final int greaterequal_Sym = 42;
-	static final int equal_Sym = 43;
+	static final int equal_Sym = 39;
+	static final int less_Sym = 40;
+	static final int lessequal_Sym = 41;
+	static final int greater_Sym = 42;
+	static final int greaterequal_Sym = 43;
 	static final int colonequal_Sym = 44;
 	static final int NOT_SYM = 45;
 	// pragmas

@@ -53,11 +53,11 @@ public class Parser {
 	public static final int percent_Sym = 36;
 	public static final int equalequal_Sym = 37;
 	public static final int bangequal_Sym = 38;
-	public static final int less_Sym = 39;
-	public static final int lessequal_Sym = 40;
-	public static final int greater_Sym = 41;
-	public static final int greaterequal_Sym = 42;
-	public static final int equal_Sym = 43;
+	public static final int equal_Sym = 39;
+	public static final int less_Sym = 40;
+	public static final int lessequal_Sym = 41;
+	public static final int greater_Sym = 42;
+	public static final int greaterequal_Sym = 43;
 	public static final int colonequal_Sym = 44;
 	public static final int NOT_SYM = 45;
 	// pragmas
@@ -376,10 +376,11 @@ public class Parser {
 		Expect(lparen_Sym);
 		Condition();
 		Expect(rparen_Sym);
+		CodeGen.branchFalse(falseLabel);
 		if (la.kind == then_Sym) {
 			Get();
+			SemError("incorrect use of \"then\" instead use \"{\" and \"}\" ");
 		}
-		CodeGen.branchFalse(falseLabel);
 		Statement(frame);
 		falseLabel.here();
 	}
@@ -436,6 +437,7 @@ public class Parser {
 			Get();
 		} else if (la.kind == colonequal_Sym) {
 			Get();
+			SemError("incorrect use of ':=', use '=' instead");
 		} else SynErr(48);
 	}
 
@@ -679,7 +681,7 @@ public class Parser {
 		int type2;
 		int op;
 		type = RelExp();
-		while (la.kind == equalequal_Sym || la.kind == bangequal_Sym) {
+		while (la.kind == equalequal_Sym || la.kind == bangequal_Sym || la.kind == equal_Sym) {
 			op = EqualOp();
 			type2 = RelExp();
 			if (!compatible(type, type2))
@@ -715,6 +717,9 @@ public class Parser {
 		} else if (la.kind == bangequal_Sym) {
 			Get();
 			op = CodeGen.cne;
+		} else if (la.kind == equal_Sym) {
+			Get();
+			SemError("incorrect use of '=', use '==' instead");
 		} else SynErr(53);
 		return op;
 	}
@@ -900,7 +905,7 @@ public class Parser {
 		{x,x,x,x, x,x,x,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
 		{x,T,T,T, T,x,T,x, x,x,x,x, x,T,T,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x},
 		{x,T,T,x, T,x,T,x, x,x,x,x, x,T,T,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,x,x, x,x,x,x, x,x,x,x, x,x,x},
-		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,T,T,x, x,x,x},
+		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, T,T,T,T, x,x,x},
 		{x,T,T,x, T,x,T,x, x,x,x,x, x,T,T,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,T,x,x, x,x,x,x, x,x,x,x, x,x,x},
 		{x,x,T,x, T,x,x,x, x,x,x,x, x,T,T,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x}
 
@@ -1063,11 +1068,11 @@ class Errors {
 			case 36: s = "\"%\" expected"; break;
 			case 37: s = "\"==\" expected"; break;
 			case 38: s = "\"!=\" expected"; break;
-			case 39: s = "\"<\" expected"; break;
-			case 40: s = "\"<=\" expected"; break;
-			case 41: s = "\">\" expected"; break;
-			case 42: s = "\">=\" expected"; break;
-			case 43: s = "\"=\" expected"; break;
+			case 39: s = "\"=\" expected"; break;
+			case 40: s = "\"<\" expected"; break;
+			case 41: s = "\"<=\" expected"; break;
+			case 42: s = "\">\" expected"; break;
+			case 43: s = "\">=\" expected"; break;
 			case 44: s = "\":=\" expected"; break;
 			case 45: s = "??? expected"; break;
 			case 46: s = "this symbol not expected in Statement"; break;

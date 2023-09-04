@@ -239,10 +239,11 @@ PRODUCTIONS
   .
 
   IfStatement<StackFrame frame>
-                                                  (. Label falseLabel = new Label(!known); .)
-  =  "if" "("   Condition ")" ["then"]            (. CodeGen.branchFalse(falseLabel); .)
-      Statement<frame>                            (. falseLabel.here(); .)
-       
+                                               (. Label falseLabel = new Label(!known); .)
+  =  "if" "(" Condition ")"                    (. CodeGen.branchFalse(falseLabel); .)
+      [ "then"                                 (. SemError("incorrect use of \"then\" instead use \"{\" and \"}\" "); .) 
+      ]                                
+      Statement<frame>                         (. falseLabel.here(); .)    
   .
 
   WhileStatement<StackFrame frame>           (. Label loopExit  = new Label(!known);
@@ -252,7 +253,7 @@ PRODUCTIONS
                                                 loopExit.here(); .)
   .
 
- 
+
   HaltStatement
   =  "halt"                                  (. CodeGen.leaveProgram(); .)
      WEAK ";"
@@ -441,6 +442,7 @@ PRODUCTIONS
   EqualOp<out int op>                        (. op = CodeGen.nop; .)
   =    "=="                                  (. op = CodeGen.ceq; .)
      | "!="                                  (. op = CodeGen.cne; .)
+     | "="                                   (. SemError("incorrect use of '=', use '==' instead"); .)
   .
 
   RelOp<out int op>                          (. op = CodeGen.nop; .)
@@ -450,7 +452,10 @@ PRODUCTIONS
      | ">="                                  (. op = CodeGen.cge; .)
   .
 
-  AssignOp = "=" | ":=" .
+  AssignOp 
+  =   "=" 
+    | ":="                                   (. SemError("incorrect use of ':=', use '=' instead"); .) 
+  .
 
   Ident<out String name>
   =  identifier                              (. name = token.val; .)
