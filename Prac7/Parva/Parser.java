@@ -559,18 +559,29 @@ public class Parser {
 		int indexType;
 		name = Ident();
 		Entry entry = Table.find(name);
-		if (!entry.declared)
+		if (!entry.declared) {
+		  Entry ident = new Entry();
+		  ident.name = name;
+		  ident.kind = Kinds.Var;
+		  ident.type = Types.noType;
+		  ident.declared = false;
+		  Table.insert(ident);
 		  SemError("undeclared identifier");
+		  //System.out.println("ident:\nname " + ident.name + " kind " + ident.kind + " type " + ident.type + " declared = " + ident.declared + "\n");
+		}
+		//System.out.println("entry:\nname " + entry.name + " kind " + entry.kind + " type " + entry.type + " declared = " + entry.declared + "\n");
 		des = new DesType(entry);
 		if (entry.kind == Kinds.Var)
 		  CodeGen.loadAddress(entry);
 		if (la.kind == lbrack_Sym) {
 			Get();
-			if (isArray(des.type)) des.type--;
-			else SemError("unexpected subscript");
-			if (des.entry.kind != Kinds.Var)
-			  SemError("unexpected subscript");
-			CodeGen.dereference();
+			if (des.type != Types.noType) { //if associated arr is undeclared
+			  if (isArray(des.type)) des.type--;
+			  else SemError("unexpected subscript");
+			  if (des.entry.kind != Kinds.Var)
+			    SemError("unexpected subscript");
+			  CodeGen.dereference();
+			}
 			indexType = Expression();
 			if (!isArith(indexType))
 			  SemError("invalid subscript type");

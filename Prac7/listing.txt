@@ -1,35 +1,16 @@
 
-   1 void main () {
-   2 // char01.pav
-   3 // Very simple allowable operations on characters
-   4     //write("a" "b" + "cccc" "y");
-   5     int a = 5;
-   6     int b = 5;
-   7     int c = 0;
-   8     int d = 2;
-   9     if (a == b) c := d;
-****                   ^ incorrect use of ':=', use '=' instead
-  10     write(d);
-  11     if (a = b) then c := d;
-****           ^ incorrect use of '=', use '==' instead
-****                ^ incorrect use of "then" instead use "{" and "}" 
-****                       ^ incorrect use of ':=', use '=' instead
-  12     write(d);
-  13     if (a = b) then c := d;
-****           ^ incorrect use of '=', use '==' instead
-****                ^ incorrect use of "then" instead use "{" and "}" 
-****                       ^ incorrect use of ':=', use '=' instead
-  14     write(d);
-  15     if (a = b) c = d;
-****           ^ incorrect use of '=', use '==' instead
-  16     write(d);
-  17     if (a <> b) c = d;
-****           ^ incorrect use of '<>', use '!=' instead
-  18     write(d);
-  19 
-  20     // legal version
-  21     if (a == b) c = d;
-  22     write(d);
-  23 }
+   1 void main () {          
+   2     array[2] = 6;
+****     ^ undeclared identifier
+   3     array[4] = 2;
+   4 
+   5     int[] array = new int[10];
+****                             ^ earlier declaration of array is still in scope
+   6     array[0] = 100;
+   7     
+   8 
+   9     int[] testArray = new int[5];
+  10     testArray[99999] = 5;
+  11 }
 
-9 errors detected
+2 errors detected

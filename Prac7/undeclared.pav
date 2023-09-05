@@ -1,0 +1,11 @@
+void main () {          
+    array[2] = 6;
+    array[4] = 2;
+
+    int[] array = new int[10];
+    array[0] = 100;
+    
+
+    int[] testArray = new int[5];
+    testArray[99999] = 5;
+}
