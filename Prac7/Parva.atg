@@ -102,11 +102,11 @@ TOKENS
 PRAGMAS
   DebugOn     = "$D+" .                      (. debug     = true; .)
   DebugOff    = "$D-" .                      (. debug     = false; .)
-  ProdCODOn   = "$C+" .                      (. listCode  = true; .)
-  ProdCODOff  = "$C-" .                      (. listCode  = false; .)
-  PrintSymbolTable = "$ST" .                 (. if (debug) Table.printTable(OutFile.StdOut); .) 
-  PrintRuntimeStack = "$SD" .                (. if (debug) CodeGen.stack(); .)
-  PrintRuntimeHeap = "$HD" .                 (. if (debug) CodeGen.heap(); .)
+  ProdCODOn   = "$C+" .                      (. listCode  = true; .)                       /****************** Changed ********************/
+  ProdCODOff  = "$C-" .                      (. listCode  = false; .)                      /****************** Changed ********************/
+  PrintSymbolTable = "$ST" .                 (. if (debug) Table.printTable(OutFile.StdOut); .) /****************** Changed ********************/
+  PrintRuntimeStack = "$SD" .                (. if (debug) CodeGen.stack(); .)            /****************** Changed ********************/
+  PrintRuntimeHeap = "$HD" .                 (. if (debug) CodeGen.heap(); .)             /****************** Changed ********************/
 
 
 COMMENTS FROM "//" TO lf
