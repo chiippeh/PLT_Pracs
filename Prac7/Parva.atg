@@ -172,11 +172,11 @@ PRODUCTIONS
     | "null"                                 (. con.type = Types.nullType; con.value = 0; .)
   .
 
-  VarDeclarations<StackFrame frame>          (. int type; boolean isFinal = false; .)
-  =  [ "final"  (. isFinal = true; .)
-     ]                            
-     Type<out type>
-     VarList<frame, type, isFinal>
+  VarDeclarations<StackFrame frame>          (. int type; boolean isFinal = false; .)  /****************** Changed ********************/
+  =  [ "final"  (. isFinal = true; .)                                                  /****************** Changed ********************/
+     ]                                                                                 /****************** Changed ********************/
+     Type<out type>                                                                    /****************** Changed ********************/
+     VarList<frame, type, isFinal>                                                     /****************** Changed ********************/
      WEAK ";"
   .
 
@@ -192,17 +192,17 @@ PRODUCTIONS
 	| "char"                                 (. type = Types.charType; .)
   .
 
-  VarList<StackFrame frame, int type, boolean isFinal>
-  =  OneVar<frame, type, isFinal>
-     { WEAK "," OneVar<frame, type, isFinal> }
+  VarList<StackFrame frame, int type, boolean isFinal>                              /****************** Changed ********************/
+  =  OneVar<frame, type, isFinal>                                                   /****************** Changed ********************/
+     { WEAK "," OneVar<frame, type, isFinal> }                                      /****************** Changed ********************/
   .
 
   OneVar<StackFrame frame, int type, boolean isFinal>         (. int expType;
-                                                Entry var = new Entry(); .)
-  =  Ident<out var.name>                     (. if (isFinal) {
-                                                    var.kind = Kinds.Final;
-                                                } else {
-                                                    var.kind = Kinds.Var;
+                                                Entry var = new Entry(); .)     /****************** Changed ********************/
+  =  Ident<out var.name>                     (. if (isFinal) {                  /****************** Changed ********************/
+                                                    var.kind = Kinds.Final;     /****************** Changed ********************/
+                                                } else {                        /****************** Changed ********************/
+                                                    var.kind = Kinds.Var;       /****************** Changed ********************/
                                                 }
                                                 var.type = type;
                                                 var.offset = frame.size;
@@ -217,7 +217,7 @@ PRODUCTIONS
   AssignmentStatement
                                              (. int expType;
                                                 DesType des; .)
-  = Designator<out des>                      (. if ( (des.entry.kind != Kinds.Var) || (des.entry.kind == Kinds.Final) )
+  = Designator<out des>                      (. if ( (des.entry.kind != Kinds.Var) || (des.entry.kind == Kinds.Final) )       /****************** Changed ********************/
                                                   SemError("cannot assign to " + Kinds.kindNames[des.entry.kind]); .)
     AssignOp
     Expression<out expType>                  (. if (!assignable(des.type, expType))
@@ -229,7 +229,7 @@ PRODUCTIONS
   Designator<out DesType des>                (. String name;
                                                 int indexType; .)
   =  Ident<out name>                         (. Entry entry = Table.find(name);
-                                                if (!entry.declared) {
+                                                if (!entry.declared) {                                           /****************** Changed ********************/
                                                   Entry ident = new Entry();
                                                   ident.name = name;
                                                   ident.kind = Kinds.Var;
@@ -243,7 +243,7 @@ PRODUCTIONS
                                                 des = new DesType(entry);
                                                 if (entry.kind == Kinds.Var)
                                                   CodeGen.loadAddress(entry); .)
-     [     "["                               (. if (des.type != Types.noType) { //if associated arr is undeclared                   
+     [     "["                               (. if (des.type != Types.noType) { //if associated arr is undeclared      /****************** Changed ********************/             
                                                   if (isArray(des.type)) des.type--;
                                                   else SemError("unexpected subscript");
                                                   if (des.entry.kind != Kinds.Var)
@@ -259,11 +259,11 @@ PRODUCTIONS
   .
 
   IfStatement<StackFrame frame>
-                                               (. Label falseLabel = new Label(!known); .)
-  =  "if" "(" Condition ")"                    (. CodeGen.branchFalse(falseLabel); .)
-      [ "then"                                 (. SemError("incorrect use of \"then\" instead use \"{\" and \"}\" "); .) 
-      ]                                
-      Statement<frame>                         (. falseLabel.here(); .)    
+                                               (. Label falseLabel = new Label(!known); .)      /****************** Changed ********************/
+  =  "if" "(" Condition ")"                    (. CodeGen.branchFalse(falseLabel); .)           /****************** Changed ********************/
+      [ "then"                                 (. SemError("incorrect use of \"then\" instead use \"{\" and \"}\" "); .)      /****************** Changed ********************/
+      ]                                                                                         /****************** Changed ********************/
+      Statement<frame>                         (. falseLabel.here(); .)                         /****************** Changed ********************/
   .
 
   WhileStatement<StackFrame frame>           (. Label loopExit  = new Label(!known);
@@ -313,7 +313,7 @@ PRODUCTIONS
   .
 
   WriteElement                               (. int expType;
-                                                String str; .)
+                                                String str; .)      
   =   StringConst<out str>                 (. CodeGen.writeString(str); .)
     | Expression<out expType>                (. if (!(isArith(expType) || expType == Types.boolType))
                                                   SemError("cannot write this type");
@@ -429,9 +429,9 @@ PRODUCTIONS
                                                     CodeGen.dereference();
                                                     break;
                                                   case Kinds.Con:
-                                                    CodeGen.loadConstant(des.entry.value);
+                                                    CodeGen.loadConstant(des.entry.value);   
                                                     break;
-                                                  case Kinds.Final:
+                                                  case Kinds.Final:                         /****************** Changed ********************/
                                                     CodeGen.loadConstant(des.entry.value);
                                                     break;
                                                   default:
@@ -464,9 +464,9 @@ PRODUCTIONS
 
   EqualOp<out int op>                        (. op = CodeGen.nop; .)
   =    "=="                                  (. op = CodeGen.ceq; .)
-     | "!="                                  (. op = CodeGen.cne; .)
-     | "="                                   (. SemError("incorrect use of '=', use '==' instead"); .)
-     | "<>"                                  (. SemError("incorrect use of '<>', use '!=' instead"); .)
+     | "!="                                  (. op = CodeGen.cne; .)             /****************** Changed ********************/
+     | "="                                   (. SemError("incorrect use of '=', use '==' instead"); .)            /****************** Changed ********************/
+     | "<>"                                  (. SemError("incorrect use of '<>', use '!=' instead"); .)           /****************** Changed ********************/
   .
 
   RelOp<out int op>                          (. op = CodeGen.nop; .)
@@ -477,8 +477,8 @@ PRODUCTIONS
   .
 
   AssignOp 
-  =   "=" 
-    | ":="                                   (. SemError("incorrect use of ':=', use '=' instead"); .) 
+  =   "="  
+    | ":="                                   (. SemError("incorrect use of ':=', use '=' instead"); .)      /****************** Changed ********************/
   .
 
   Ident<out String name>
@@ -487,10 +487,10 @@ PRODUCTIONS
 
   StringConst<out String str>
   =  stringLit                               (. str = token.val;
-                                                str = unescape(str.substring(1, str.length() - 1)); .)  
-    {["+"] stringLit                         (. String str1 = token.val;
-                                                str1 = unescape(str1.substring(1, str1.length() - 1));
-                                                str += str1; .)
+                                                str = unescape(str.substring(1, str.length() - 1)); .)      /****************** Changed ********************/
+    {["+"] stringLit                         (. String str1 = token.val;                                    /****************** Changed ********************/
+                                                str1 = unescape(str1.substring(1, str1.length() - 1));      /****************** Changed ********************/
+                                                str += str1; .)                                             /****************** Changed ********************/
     }                                                      
   .
 
