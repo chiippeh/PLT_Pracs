@@ -46,9 +46,10 @@ import library.*;
     public static final int
       Con   = 0,
       Var   = 1,
-      Fun   = 2;
+      Fun   = 2,
+      Final = 3;
 
-    public static String[] kindNames = { "const", "var  ", "func "};
+    public static String[] kindNames = { "const", "var  ", "func ", "final "};
 
   } // end Kinds
 
@@ -61,6 +62,7 @@ import library.*;
     public int     offset   = 0;          // variables
     public boolean declared = true;       // true for all except sentinel entry
     public Entry   nextInScope = null;    // link to next entry in current scope
+    //public boolean isFinal = false;       //is final variable (false by default)                 ******************* Changed ******************
   } // end Entry
 
   class StackFrame {

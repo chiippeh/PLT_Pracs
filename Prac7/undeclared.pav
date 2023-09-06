@@ -1,4 +1,8 @@
-void main () {          
+void main () {       
+    x = 7;
+    x = 10;
+    x = 70;
+
     array[2] = 6;
     array[4] = 2;
 
@@ -7,5 +11,8 @@ void main () {
     
 
     int[] testArray = new int[5];
+    testArray has the type of arr of int
+    testArray[7]  has the type of int
+
     testArray[99999] = 5;
 }

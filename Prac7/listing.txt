@@ -1,16 +1,15 @@
 
-   1 void main () {          
-   2     array[2] = 6;
-****     ^ undeclared identifier
-   3     array[4] = 2;
-   4 
-   5     int[] array = new int[10];
-****                             ^ earlier declaration of array is still in scope
-   6     array[0] = 100;
-   7     
-   8 
-   9     int[] testArray = new int[5];
-  10     testArray[99999] = 5;
-  11 }
+   1 void main () {       
+   2     final char max = 'c';
+   3     const test = 2;
+   4     //test = 7;
+   5     //max = 2;
+   6     int i = 5;
+   7     int iPlusMax1 = 5 + test;
+   8     final int iPlusMax2 = i + max;
+   9     final int[] list = new int[iPlusMax2]; 
+  10 
+  11     
+  12 }
 
-2 errors detected
+0 errors detected

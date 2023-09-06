@@ -172,9 +172,11 @@ PRODUCTIONS
     | "null"                                 (. con.type = Types.nullType; con.value = 0; .)
   .
 
-  VarDeclarations<StackFrame frame>          (. int type; .)
-  =  Type<out type>
-     VarList<frame, type>
+  VarDeclarations<StackFrame frame>          (. int type; boolean isFinal = false; .)
+  =  [ "final"  (. isFinal = true; .)
+     ]                            
+     Type<out type>
+     VarList<frame, type, isFinal>
      WEAK ";"
   .
 
@@ -190,14 +192,18 @@ PRODUCTIONS
 	| "char"                                 (. type = Types.charType; .)
   .
 
-  VarList<StackFrame frame, int type>
-  =  OneVar<frame, type>
-     { WEAK "," OneVar<frame, type> }
+  VarList<StackFrame frame, int type, boolean isFinal>
+  =  OneVar<frame, type, isFinal>
+     { WEAK "," OneVar<frame, type, isFinal> }
   .
 
-  OneVar<StackFrame frame, int type>         (. int expType;
+  OneVar<StackFrame frame, int type, boolean isFinal>         (. int expType;
                                                 Entry var = new Entry(); .)
-  =  Ident<out var.name>                     (. var.kind = Kinds.Var;
+  =  Ident<out var.name>                     (. if (isFinal) {
+                                                    var.kind = Kinds.Final;
+                                                } else {
+                                                    var.kind = Kinds.Var;
+                                                }
                                                 var.type = type;
                                                 var.offset = frame.size;
                                                 frame.size++; .)
@@ -211,7 +217,7 @@ PRODUCTIONS
   AssignmentStatement
                                              (. int expType;
                                                 DesType des; .)
-  = Designator<out des>                      (. if (des.entry.kind != Kinds.Var)
+  = Designator<out des>                      (. if ( (des.entry.kind != Kinds.Var) || (des.entry.kind == Kinds.Final) )
                                                   SemError("cannot assign to " + Kinds.kindNames[des.entry.kind]); .)
     AssignOp
     Expression<out expType>                  (. if (!assignable(des.type, expType))
@@ -423,6 +429,9 @@ PRODUCTIONS
                                                     CodeGen.dereference();
                                                     break;
                                                   case Kinds.Con:
+                                                    CodeGen.loadConstant(des.entry.value);
+                                                    break;
+                                                  case Kinds.Final:
                                                     CodeGen.loadConstant(des.entry.value);
                                                     break;
                                                   default:

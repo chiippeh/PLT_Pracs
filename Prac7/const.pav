@@ -1,0 +1,12 @@
+void main () {       
+    final char max = 'c';
+    const test = 2;
+    //test = 7;
+    //max = 2;
+    int i = 5;
+    int iPlusMax1 = 5 + test;
+    final int iPlusMax2 = i + max;
+    final int[] list = new int[iPlusMax2]; 
+
+    
+}
