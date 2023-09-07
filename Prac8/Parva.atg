@@ -139,6 +139,7 @@ PRODUCTIONS
             | HaltStatement
             | ReadStatement
             | WriteStatement
+            | RepeatStatement
             | ";"
           )
   .
@@ -305,8 +306,9 @@ PRODUCTIONS
   .
 
   WriteStatement
-  = "write" "(" WriteList ")"
-    WEAK ";"
+  =   ( "write" "(" WriteList ")" )
+    | ( "writeLine" "(" WriteList ")" ) (. CodeGen.writeLine(); .)
+      WEAK ";"
   .
 
   WriteList
@@ -327,6 +329,14 @@ PRODUCTIONS
                                                     break;
                                                 } .)
   .
+
+  RepeatStatment<StackFrame frame>           (. Label loopStart = new Label(known); .)
+  =  "repeat"
+     Statement<frame>
+     "until"
+     "(" Condition ")"                       (. CodeGen.branchFalse(loopStart) .)
+     ";"
+     .
 
   Condition                                  (. int type; .)
   =  Expression<out type>                    (. if (!isBool(type))

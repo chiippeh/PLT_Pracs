@@ -1,7 +1,8 @@
 package Parva;
 
 /* Driver for compilers and assemblers targetting the PVM: Coco/R for Java.
-   P.D. Terry, Rhodes University; modified KL Bradshaw, 2021 */
+   P.D. Terry, Rhodes University; modified KL Bradshaw, 2023
+   Solution Prac 7 2023   */
 
 //  ----------------------- you may need to change the "import" clauses:
 
@@ -28,14 +29,16 @@ import library.*;
         if (args[i].toLowerCase().equals("-l")) mergeErrors = true;
         else if (args[i].toLowerCase().equals("-d")) Parser.debug = true;
         else if (args[i].toLowerCase().equals("-w")) Parser.warnings = false;
+		else if (args[i].toLowerCase().equals("-c")) Parser.listCode = true;
         else inputName = args[i];
       }
       if (inputName == null) {
         System.err.println("No input file specified");
-        System.err.println("Usage: Parva [-l] [-d] [-w] source.pav");
+        System.err.println("Usage: Parva [-l] [-d] [-w][-c] source.pav");
         System.err.println("-l directs source listing to listing.txt");
         System.err.println("-d turns on debug mode");
         System.err.println("-w suppresses warnings");
+		System.err.println("-c lists object code (.cod file)");
         System.exit(1);
       }
 
@@ -61,7 +64,7 @@ import library.*;
       int initSP = CodeGen.getInitSP();
       String codeName = newFileName(inputName, ".cod");
       int codeLength = CodeGen.getCodeLength();
-      PVM.listCode(codeName, codeLength);
+      if (Parser.listCode) PVM.listCode(codeName, codeLength);
       if (!assembledOK || codeLength == 0) {
         System.err.println("Unable to execute code");
         System.exit(1);

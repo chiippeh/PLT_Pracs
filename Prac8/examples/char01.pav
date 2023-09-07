@@ -5,6 +5,8 @@ void main () {
 
   char c = 'a';
   write(c);
+  writeLine(c);
+  write("test");
 
   read(c);
   write(c);
