@@ -8,7 +8,7 @@
    7     int iPlusMax1 = 5 + test;
    8     final int iPlusMax2 = i + max;
    9     final int[] list = new int[iPlusMax2]; 
-  10 
+  1
   11     
   12 }
 
