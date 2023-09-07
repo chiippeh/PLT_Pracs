@@ -2,8 +2,13 @@ void Main () { $C+
 // repeat1.pav
 // simple repeat until loop
   int i = 0;
-  repeat
-    write(i);
-    i = i + 1;
-  until (i >= 10);
+  int a = 1;
+  int b = 2;
+  int c = 3;
+  //repeat
+  //  write(i);
+  //  i = i + 1;
+  //until (i >= 10);
+  do { a = b; c = c + 10; writeLine(c); } while (c < 100); 
+  writeLine(c);
 }

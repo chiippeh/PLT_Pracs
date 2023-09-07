@@ -1,0 +1,16 @@
+
+   1 void Main () { $C+
+   2 // repeat2.pav
+   3 // Simple repeat until loop
+   4   int i = 0;
+   5   Repeat
+****   ^ undeclared identifier
+   6     Write(i);
+****            ^ invalid AssignOp
+   7     i = i + 1;
+   8   Until (i = 10);
+****   ^ undeclared identifier
+****            ^ == intended?
+   9 }
+
+4 errors detected

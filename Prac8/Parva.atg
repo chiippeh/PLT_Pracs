@@ -6,7 +6,10 @@ COMPILER Parva $NC
    P.D. Terry, Rhodes University; Modified by KL Bradshaw, 2023
    Java operator precedences with short circuit evaluation
    Includes character type
-   Solution to Prac 7 & initial grammar for Prac 8, 2023*/
+   Solution to Prac 7 & initial grammar for Prac 8, 2023
+   
+   Extended (September 2023) by:
+   Wynne Edwards g21e2079, Mila Davies g21d6937, Manu Jourdan g21j5408 */
 
   public static boolean
     debug    = false,
@@ -139,7 +142,8 @@ PRODUCTIONS
             | HaltStatement
             | ReadStatement
             | WriteStatement
-            | RepeatStatement
+            | RepeatStatement<frame>
+            | DoWhileStatement<frame>
             | ";"
           )
   .
@@ -330,13 +334,25 @@ PRODUCTIONS
                                                 } .)
   .
 
-  RepeatStatment<StackFrame frame>           (. Label loopStart = new Label(known); .)
+  RepeatStatement<StackFrame frame>           (. Label loopStart = new Label(known); .)
   =  "repeat"
-     Statement<frame>
+     { Statement<frame> }
      "until"
-     "(" Condition ")"                       (. CodeGen.branchFalse(loopStart) .)
+     "(" Condition ")"                        (. CodeGen.branchFalse(loopStart); .)
      ";"
      .
+
+  DoWhileStatement<StackFrame frame>          (. Label loopExit = new Label(!known); 
+                                                 Label loopStart = new Label(known); .)
+  = "do"                        
+    Statement<frame>
+    "while"
+    "(" Condition ")"                         (. CodeGen.branchFalse(loopExit); .)
+                                              (. CodeGen.branch(loopStart);
+                                                 loopExit.here(); .)
+    ";"
+    .
+
 
   Condition                                  (. int type; .)
   =  Expression<out type>                    (. if (!isBool(type))
