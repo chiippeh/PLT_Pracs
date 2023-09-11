@@ -266,8 +266,12 @@ PRODUCTIONS
   IfStatement<StackFrame frame>
                                              (. Label falseLabel = new Label(!known); .)
   =  "if" "(" Condition ")"                  (. CodeGen.branchFalse(falseLabel); .)
-      [ "then"								 (. SemError("then is not used in Parva"); .) 
-      ]  Statement<frame>                    (. falseLabel.here(); .)
+      [ "then"							 	 (. SemError("then is not used in Parva"); .) 
+      ]  Statement<frame>                    (. Label exitLabel = new Label(!known); .)
+                                             (. CodeGen.branch(exitLabel); .)
+                                             (. falseLabel.here(); .)
+      [ "else"                               
+      ] Statement<frame>                     (. exitLabel.here(); .)    
   .
 
   WhileStatement<StackFrame frame>           (. Label loopExit  = new Label(!known);

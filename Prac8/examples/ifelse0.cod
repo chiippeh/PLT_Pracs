@@ -1,0 +1,17 @@
+ASSEM
+BEGIN
+  {    0 } DSP      0
+  {    2 } LDC      1
+  {    4 } LDC      1
+  {    6 } CEQ     
+  {    7 } BZE      23
+  {    9 } LDC      1
+  {   11 } LDC      2
+  {   13 } CEQ     
+  {   14 } BZE      18
+  {   16 } BRN      21
+  {   18 } PRNS     "inside nested if else"
+  {   20 } PRNL    
+  {   21 } BRN      23
+  {   23 } HALT    
+END.
