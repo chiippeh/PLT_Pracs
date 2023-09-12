@@ -8,12 +8,7 @@ void Main () { $C+
     i = i + 1;
     if (i == 3) {
       int j = 10;
-      while (j < 100) {
-        write(j);
-        if (j == 40) break;
-        j = j + 10;
-      }
     }
-//    break;
+    //break;
   }
 }
