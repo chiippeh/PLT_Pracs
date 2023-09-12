@@ -5,7 +5,7 @@ void Main () { $C+
   while (i < 10) {
     write(i);
     if (i == 4) break;
-    i = 0;
-    break;
+    //i = 0;
+    //break;
   }
 }

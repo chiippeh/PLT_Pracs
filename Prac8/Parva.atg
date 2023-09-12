@@ -123,34 +123,36 @@ PRODUCTIONS
                                                 program.type = Types.voidType;
                                                 Table.insert(program);
                                                 StackFrame frame = new StackFrame();
+                                                Label breakLabel = null;
                                                 Table.openScope();
                                                 Label DSPLabel = new Label(known);
                                                 CodeGen.openStackFrame(0); .)
-     WEAK "{" { Statement<frame> }
+     WEAK "{" { Statement<frame, breakLabel> }
      WEAK "}"                                (. CodeGen.fixDSP(DSPLabel.address(), frame.size);
                                                 CodeGen.leaveProgram();
                                                 Table.closeScope(); .)
   .
 
-  Statement<StackFrame frame>
-  =  SYNC (   Block<frame>
+  Statement<StackFrame frame, Label breakLabel>
+  =  SYNC (   Block<frame, breakLabel>
             | ConstDeclarations
             | VarDeclarations<frame>
             | AssignmentStatement
-            | IfStatement<frame>
+            | IfStatement<frame, breakLabel>
             | WhileStatement<frame>
             | HaltStatement
             | ReadStatement
             | WriteStatement
-            | RepeatStatement<frame>
-            | DoWhileStatement<frame>
+            | RepeatStatement<frame, breakLabel>
+            | DoWhileStatement<frame, breakLabel>
+            | BreakStatement<breakLabel>
             | ";"
           )
   .
 
-  Block<StackFrame frame>
+  Block<StackFrame frame, Label breakLabel> 
   =                                          (. Table.openScope(); .)
-     "{" { Statement<frame> }
+     "{" { Statement<frame, breakLabel> }
      WEAK "}"                                (. Table.closeScope(); .)
   .
 
@@ -263,22 +265,22 @@ PRODUCTIONS
      ]
   .
 
-  IfStatement<StackFrame frame>
-                                             (. Label falseLabel = new Label(!known); .)
+  IfStatement<StackFrame frame, Label breakLabel>
+                                             (. Label falseLabel = new Label(!known); Label exitLabel = new Label(!known); .)
   =  "if" "(" Condition ")"                  (. CodeGen.branchFalse(falseLabel); .)
       [ "then"							 	 (. SemError("then is not used in Parva"); .) 
-      ]  Statement<frame>                    (. Label exitLabel = new Label(!known); .)
+      ]  Statement<frame, breakLabel>                   
                                              (. CodeGen.branch(exitLabel); .)
                                              (. falseLabel.here(); .)
       [ "else"                               
-      ] Statement<frame>                     (. exitLabel.here(); .)    
+      Statement<frame, breakLabel> ]                   (. exitLabel.here(); .)    
   .
 
-  WhileStatement<StackFrame frame>           (. Label loopExit  = new Label(!known);
-                                                Label loopStart = new Label(known); .)
-  =  "while" "(" Condition ")"               (. CodeGen.branchFalse(loopExit); .)
-     Statement<frame>                        (. CodeGen.branch(loopStart);
-                                                loopExit.here(); .)
+  WhileStatement<StackFrame frame>                   (. Label loopExit  = new Label(!known);
+                                                        Label loopStart = new Label(known); .)
+  =  "while" "(" Condition ")"                       (. CodeGen.branchFalse(loopExit); .)
+     Statement<frame, loopExit>                      (. CodeGen.branch(loopStart);
+                                                        loopExit.here(); .)
   .
 
  
@@ -338,24 +340,32 @@ PRODUCTIONS
                                                 } .)
   .
 
-  RepeatStatement<StackFrame frame>           (. Label loopStart = new Label(known); .)
+  RepeatStatement<StackFrame frame, Label breakLabel>  (. Label loopStart = new Label(known); Label loopExit = new Label(!known); .)
   =  "repeat"
-     { Statement<frame> }
+     { Statement<frame, loopExit> }
      "until"
      "(" Condition ")"                        (. CodeGen.branchFalse(loopStart); .)
-     ";"
+     ";"                                      (. loopExit.here(); .)
      .
 
-  DoWhileStatement<StackFrame frame>          (. Label loopExit = new Label(!known); 
-                                                 Label loopStart = new Label(known); .)
+  DoWhileStatement<StackFrame frame, Label breakLabel>  (. Label loopExit = new Label(!known); Label loopStart = new Label(known); .)
   = "do"                        
-    Statement<frame>
+    Statement<frame, loopExit>
     "while"
     "(" Condition ")"                         (. CodeGen.branchFalse(loopExit); .)
                                               (. CodeGen.branch(loopStart);
                                                  loopExit.here(); .)
     ";"
     .
+
+  BreakStatement<Label breakLabel>
+  = "break"
+    WEAK ";" (. if (breakLabel != null) {
+                  CodeGen.branch(breakLabel);
+                } else {
+                  SemError("break cannot be outside of loop");
+                } .)         
+    . 
 
 
   Condition                                  (. int type; .)

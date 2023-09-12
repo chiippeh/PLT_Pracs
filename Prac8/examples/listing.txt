@@ -1,16 +1,15 @@
 
-   1 void Main () { $C+
-   2 // repeat2.pav
-   3 // Simple repeat until loop
-   4   int i = 0;
-   5   Repeat
-****   ^ undeclared identifier
-   6     Write(i);
-****            ^ invalid AssignOp
-   7     i = i + 1;
-   8   Until (i = 10);
-****   ^ undeclared identifier
-****            ^ == intended?
-   9 }
+   1 void main () { $C+
+   2 // ifelse1.pav
+   3 // if-then-else
+   4   int i;
+   5   read(i);
+   6   if (i > 0)
+   7     write("positive");
+   8   else write("negative");
+****   ^ "}" expected
+   9   if (i > 10)
+  10     write(" and greater than 10");
+  11 }
 
-4 errors detected
+1 errors detected

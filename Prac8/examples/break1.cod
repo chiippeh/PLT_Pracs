@@ -1,0 +1,30 @@
+ASSEM
+BEGIN
+  {    0 } DSP      1
+  {    2 } LDA      0
+  {    4 } LDC      0
+  {    6 } STO     
+  {    7 } LDA      0
+  {    9 } LDV     
+  {   10 } LDC      10
+  {   12 } CLT     
+  {   13 } BZE      42
+  {   15 } LDA      0
+  {   17 } LDV     
+  {   18 } PRNI    
+  {   19 } LDA      0
+  {   21 } LDV     
+  {   22 } LDC      4
+  {   24 } CEQ     
+  {   25 } BZE      31
+  {   27 } BRN      42
+  {   29 } BRN      40
+  {   31 } LDA      0
+  {   33 } LDA      0
+  {   35 } LDV     
+  {   36 } LDC      1
+  {   38 } ADD     
+  {   39 } STO     
+  {   40 } BRN      7
+  {   42 } HALT    
+END.

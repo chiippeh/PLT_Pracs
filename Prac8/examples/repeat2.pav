@@ -2,7 +2,16 @@ void Main () { $C+
 // repeat2.pav
 // simple repeat until loop
   int i = 0;
+  int x = 0;
   repeat
+    if (i == 5) break;
+    
+    repeat 
+      if (x == 5) break;
+      write(x);
+      x = x + 1;
+    until (x == 10);
+
     write(i);
     i = i + 1;
   until (i == 10);

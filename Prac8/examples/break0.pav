@@ -7,4 +7,15 @@ void Main () { $C+
     write(2);
     break;
   }
+
+  //while (true) {
+  //  write(1);
+  //  while (true) {
+  //    write(2);
+  //    break;
+  //    write(3);
+  //  }
+  //  write(4);
+  //  break;
+  //}
 }
