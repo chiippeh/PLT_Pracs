@@ -2,13 +2,15 @@ ASSEM
 BEGIN
   {    0 } DSP      0
   {    2 } LDC      1
-  {    4 } BZE      18
+  {    4 } BZE      20
   {    6 } LDC      1
   {    8 } PRNI    
-  {    9 } BRN      18
-  {   11 } LDC      2
-  {   13 } PRNI    
-  {   14 } BRN      18
-  {   16 } BRN      2
-  {   18 } HALT    
+  {    9 } PRNL    
+  {   10 } BRN      20
+  {   12 } LDC      2
+  {   14 } PRNI    
+  {   15 } PRNL    
+  {   16 } BRN      20
+  {   18 } BRN      2
+  {   20 } HALT    
 END.

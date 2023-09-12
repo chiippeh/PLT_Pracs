@@ -457,9 +457,9 @@ public class Parser {
 			Expect(lparen_Sym);
 			WriteList();
 			Expect(rparen_Sym);
-			CodeGen.writeLine();
-			ExpectWeak(semicolon_Sym, 4);
 		} else SynErr(56);
+		CodeGen.writeLine();
+		ExpectWeak(semicolon_Sym, 4);
 	}
 
 	static void RepeatStatement(StackFrame frame, Label breakLabel) {

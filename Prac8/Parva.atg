@@ -316,9 +316,9 @@ PRODUCTIONS
   .
 
   WriteStatement
-  =   ( "write" "(" WriteList ")" )
-    | ( "writeLine" "(" WriteList ")" ) (. CodeGen.writeLine(); .)
-      WEAK ";"
+  =   ( ( "write" "(" WriteList ")" )
+    | ( "writeLine" "(" WriteList ")" ) ) (. CodeGen.writeLine(); .)
+    WEAK ";"
   .
 
   WriteList

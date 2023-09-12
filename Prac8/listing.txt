@@ -318,9 +318,9 @@
  316   .
  317 
  318   WriteStatement
- 319   =   ( "write" "(" WriteList ")" )
- 320     | ( "writeLine" "(" WriteList ")" ) (. CodeGen.writeLine(); .)
- 321       WEAK ";"
+ 319   =   ( ( "write" "(" WriteList ")" )
+ 320     | ( "writeLine" "(" WriteList ")" ) ) (. CodeGen.writeLine(); .)
+ 321     WEAK ";"
  322   .
  323 
  324   WriteList

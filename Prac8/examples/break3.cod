@@ -8,18 +8,17 @@ BEGIN
   {    9 } LDV     
   {   10 } LDC      10
   {   12 } CLT     
-  {   13 } BZE      34
+  {   13 } BZE      31
   {   15 } LDA      0
   {   17 } LDV     
   {   18 } PRNI    
   {   19 } PRNL    
   {   20 } LDA      0
-  {   22 } LDV     
-  {   23 } LDC      4
-  {   25 } CEQ     
-  {   26 } BZE      32
-  {   28 } BRN      34
-  {   30 } BRN      32
-  {   32 } BRN      7
-  {   34 } HALT    
+  {   22 } LDA      0
+  {   24 } LDV     
+  {   25 } LDC      1
+  {   27 } ADD     
+  {   28 } STO     
+  {   29 } BRN      7
+  {   31 } HALT    
 END.
