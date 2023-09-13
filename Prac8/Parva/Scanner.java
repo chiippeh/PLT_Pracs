@@ -67,8 +67,8 @@ public class Scanner {
 	static final char EOL = '\n';
 	static final int  eofSym = 0;
 	static final int charSetSize = 256;
-	static final int maxT = 53;
-	static final int noSym = 53;
+	static final int maxT = 55;
+	static final int noSym = 55;
 	// terminals
 	static final int EOF_SYM = 0;
 	static final int identifier_Sym = 1;
@@ -105,33 +105,35 @@ public class Scanner {
 	static final int until_Sym = 32;
 	static final int do_Sym = 33;
 	static final int break_Sym = 34;
-	static final int barbar_Sym = 35;
-	static final int andand_Sym = 36;
-	static final int plus_Sym = 37;
-	static final int minus_Sym = 38;
-	static final int bang_Sym = 39;
-	static final int new_Sym = 40;
-	static final int star_Sym = 41;
-	static final int slash_Sym = 42;
-	static final int percent_Sym = 43;
-	static final int equalequal_Sym = 44;
-	static final int bangequal_Sym = 45;
-	static final int equal_Sym = 46;
-	static final int lessgreater_Sym = 47;
-	static final int less_Sym = 48;
-	static final int lessequal_Sym = 49;
-	static final int greater_Sym = 50;
-	static final int greaterequal_Sym = 51;
-	static final int colonequal_Sym = 52;
-	static final int NOT_SYM = 53;
+	static final int for_Sym = 35;
+	static final int in_Sym = 36;
+	static final int barbar_Sym = 37;
+	static final int andand_Sym = 38;
+	static final int plus_Sym = 39;
+	static final int minus_Sym = 40;
+	static final int bang_Sym = 41;
+	static final int new_Sym = 42;
+	static final int star_Sym = 43;
+	static final int slash_Sym = 44;
+	static final int percent_Sym = 45;
+	static final int equalequal_Sym = 46;
+	static final int bangequal_Sym = 47;
+	static final int equal_Sym = 48;
+	static final int lessgreater_Sym = 49;
+	static final int less_Sym = 50;
+	static final int lessequal_Sym = 51;
+	static final int greater_Sym = 52;
+	static final int greaterequal_Sym = 53;
+	static final int colonequal_Sym = 54;
+	static final int NOT_SYM = 55;
 	// pragmas
-	static final int CodeOn_Sym = 54;
-	static final int CodeOff_Sym = 55;
-	static final int DebugOn_Sym = 56;
-	static final int DebugOff_Sym = 57;
-	static final int StackDump_Sym = 58;
-	static final int HeapDump_Sym = 59;
-	static final int TableDump_Sym = 60;
+	static final int CodeOn_Sym = 56;
+	static final int CodeOff_Sym = 57;
+	static final int DebugOn_Sym = 58;
+	static final int DebugOff_Sym = 59;
+	static final int StackDump_Sym = 60;
+	static final int HeapDump_Sym = 61;
+	static final int TableDump_Sym = 62;
 
 	static short[] start = {
 	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -285,6 +287,8 @@ public class Scanner {
 		else if (lit.compareTo("until") == 0) t.kind = until_Sym;
 		else if (lit.compareTo("do") == 0) t.kind = do_Sym;
 		else if (lit.compareTo("break") == 0) t.kind = break_Sym;
+		else if (lit.compareTo("for") == 0) t.kind = for_Sym;
+		else if (lit.compareTo("in") == 0) t.kind = in_Sym;
 		else if (lit.compareTo("new") == 0) t.kind = new_Sym;
 	}
 

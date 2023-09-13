@@ -146,6 +146,7 @@ PRODUCTIONS
             | RepeatStatement<frame, breakLabel>
             | DoWhileStatement<frame, breakLabel>
             | BreakStatement<breakLabel>
+            | ForStatement<frame, breakLabel>
             | ";"
           )
   .
@@ -367,6 +368,25 @@ PRODUCTIONS
                 } .)         
     . 
 
+  ForStatement<StackFrame frame, Label breakLabel> (. String name; int type1, type2; .)
+  =                                          (. Label loopExit = new Label(!known); Label loopStart = new Label(known); .)
+    "for"                                    
+    Ident<out name>                          (. Entry entry = Table.find(name);
+                                                boolean notDeclared = !entry.declared;
+                                                if (notDeclared) {
+                                                  SemError("undeclared identifier");
+                                                } .)
+    "in"
+    "(" Expression<out type1>                (. if (!compatible(entry.type, type1)) {
+                                                  SemError("incomparable types"); 
+                                                } .)
+        { 
+          "," Expression<out type2>          (. if (!compatible(entry.type, type2)) {
+                                                  SemError("incomparable types"); 
+                                                } .)
+        } 
+    ")" Statement<frame, loopExit>           (. loopExit.here(); .)
+    .
 
   Condition                                  (. int type; .)
   =  Expression<out type>                    (. if (!isBool(type))
