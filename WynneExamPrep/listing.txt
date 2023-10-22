@@ -1,0 +1,47 @@
+
+   1   void main() {
+   2   // Sieve of Eratosthenes for finding primes 2 <= n <= Max (Parva version)
+   3   // Nov23 exam
+   4     const max = 49000;
+   5     bool[] Uncrossed = new bool[max];          // the sieve
+   6     int i, n, k, it, iterations, primes = 0;   // counters
+   7     read("How many iterations? ", iterations);
+   8     read("Supply largest number to be tested ", n);
+   9     if (n > max) {
+  10       write("n too large, sorry");
+  11       return;
+****             ^ invalid Assignment
+  12     }
+  13     it = 1;
+  14     while (it <= iterations) {
+  15       primes = 0;
+  16 //    write("Prime numbers between 2 and " , n, "\n");
+  17 //    write("-----------------------------------\n");
+  18       i = 2;
+  19       while (i <= n) {                         // clear sieve
+  20         Uncrossed[i-2] = true;
+  21         i = i + 1;
+  22       }
+  23       i = 2;
+  24       while (i <= n) {                         // the passes over the sieve
+  25         if (Uncrossed[i-2]) {
+  26 //        if (primes % 8 == 0) writeLine();    // ensure line not too long
+  27           primes = primes + 1;
+  28 //        write(i, "\t");
+  29           k = i;                               // now cross out multiples of i
+  30           Uncrossed[k-2] = false;
+  31           k = k + i;
+  32           while (k <= n) {
+  33             Uncrossed[k-2] = false;
+  34             k = k + i;
+  35           }
+  36         }
+  37         i = i + 1;
+  38       }
+  39       it = it + 1;
+  40 //    write("\n");
+  41     }
+  42     write(primes, " primes");
+  43   } // main
+
+1 errors detected

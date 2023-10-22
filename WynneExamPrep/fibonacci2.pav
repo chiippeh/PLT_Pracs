@@ -1,0 +1,19 @@
+void main() {
+// Print a table of Fibonacci numbers using (fast) iterative method
+// Nov23 exam
+
+  int
+    term   = 0,
+    first  = 0,
+    second = 1,
+    limit;
+
+  read("Supply upper limit ", limit);
+  writeLine(term, "\t", first);
+  while (term < limit) {
+    term++;
+    writeLine(term, "\t", second);
+    second = first + second;
+    first  = second - first;
+  } // while
+} // main

@@ -1,0 +1,18 @@
+void main () {
+/* Demonstrate de Morgan's Laws
+   Nov23 exam */
+
+  bool X, Y;
+
+  write("   X      Y    (X.Y)' X'+Y'  (X+Y)' X'.Y'\n\n");
+
+  X = false;
+  do {
+    Y = false;
+    do {
+      writeLine(X, Y, !(X && Y),  !X || !Y, !(X || Y), !X && !Y); Y = ! Y;
+    } while (Y); // still
+    X = ! X;
+  } while (X); // still
+
+} // main

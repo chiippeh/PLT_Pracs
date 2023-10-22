@@ -1,0 +1,427 @@
+import library.*;
+import java.util.*;
+
+COMPILER FormatParva $CN
+/* Parva level 1.5 grammar for Nov23 examination - Coco/R for Java
+   Skeleton file for creating a translator to format .pav source code
+   Java operator precedences
+   Supplied Parva compiler (Parva.exe) does not support forstatements as given in this grammar 
+   Supplied Parva compiler (Parva.exe) supports all other statements in this grammar (plus a few extensions) 
+   Nov23 exam free1 kit version */
+
+    public static OutFile output = null;
+
+    static int indentation = 0;
+
+    public static void openOutput(String fileName) {
+    // Opens output file from specified fileName
+      output = new OutFile(fileName);
+      if (output.openError()) {
+        System.out.println("cannot open " + fileName);
+        System.exit(1);
+      }
+    }
+
+    public static void closeOutput() {
+    // Closes output file
+      output.close();
+    }
+	public static void append(String str) {
+    // Appends str to output file
+      output.write(str);
+    }
+
+    public static void newLine() {
+    // Writes line mark to output file but leaves indentation as before
+      output.writeLine();
+      appendLeadingSpaces();
+    }
+
+    static void appendLeadingSpaces() {
+    // Appends the spaces needed at the start of each line of output before a statement
+      for (int j = 1; j <= indentation; j++) output.write(' ');
+    }
+
+    public static void indentNewLine() {
+    // Writes line mark to output file and prepares to indent further lines
+    // by two spaces more than before
+      indentation += 2;
+      newLine();
+    }
+
+    public static void decIndentNewLine() {
+    // Writes line mark to output file and prepares to indent further lines
+    // by two spaces less
+      indentation -= 2;
+      newLine();
+    }
+
+    public static void indent() {
+    // Increments indentation level by 2
+      indentation += 2;
+    }
+
+    public static void decIndent() {
+    // Decrements indentation level by 2
+      indentation -= 2;
+    }
+
+
+  public static boolean
+    indented = true;
+
+CHARACTERS
+  lf           = CHR(10) .
+  backslash    = CHR(92) .
+  control      = CHR(0) .. CHR(31) .
+  letter       = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" .
+  digit        = "0123456789" .
+  stringCh     = ANY - '"' - control - backslash .
+  charCh       = ANY - "'" - control - backslash .
+  printable    = ANY - control .
+
+TOKENS
+  identifier = letter { { "_" } (letter | digit) } .
+  number     = digit { digit } .
+  stringLit    = '"' { stringCh  | backslash printable } '"' .
+  charLit      = "'" ( charCh    | backslash printable ) "'" .
+
+COMMENTS FROM "//" TO lf
+COMMENTS FROM "/*" TO "*/"
+
+IGNORE CHR(9) .. CHR(13)
+
+PRODUCTIONS
+  FormatParva                        (. String name; .)
+  = "void"                           (. append("void "); .)
+    Ident<out name>                  (. append(name); .)
+    "(" ")"                          (. append("()"); .)
+    Block 							 
+.
+
+  Block
+  = "{"                              (. append(" {"); indent(); .)
+       { Statement<!indented> }
+    "}"                              (. decIndentNewLine();
+                                        append("}"); .) .
+
+  Statement<boolean indented>
+  =   Block
+    | ";"                            (. append(";"); .)
+    |                                (. if (indented) indent();
+                                        newLine(); .)
+     (   ConstDeclarations
+       | VarDeclarations
+       | AssignmentStatement
+       | IfStatement
+       | WhileStatement
+       | DoWhileStatement
+       | ForStatement
+       | BreakStatement
+       | HaltStatement
+       | ReadStatement
+       | ReadLineStatement
+       | WriteStatement
+       | WriteLineStatement
+     )                              (. if (indented) decIndent(); .) .
+
+  ConstDeclarations
+  = "const"                     (. append("const "); .)      
+    OneConst
+    { WEAK ","                  (. append(", "); .)      
+      OneConst
+    } WEAK ";"                  (. append(";"); .)      
+	.
+
+  OneConst                  		(. String name; .)         
+  = Ident<out name>             (. append(name); .)     
+    "="                         (. append(" = "); .)     
+    Constant .
+
+  Constant         					    (. String name; .)       			           
+  =   IntConst<out name>   			(. append(name); .)		         
+    | CharConst<out name>        (. append(name); .)
+    | "true"                    (. append("true"); .)    
+    | "false"                   (. append("false"); .)   
+    | "null"                    (. append("null"); .)     
+	.
+
+  VarDeclarations           
+  = Type<out String name>     (. append(name + " "); .)                                            
+    OneVar
+    { WEAK ","                (. append(", "); .)           
+      OneVar
+    }
+    WEAK ";"                  (. append(";"); .)       
+	.
+
+  Type<out String name>       (. name = ""; .)
+  = BasicType<out name>       
+    [ "[]"                    (. append(name + "[] "); .)      
+    ] .
+
+  BasicType<out String name>   (. name = ""; .)
+  =   "int"                    (. name = "int";.)      
+    | "bool"                   (. name = "bool"; .)       
+    | "char"                   (. name = "char"; .)      
+	.
+
+  OneVar          							(. String name; .)                   
+  = Ident<out name>             (. append(name); .)
+    [ "="                       (. append(" = "); .)     
+      Expression
+    ] .
+
+  AssignmentStatement
+  = Assignment WEAK ";"          (. append(";"); .)    
+  .
+
+  Assignment
+  =   Designator
+      (   AssignOp Expression
+        | "++"                   (. append("++"); .)    
+        | "--"                   (. append("--"); .)    
+      )
+    | "++"                           
+      Designator
+    | "--"                           
+      Designator .
+
+  Designator                         		(. String name; .)
+  = Ident<out name>                     (. append(name); .)
+    [  "["                              (. append("["); .)
+          Expression
+       "]"                              (. append("]"); .)
+    ] .
+
+  IfStatement
+  = "if"                            (. append("if "); .)   
+    "("                             (. append("("); .) 
+       Condition
+    ")"                             (. append(")"); .) 
+    Statement<indented>
+    { "elsif"                       (. newLine(); append("else if "); .)
+    "("                             (. append("("); .)   
+        Condition
+      ")"                           (. append(")"); .)  
+      Statement<indented>
+    }
+    [ "else"                        (. newLine(); append("else "); .)  
+      Statement<indented>
+    ] .
+
+  WhileStatement
+  = "while"                          (. append("while "); .)
+    "("                              (. append("("); .)
+       Condition
+    ")"                              (. append(")"); .)
+    Statement<indented> .
+
+  DoWhileStatement
+  = "do"                             (. append("do "); .)
+      Statement<indented>
+    WEAK "while"                     (. append(" while "); .)
+    "("                              (. append("("); .) 
+       Condition
+    ")"                              (. append(")"); .)   
+    WEAK ";"                         (. append(";"); .)
+	.
+
+  ForStatement  
+  = "for"                           (. append("for "); .)  
+    ForControl
+    Statement<indented> .
+
+  ForControl                        	(. String name; .) 
+  =   "("                             (. append("("); .)
+         [ [ BasicType<out name>      (. append(name); .)              
+           ]
+           Ident<out name>            (. append(name); .)
+           "="                        (. append("="); .)
+           Expression
+         ] ";"                        (. append(";"); .)
+         [ Condition ] ";"            (. append(";"); .)
+         [ Assignment ]              
+      ")"                             (. append(")"); .)
+    | Ident<out name>                 (. append(name); .)
+      "="                             (. append(" = "); .)
+      Expression
+      (   "to"                        (. append("to "); .)
+        | "downto"                    (. append("downto "); .)
+      )
+      Expression .
+
+  BreakStatement
+  = "break"                          (. append("break"); .)
+    WEAK ";"                         (. append(";"); .)
+	.
+
+  HaltStatement
+  = "halt"                           (. append("halt"); .)
+    WEAK ";"                         (. append(";"); .) .
+
+  ReadStatement
+  = "read"                           (. append("read"); .)
+    "("                              (. append("("); .)
+       ReadElement
+       { WEAK ","                    (. append(", "); .) 
+         ReadElement
+       }
+    ")"                              (. append(")"); .)
+    WEAK ";"                         (. append(";"); .)
+	.
+
+  ReadLineStatement
+  = "readLine"                 (. append("readLine"); .)      
+    "("                        (. append("("); .)      
+       [ ReadElement
+         { WEAK ","            (. append(", "); .)      
+           ReadElement
+         }
+       ]
+    ")"                        (. append(")"); .)      
+    WEAK ";"                   (. append(";"); .)      
+	.
+
+  ReadElement                   (. String name; .)    
+  = (   StringConst<out name>   (. append(name); .)        
+      | Designator
+    ) .
+
+  WriteStatement
+  = "write"                     (. append("write"); .)     
+    "("                         (. append("("); .)     
+       WriteElement
+       { WEAK ","               (. append(", "); .)     
+         WriteElement
+       }
+    ")"                         (. append(")"); .)     
+    WEAK ";"                    (. append(";"); .)     
+	.
+
+  WriteLineStatement
+  = "writeLine"                 (. append("writeLine"); .)     
+    "("                         (. append("("); .)     
+       [ WriteElement
+         { WEAK ","             (. append(", "); .)     
+           WriteElement
+         }
+       ]
+    ")"                         (. append(")"); .)     
+    WEAK ";"                    (. append(";"); .)     
+	.
+
+  WriteElement                 (. String name; .)      
+  = (   StringConst<out name>  (. append(name); .)         
+      | Expression
+    ) .
+
+  Condition
+  = Expression .
+
+  Expression
+  = AndExp
+    { "||"                        (. append(" || "); .)    
+      AndExp
+    } .
+
+  AndExp
+  = EqlExp
+    { "&&"                        (. append(" && "); .)   
+      EqlExp
+    } .
+
+  EqlExp
+  = RelExp
+    { EqualOp
+      RelExp
+    } .
+
+  RelExp
+  = AddExp
+    [ RelOp
+      AddExp
+    ] .
+
+  AddExp
+  = MultExp
+    { AddOp
+      MultExp
+    } .
+
+  MultExp
+  = Factor
+    { MulOp
+      Factor
+    } .
+
+  Factor
+  =   Primary
+    | "+"                           (. append(" + "); .) 
+      Factor
+    | "-"                           (. append(" - "); .) 
+      Factor
+    | "!"                           (. append("!"); .)  
+      Factor .
+
+  Primary                             (. String name; .)
+  =   Designator
+    | Constant
+    | "new"                          (. append(" = new "); .) 
+      BasicType<out name>            (. append(name); .)
+      "["                            (. append("["); .)
+         Expression
+      "]"                            (. append("]"); .) 
+    | "("                            (. append("("); .) 
+      (   "char" ")"                 (. append("char )"); .)
+          Factor
+        | "int" ")"                  (. append("int )"); .)
+          Factor
+        | Expression
+          ")"                        (. append(")"); .) 
+      ) .
+
+  AddOp
+  =   "+"                            (. append(" + "); .)
+    | "-"                            (. append(" - "); .) 
+	.
+
+  MulOp
+  =   "*"                            (. append(" * "); .)    
+    | "/"                            (. append(" / "); .) 
+    | "%"                            (. append(" % "); .) 
+	.
+
+  EqualOp
+  =   "=="                           (. append(" == "); .)
+    | "!="                           (. append(" != "); .)
+	.
+
+  RelOp
+  =   "<"                            (. append(" < ");  .)
+    | "<="                           (. append(" <= "); .)
+    | ">"                            (. append(" > ");  .)
+    | ">="                           (. append(" >= "); .)
+	.
+
+  AssignOp  
+  =   "="                            (. append(" = "); .)      
+  .
+
+  Ident<out String name>
+  = identifier         				      (. name = token.val; .)               
+  .
+
+  StringConst<out String name>
+  = stringLit                       (. name = token.val; .)   
+  .
+
+  CharConst<out String name>
+  = charLit                         (. name = token.val; .) 
+  .
+
+  IntConst<out String name>
+  = number              			(. name = token.val; .)
+  .
+
+END FormatParva.

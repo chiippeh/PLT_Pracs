@@ -1,0 +1,17 @@
+void main () {
+// Print a table of factorial numbers 1! ... 20!
+// Nov23 exam
+
+  const limit=20;
+  int n=1;
+  while (n<=limit) {
+    int f=1;int i = n;
+    while(i>0) {
+      f=f*i;i--;
+    }
+    writeLine(n,"! = ",f);
+    n ++
+    ;
+  }
+
+} // main

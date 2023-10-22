@@ -1,0 +1,217 @@
+**************************************************************************************
+// Summary of useful library classes 
+// The following summarizes the simple set handling and I/O classes that have been useful in 
+// the development of applications using the Coco/R compiler generator. 
+
+  class SymSet  { // simple set handling routines
+    public SymSet()
+    public SymSet(int[] members)
+    public boolean equals(Symset s)
+    public void incl(int i)
+    public void excl(int i)
+    public boolean contains(int i)
+    public boolean isEmpty()
+    public int members()
+    public SymSet union(SymSet s)
+    public SymSet intersection(SymSet s)
+    public SymSet difference(SymSet s)
+    public SymSet symDiff(SymSet s)
+    public void write()
+    public String toString()
+  } // SymSet
+
+  public class OutFile {  // text file output
+    public static OutFile StdOut
+    public static OutFile StdErr
+    public OutFile()
+    public OutFile(String fileName)
+    public boolean openError()
+    public void write(String s)
+    public void write(Object o)
+    public void write(int o)
+    public void write(long o)
+    public void write(boolean o)
+    public void write(float o)
+    public void write(double o)
+    public void write(char o)
+    public void writeLine()
+    public void writeLine(String s)
+    public void writeLine(Object o)
+    public void writeLine(int o)
+    public void writeLine(long o)
+    public void writeLine(boolean o)
+    public void writeLine(float o)
+    public void writeLine(double o)
+    public void writeLine(char o)
+    public void write(String o,  int width)
+    public void write(Object o,  int width)
+    public void write(int o,     int width)
+    public void write(long o,    int width)
+    public void write(boolean o, int width)
+    public void write(float o,   int width)
+    public void write(double o,  int width)
+    public void write(char o,    int width)
+    public void writeLine(String o,  int width)
+    public void writeLine(Object o,  int width)
+    public void writeLine(int o,     int width)
+    public void writeLine(long o,    int width)
+    public void writeLine(boolean o, int width)
+    public void writeLine(float o,   int width)
+    public void writeLine(double o,  int width)
+    public void writeLine(char o,    int width)
+    public void close()
+  } // OutFile
+
+  public class InFile {    // text file input
+    public static InFile StdIn
+    public InFile()
+    public InFile(String fileName)
+    public boolean openError()
+    public int errorCount()
+    public static boolean done()
+    public void showErrors()
+    public void hideErrors()
+    public boolean eof()
+    public boolean eol()
+    public boolean error()
+    public boolean noMoreData()
+    public char readChar()
+    public void readAgain()
+    public void skipSpaces()
+    public void readLn()
+    public String readString()
+    public String readString(int max)
+    public String readLine()
+    public String readWord()
+    public int readInt()
+    public long readLong()
+    public int readShort()
+    public float readFloat()
+    public double readDouble()
+    public boolean readBool()
+    public void close()
+  } // InFile
+
+**************************************************************************************
+// Simple list handling in Java   
+// The following is the specification of useful members of a Java list handling class. 
+
+import java.util.*;
+
+  class ArrayList
+  // Class for constructing a list of elements of type E
+
+    public ArrayList<E>()
+    // Empty list constructor
+
+    public void add(E element)
+    // Appends element to end of list
+
+    public void add(int index, E element)
+    // Inserts element at position index
+
+    public E get(int index)
+    // Retrieves an element from position index
+
+    public E set(int index, E element)
+    // Stores an element at position index
+
+    public void clear()
+    // Clears all elements from list
+
+    public int size()
+    // Returns number of elements in list
+
+    public boolean isEmpty()
+    // Returns true if list is empty
+
+    public boolean contains(E element)
+    // Returns true if element is in the list
+
+    public int indexOf(E element)
+    // Returns position of element in the list
+
+    public E remove(int index)
+    // Removes the element at position index
+
+  } // ArrayList
+
+A simple Java program using this class is given in the exam kit as Listdemo.java.  
+
+*******************************************************************************************
+// Strings and Characters in Java
+// The following rather meaningless code illustrates some of the string and character 
+// manipulation methods that are available in Java and which may be useful in developing translators.
+
+  import java.util.*;
+
+      char c, c1, c2;
+      boolean b, b1, b2;
+      String s, s1, s2;
+      int i, i1, i2;
+
+      b = Character.isLetter(c);                 // true if letter
+      b = Character.isDigit(c);                  // true if digit
+      b = Character.isLetterOrDigit(c);          // true if letter or digit
+      b = Character.isWhitespace(c);             // true if white space
+      b = Character.isLowerCase(c);              // true if lowercase
+      b = Character.isUpperCase(c);              // true if uppercase
+      c = Character.toLowerCase(c);              // equivalent lowercase
+      c = Character.toUpperCase(c);              // equivalent uppercase
+      s = Character.toString(c);                 // convert to string
+      i = s.length();                            // length of string
+      b = s.equals(s1);                          // true if s == s1
+      b = s.equalsIgnoreCase(s1);                // true if s == s1, case irrelevant
+      i = s1.compareTo(s2);                      // i = -1, 0, 1 if s1 < = > s2
+      s = s.trim();                              // remove leading/trailing whitespace
+      s = s.toUpperCase();                       // equivalent uppercase string
+      s = s.toLowerCase();                       // equivalent lowercase string
+      char[] ca = s.toCharArray();               // create character array
+      s = s1.concat(s2);                         // s1 + s2
+      s = s.substring(i1);                       // substring starting at s[i1]
+      s = s.substring(i1, i2);                   // substring s[i1 ... i2-1]
+      s = s.replace(c1, c2);                     // replace all c1 by c2
+      c = s.charAt(i);                           // extract i-th character of s
+  //    s[i] = c;                                // not allowed
+      i = s.indexOf(c);                          // position of c in s[0 ...
+      i = s.indexOf(c, i1);                      // position of c in s[i1 ...
+      i = s.indexOf(s1);                         // position of s1 in s[0 ...
+      i = s.indexOf(s1, i1);                     // position of s1 in s[i1 ...
+      i = s.lastIndexOf(c);                      // last position of c in s
+      i = s.lastIndexOf(c, i1);                  // last position of c in s, <= i1
+      i = s.lastIndexOf(s1);                     // last position of s1 in s
+      i = s.lastIndexOf(s1, i1);                 // last position of s1 in s, <= i1
+      i = Integer.parseInt(s);                   // convert string to integer
+      i = Integer.parseInt(s, i1);               // convert string to integer, base i1
+      s = Integer.toString(i);                   // convert integer to string
+
+      StringBuffer                               // build strings (Java 1.4)
+        sb = new StringBuffer(),                 //
+        sb1 = new StringBuffer("original");      //
+      StringBuilder                              // build strings (Jaba 1.5 and 1.6)
+        sb = new StringBuilder(),                //
+        sb1 = new StringBuilder("original");     //
+      sb.append(c);                              // append c to end of sb
+      sb.append(s);                              // append s to end of sb
+      sb.insert(i, c);                           // insert c in position i
+      sb.insert(i, s);                           // insert s in position i
+      b = sb.equals(sb1);                        // true if sb == sb1
+      i = sb.length();                           // length of sb
+      i = sb.indexOf(s1);                        // position of s1 in sb
+      sb.delete(i1, i2);                         // remove sb[i1 .. i2-1]
+      sb.deleteCharAt(i1);                       // remove sb[i1]
+      sb.replace(i1, i2, s1);                    // replace sb[i1 .. i2-1] by s1
+      s = sb.toString();                         // convert sb to real string
+      c = sb.charAt(i);                          // extract sb[i]
+      sb.setCharAt(i, c);                        // sb[i] = c
+
+      StringTokenizer                            // tokenize strings
+        st = new StringTokenizer(s, ".,");       // delimiters are . and ,
+        st = new StringTokenizer(s, ".,", true); // delimiters are also tokens
+        while (st.hasMoreTokens())               // process successive tokens
+          process(st.nextToken());
+
+      String[]                                   // tokenize strings
+        tokens = s.split(".;");                  // delimiters are defined by a regexp
+      for (i = 0; i < tokens.length; i++)        // process successive tokens
+        process(tokens[i]);

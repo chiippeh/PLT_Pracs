@@ -1,0 +1,13 @@
+// Print a table of Fibonacci numbers using (fast) iterative method
+// Nov23 exam
+
+  void main() {
+    int limit, term   = 0, first  = 0, second = 1;
+
+    read("Supply upper limit ", limit);
+    writeLine(term, "\t", first);
+    while (term < limit) {
+      term++;
+      writeLine(term, "\t", second);
+      int third = first + second; first  = second; second = third; } // while
+      } // main

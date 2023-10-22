@@ -1,0 +1,9 @@
+void main(){int b,c,d;
+ b= 10;
+ while (b>0) { write("b = ", b); b--;
+ if (b == 4) writeLine(" hit four!")
+ ; elsif(true) 
+    writeLine(" on we go");
+     else writeLine(" never get here");
+    }
+ } 

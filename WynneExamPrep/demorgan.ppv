@@ -1,0 +1,13 @@
+void main() {
+  bool X, Y;
+  write("   X      Y    (X.Y)' X'+Y'  (X+Y)' X'.Y'\n\n");
+  X = false;
+  do  {
+    Y = false;
+    do  {
+      writeLine(X, Y, !(X && Y), !X || !Y, !(X || Y), !X && !Y);
+      Y = !Y;
+    } while (Y);
+    X = !X;
+  } while (X);
+}

@@ -1,0 +1,13 @@
+void main() {
+  const limit = 256;
+  char[] char sentence =  = new char[limit];
+  int leng = 0;
+  do  {
+    read(sentence[leng]);
+    leng++;
+  } while (sentence[leng - 1] != '.');
+  while (leng > 0) {
+    leng--;
+    write(sentence[leng]);
+  }
+}

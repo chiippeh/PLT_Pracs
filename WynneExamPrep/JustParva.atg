@@ -1,0 +1,86 @@
+    COMPILER FormatParva $CN
+    /* Parva grammar for 2023 examination - Grammar only */
+
+    CHARACTERS
+		lf           = CHR(10) .
+		backslash    = CHR(92) .
+		control      = CHR(0) .. CHR(31) .
+		letter       = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" .
+		digit        = "0123456789" .
+		stringCh     = ANY - '"' - control - backslash .
+		charCh       = ANY - "'" - control - backslash .
+		printable    = ANY - control .
+
+    TOKENS
+		identifier = letter { { "_" } (letter | digit) } .
+		number     = digit { digit } .
+		stringLit    = '"' { stringCh  | backslash printable } '"' .
+		charLit      = "'" ( charCh    | backslash printable ) "'" .
+
+    COMMENTS FROM "//" TO lf
+    COMMENTS FROM "/*" TO "*/"
+    IGNORE CHR(9) .. CHR(13)
+
+    PRODUCTIONS
+      FormatParva       = "void" Ident "(" ")" Block .
+      Block             = "{" { Statement } "}" .
+      Statement         = (   Block | ConstDeclarations | VarDeclarations 
+								| AssignmentStatement | IfStatement 
+								| WhileStatement | ForStatement | HaltStatement 
+								| DoWhileStatement | BreakStatement 
+								| ReadStatement | WriteStatement  
+								| ReadLineStatement | WriteLineStatement | ";"
+                           ) .
+      ConstDeclarations   = "const" OneConst { "," OneConst } ";" .
+      OneConst            = Ident "=" Constant .
+      Constant            = IntConst | CharConst | "true" | "false" | "null" .
+      VarDeclarations     = Type OneVar { "," OneVar } ";" .
+      Type                = BasicType [ "[]" ] .
+      BasicType           = "int" | "bool" | "char" .
+      OneVar              = Ident [ "=" Expression ] .
+      AssignmentStatement = Assignment ";" .
+      Assignment          = Designator ( AssignOp Expression | "++" | "--" )
+                            | "++" Designator | "--" Designator .
+      Designator          = Ident [ "[" Expression "]" ] .
+      IfStatement         = "if" "(" Condition ")" Statement
+                             { "elsif" "(" Condition ")" Statement }
+                             [ "else" Statement ] .
+      WhileStatement      = "while" "(" Condition ")" Statement .
+      DoWhileStatement    = "do" Statement "while" "(" Condition ")" ";" .
+      ForStatement        = "for" ForControl Statement .
+      ForControl          =   "(" [ [ BasicType ] Ident "=" Expression ] ";" 
+							[ Condition ] ";" [ Assignment ] ")"
+                          | Ident "=" Expression ( "to" | "downto" ) Expression .
+      BreakStatement      = "break" ";" .
+      HaltStatement       = "halt" ";" .
+      ReadStatement       = "read" "(" ReadElement { "," ReadElement } ")" ";" .
+      ReadLineStatement   = "readLine" "(" [ ReadElement { "," ReadElement } ] ")" ";" .
+      ReadElement         = StringConst | Designator .
+      WriteStatement      = "write" "(" WriteElement { "," WriteElement } ")" ";" .
+      WriteLineStatement  = "writeLine" "(" [ WriteElement {"," WriteElement} ] ")" ";" .
+      WriteElement        = StringConst | Expression .
+      Condition           = Expression .
+      Expression          = AndExp { "||" AndExp } .
+      AndExp              = EqlExp { "&&" EqlExp } .
+      EqlExp              = RelExp { EqlOp RelExp } .
+      RelExp              = AddExp [ RelOp AddExp ] .
+      AddExp              = MulExp { AddOp MulExp } .
+      MulExp              = Factor { MulOp Factor } .
+      Factor              = Primary | "+" Factor | "-" Factor | "!" Factor .
+      Primary 		      = Designator | Constant | "new" BasicType "[" Expression "]"
+                            | "(" (   
+									"char" ")" Factor
+									| "int" ")"  Factor
+									| Expression ")"
+                              ) .
+      MulOp               = "*"  | "/" | "%" .
+      AddOp               = "+"  | "-" .
+      EqlOp               = "==" | "!=" .
+      RelOp               = "<"  | "<=" | ">" | ">=" .
+      AssignOp            = "=" .
+      Ident               = identifier .
+      StringConst         = stringLit .
+      CharConst           = charLit .
+      IntConst            = number .
+    END FormatParva.
+
